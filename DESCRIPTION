@@ -9,10 +9,11 @@ Authors@R: c(
     )
 Description: Scalable Spatiotemporally Varying Coefficient Modelling with Bayesian Kernelized Tensor Regression.
 Depends:
-    R (>= 4.1.2)
+    R (>= 4.0.0)
 Imports:
     torch,
-    R6
+    R6,
+    R6P
 License: MIT
 RoxygenNote: 7.1.2
 Collate: 
