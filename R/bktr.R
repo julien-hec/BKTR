@@ -362,7 +362,10 @@ BKTRRegressor <- R6::R6Class(
                 tau = self$tau,
                 y_estimate = self$y_estimate,
                 mae = self$mae,
-                rmse = self$rmse
+                rmse = self$rmse,
+                spatial_length = self$spatial_length_sampler$theta_value,
+                decay_scale = self$decay_scale_sampler$theta_value,
+                periodic_length = self$periodic_length_sampler$theta_value
             ))
         },
 
@@ -391,10 +394,10 @@ BKTRRegressor <- R6::R6Class(
         initialize_params = function() {
             private$init_covariate_decomp()
             private$set_y_estimate_and_errors(0)
-            private$create_iter_estim_tensors()
             private$create_kernel_factories()
             private$create_likelihood_evaluators()
             private$create_hparam_samplers()
+            private$create_iter_estim_tensors()
         }
     )
 )
