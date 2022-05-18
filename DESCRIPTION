@@ -1,0 +1,27 @@
+Package: BKTR
+Version: 0.1
+Title: Bayesian Kernelized Tensor Regression
+Authors@R: c(
+        person("Mengying", "Lei", role = "aut"),
+        person("Aurelie", "Labbe", role = "aut"),
+        person("Lijun", "Sun", role = "aut"),
+        person("Julien", "Lanthier", email = "julien.lanthier@hec.ca", role = c("aut", "cre"))
+    )
+Description: Scalable Spatiotemporally Varying Coefficient Modelling with Bayesian Kernelized Tensor Regression.
+Depends:
+    R (>= 4.1.2)
+Imports:
+    torch,
+    R6
+License: MIT
+RoxygenNote: 7.1.2
+Collate: 
+    'sampler.R'
+    'tensor_ops.R'
+    'marginal_likelihoods.R'
+    'kernel_generator.R'
+    'bktr.R'
+    'sampler_config.R'
+    'bktr_config.R'
+    'data_import_utils.R'
+LazyData: true

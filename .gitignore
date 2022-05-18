@@ -37,3 +37,12 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# python-version
+.python-version
+
+# editor config
+.editorconfig
+
+# VS code config
+.vscode

@@ -1,0 +1,90 @@
+---
+title: "BIXI Data Example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Distributions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(BKTR)
+```
+
+This vignette showcases how to transform real world data so that it can be used by the BKTR library.
+
+#TODO ADD more detail for the data origin
+The Response and the spatial data was gathered from BIXI a docked bike-sharing service in Montreal, Canada.
+Additional spatial features were gathered from the canadian census.
+The temporal data is weather historical data for montreal. 
+
+
+## Load necessary Response, Spatial, Temporal and Distance Matrices
+
+Temporal index columns that are droped in the final matrix
+```{r}
+date_columns <- c("day", "month", "weekday")
+```
+
+#### Load response data (Bixi station departure data)
+It is important to verify that the response data matrix has as many rows as the temporal final matrix. The number of column of the final response matrix should also be equal to the number of rows in the spatial data matrix. The respective indexes of them should also be kept in the same order in all matrices.
+```{r}
+# Load bike station departure data
+bixi_departure_path <- system.file('extdata', 'bike_station_departures.csv', package = 'BKTR')
+departure_matrix <- BKTR::load_matrix_from_csv(
+    bixi_departure_path, columns_to_drop = date_columns, rows_to_keep = 2:197,
+    fill_na_with_zeros = TRUE, transpose_matrix = TRUE
+)
+# TODO Check those additionnal data manipulations
+departure_matrix[departure_matrix > quantile(departure_matrix, 0.9)[[1]]] <- 0
+departure_matrix[, c(42, 133, 166)] <- 0
+
+# Create response variable and omega from departure data
+bixi_y <- departure_matrix / max(departure_matrix)
+bixi_omega <- departure_matrix > 0
+```
+
+#### Load weather data (Weather data)
+```{r}
+weather_data_path <- system.file('extdata', 'montreal_weather_data.csv', package = 'BKTR')
+bixi_weather_matrix <- BKTR::load_matrix_from_csv(
+    weather_data_path, columns_to_drop = date_columns, rows_to_keep = 2:197,
+    fill_na_with_zeros = TRUE, min_max_normalization = TRUE
+)
+```
+
+#### Load spatial data (bike station's properties)
+```{r}
+bixi_station_path <- system.file('extdata', 'bike_station_features.csv', package = 'BKTR')
+bixi_station_matrix <- BKTR::load_matrix_from_csv(
+    bixi_station_path, columns_to_keep = 9:21,
+    fill_na_with_zeros = TRUE, transpose_matrix = FALSE, min_max_normalization = TRUE
+)
+```
+
+#### Load spatial distance data (Distance between each station)
+```{r}
+distance_data_path <- system.file('extdata', 'bike_station_distances.csv', package = 'BKTR')
+# TODO (this tensor can come from the haversine dist later)
+bixi_distance_matrix <- BKTR::load_matrix_from_csv(distance_data_path, has_header = FALSE)
+```
+
+## Data usage in a BKTR regression
+The four datasets gathered previously could be directly used with a BKTR regressor (As shown in the BKTR_example vignette).
+The transformed datasets were saved in the package to be used as examples.
+
+```{r eval=FALSE}
+# The following instructions ran once to save the datasets in the package
+usethis::use_data(bixi_y)
+usethis::use_data(bixi_omega)
+usethis::use_data(bixi_weather_matrix)
+usethis::use_data(bixi_station_matrix)
+usethis::use_data(bixi_distance_matrix)
+```
