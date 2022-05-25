@@ -25,7 +25,7 @@ min_max_normalize <- function(mat, new_min, new_max) {
 #' @description Helper utility function to load and transform CSV data into numeric matrix
 #' that can be loaded as tensor into the BKTR algorithm
 #' @param file_location String: The file path of the source CSV
-#' @param has_header Boolean: The new mimimal value for the normalized matrix
+#' @param has_header Boolean: Indicator about the presence of headers in the CSV
 #' @param columns_to_drop Vector[String]: A vector of column name that can be removed
 #' @param columns_to_keep Vector[String]: A vector of column name that can remain in the matrix
 #' @param rows_to_keep Vector[Integer]: A vector of row index that can remain in the matrix

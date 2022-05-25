@@ -18,7 +18,7 @@ load_matrix_from_csv(
 \arguments{
 \item{file_location}{String: The file path of the source CSV}
 
-\item{has_header}{Boolean: The new mimimal value for the normalized matrix}
+\item{has_header}{Boolean: Indicator about the presence of headers in the CSV}
 
 \item{columns_to_drop}{Vector[String]: A vector of column name that can be removed}
 

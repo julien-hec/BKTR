@@ -108,7 +108,7 @@ TemporalKernelGenerator <- R6::R6Class(
 #'
 #' @export
 SpatialKernelGenerator <- R6::R6Class(
-    'TemporalKernelGenerator',
+    'SpatiallKernelGenerator',
 
     public = list(
         distance_matrix = NULL,
