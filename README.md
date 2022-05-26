@@ -1,5 +1,5 @@
-# pyBKTR
-This project is a python implementation of the BKTR algorithm (by Mengying Lei, Aurelie Labbe, Lijun Sun).
+# BKTR
+This project is a R implementation of the BKTR algorithm (by Mengying Lei, Aurelie Labbe, Lijun Sun).
 
 BKTR stands for Scalable Spatiotemporally Varying Coefficient Modelling with Bayesian Kernelized Tensor Regression.
 
