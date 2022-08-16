@@ -75,6 +75,12 @@ ResultLogger <- R6::R6Class(
             y_beta_sampled_values <- private$get_y_and_beta_sampled_values(
                 self$y_estimates, self$beta_estimates
             )
+
+            if (iter > self$nb_burn_in_iter) {
+                self$sum_beta_est <- self$sum_beta_est + self$beta_estimates
+                self$sum_y_est <- self$sum_y_est + self$y_estimates
+            }
+
             all_par_iter <- c(
                 list(
                     iter = iter,
@@ -92,19 +98,6 @@ ResultLogger <- R6::R6Class(
             }
 
             private$print_iter_result(iter, append(elapsed_time_dict, self$error_metrics))
-
-        },
-
-        get_avg_estimates = function() {
-            nb_sample_iter <- self$nb_iter - self$nb_burn_in_iter
-            avg_estimates <- append(
-                list(
-                    y_est = self$sum_y_est / nb_sample_iter,
-                    beta_est = self$sum_beta_est / nb_sample_iter
-                ),
-                self$error_metrics
-            )
-            return(avg_estimates)
         },
 
         set_error_metrics = function() {
@@ -131,23 +124,34 @@ ResultLogger <- R6::R6Class(
                 )
             )
             self$y_estimates <- torch::torch_einsum('ijk,ijk->ij', c(self$covariates, self$beta_estimates))
-
-            self$sum_beta_est <- self$sum_beta_est + self$beta_estimates
-            self$sum_y_est <- self$sum_y_est + self$y_estimates
         },
 
         log_final_results = function() {
             iter_results_df <- as.data.frame(do.call(cbind, self$logged_params_map))
+            avg_estimates <- private$get_avg_estimates()
             write.csv(iter_results_df, private$get_file_name('iter_results'), row.names = FALSE)
-            avg_estimates <- self$get_avg_estimates()
             y_est <- as.array(avg_estimates[['y_est']]$cpu()$flatten())
             beta_est <- as.array(avg_estimates[['beta_est']]$cpu()$flatten())
             write.table(y_est, private$get_file_name('y_estimates'), row.names = FALSE, col.names = FALSE)
             write.table(beta_est, private$get_file_name('beta_estimates'), row.names = FALSE, col.names = FALSE)
+            return(avg_estimates)
         }
     ),
 
     private = list(
+        get_avg_estimates = function() {
+            nb_sample_iter <- self$nb_iter - self$nb_burn_in_iter
+            self$beta_estimates <- self$sum_beta_est / nb_sample_iter
+            self$y_estimates <- self$sum_y_est / nb_sample_iter
+            error_metrics <- self$set_error_metrics()
+            private$print_iter_result(-1, error_metrics)
+            avg_estimates <- append(
+                list(y_est = self$y_estimates, beta_est = self$beta_estimates),
+                error_metrics
+            )
+            return(avg_estimates)
+        },
+
         get_elapsed_time_dict = function() {
             iter_elapsed_time <- Sys.time() - self$last_time_stamp
             self$last_time_stamp <- Sys.time()

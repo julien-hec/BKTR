@@ -102,9 +102,7 @@ BKTRRegressor <- R6::R6Class(
                 # Needed to force garbage collection in Cuda
                 gc()
             }
-            avg_estimates <- private$calculate_avg_estimates()
-            private$log_iter_results()
-            return(avg_estimates)
+            return(private$log_iter_results())
         }
     ),
 
