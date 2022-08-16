@@ -43,7 +43,17 @@ BKTRConfig <- R6::R6Class(
         #' @field spatial_length_config spatial length-scale's KernelSamplerConfig (Paper: \eqn{\phi})
         spatial_length_config = NULL,
 
+        # Ouput Params
+        #' @field sampled_beta_indexes Indexes of beta estimates that need to be sampled through iterations
+        sampled_beta_indexes = NULL,
+        #' @field sampled_y_indexes Indexes of y estimates that need to be sampled through iterations
+        sampled_y_indexes = NULL,
+        #' @field results_export_dir Path of the folder where the csv file will be exported
+        results_export_dir = NULL,
+
         # Torch Params
+        #' @field torch_seed Seed used by torch to be able to reproduce results for a given seed
+        torch_seed = NULL,
         #' @field torch_dtype Type used for floating points in the tensor backend
         torch_dtype = NULL,
         #' @field torch_device Device used by the tensor backend for calculation (\code{'cuda'} or \code{'cpu'})
@@ -74,6 +84,10 @@ BKTRConfig <- R6::R6Class(
         #' @param spatial_max_hparam_val Numeric: Maximum value for spatial length scale hyperparameter
         #' @param spatial_hparam_mu_prior Numeric: Initial value for spatial length scale mean
         #' @param spatial_hparam_precision_prior Numeric: Initial value for spatial length scale precision
+        #' @param sampled_beta_indexes Indexes of beta estimates that need to be sampled through iterations
+        #' @param sampled_y_indexes Indexes of y estimates that need to be sampled through iterations
+        #' @param results_export_dir Path of the folder where the csv file will be exported
+        #' @param torch_seed Seed used by torch to be able to reproduce results for a given seed
         #' @param torch_device String ('cpu', 'cuda'): the device used by Torch for computation
         #' @param torch_dtype Torch floating point type (\code{torch_float16()}, \code{torch_float32()},
         #' \code{torch_float64()}): Default \code{torch_float64()} helps for large kernel cholesky decomposition
@@ -109,7 +123,12 @@ BKTRConfig <- R6::R6Class(
             spatial_max_hparam_val = log(1E3),
             spatial_hparam_mu_prior = 0,
             spatial_hparam_precision_prior = 1,
+            # Output Params
+            sampled_beta_indexes = c(),
+            sampled_y_indexes = c(),
+            results_export_dir = '.',
             # Torch Params
+            torch_seed = NULL,
             torch_device = 'cpu',
             torch_dtype = torch::torch_float64()
         ) {
@@ -126,8 +145,12 @@ BKTRConfig <- R6::R6Class(
             self$sigma_r <- sigma_r
             self$a_0 <- a_0
             self$b_0 <- b_0
+            self$sampled_beta_indexes <- sampled_beta_indexes
+            self$sampled_y_indexes <- sampled_y_indexes
+            self$torch_seed <- torch_seed
             self$torch_dtype <- torch_dtype
             self$torch_device <- torch_device
+            self$results_export_dir <- results_export_dir
 
             self$periodic_scale_config <- KernelSamplerConfig$new(
                 slice_sampling_scale = period_slice_sampling_scale,

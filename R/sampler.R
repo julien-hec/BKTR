@@ -155,7 +155,7 @@ TauSampler <- R6::R6Class(
         sample = function(total_sq_error) {
             b_tau <- self$b_0 + 0.5 * total_sq_error
             return(tsr$new_tensor(
-                torch::distr_gamma(self$a_tau$cpu(), b_tau$cpu())$sample()
+                torch::distr_gamma(self$a_tau$cpu(), b_tau)$sample()
             ))
         }
     )
