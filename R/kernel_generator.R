@@ -12,11 +12,14 @@ TemporalKernelGenerator <- R6::R6Class(
     'TemporalKernelGenerator',
 
     public = list(
+        STAB_DIAG_MULTIPLIER = 1e-12,
         time_distances = NULL,
         period_length = NULL,
         kernel = NULL,
         kernel_variance = NULL,
         core_kernel_fn = NULL,
+        has_stabilizing_diag = NULL,
+        time_segment_duration = NULL,
         # Following params are set externally via HyperParamSampler
         periodic_length_scale = NULL,
         decay_time_scale = NULL,
@@ -28,6 +31,8 @@ TemporalKernelGenerator <- R6::R6Class(
         #' @param kernel_variance Numeric: The variance used in the kernel
         #' @param ini_period_length_scale Numeric: Initial value for the periodic length scale
         #' @param ini_decay_time_scale Numeric: Initial value for the decay time scale
+        #' @param has_stabilizing_diag Boolean: Indicate if adding a stabilizing diagonal to help cholesky decomp
+        #' @param ini_decay_time_scale Numeric:  Duration between all segments in the kernel
         #' @return A new \code{TemporalKernelGenerator} object.
         initialize = function(
             kernel_fn_name,
@@ -35,20 +40,26 @@ TemporalKernelGenerator <- R6::R6Class(
             period_length,
             kernel_variance,
             ini_period_length_scale = NULL,
-            ini_decay_time_scale = NULL
+            ini_decay_time_scale = NULL,
+            has_stabilizing_diag = FALSE,
+            time_segment_duration = 1
         ) {
             self$core_kernel_fn <- private$get_kernel_fn(kernel_fn_name)
-            private$set_time_distance_matrix(nb_time_segments)
+            private$set_time_distance_matrix(nb_time_segments, time_segment_duration)
             self$period_length <- period_length
             self$kernel_variance <- kernel_variance
             self$periodic_length_scale <- ini_period_length_scale
             self$decay_time_scale <- ini_decay_time_scale
+            self$has_stabilizing_diag <- has_stabilizing_diag
         },
 
         #' @description Generate and set temporal kernel values using current parameters
         #' @return A new numeric matrix containing the temporal kernel
         kernel_gen = function() {
             self$kernel <- self$kernel_variance * self$core_kernel_fn()
+            if (self$has_stabilizing_diag) {
+                self$kernel <- self$kernel + self$STAB_DIAG_MULTIPLIER * tsr$eye(self$kernel$shape[1])
+            }
             return(self$kernel)
         }
     ),
@@ -71,8 +82,9 @@ TemporalKernelGenerator <- R6::R6Class(
 
         #~ @description Calculate and set the time distance matrix used in the temporal kernel
         #~ @param nb_time_segments Integer: The number of time segments for the kernel
-        set_time_distance_matrix = function(nb_time_segments) {
-            time_segments <- tsr$arange(1, nb_time_segments)$unsqueeze(2)
+        #~ @param time_segment_duration Numeric: Duration between kernel time segment
+        set_time_distance_matrix = function(nb_time_segments, time_segment_duration) {
+            time_segments <- tsr$arange(1, nb_time_segments)$unsqueeze(2) * time_segment_duration
             self$time_distances <- time_segments - time_segments$t()
         },
 

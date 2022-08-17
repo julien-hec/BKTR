@@ -24,6 +24,12 @@ BKTRConfig <- R6::R6Class(
         # Kernel Params
         #' @field temporal_period_length Period used in the periodic kernel (Paper: \eqn{T})
         temporal_period_length = NULL,
+        #' @field temporal_kernel_fn_name Temporal kernel function used (periodic_se, se or periodic)
+        temporal_kernel_fn_name = NULL,
+        #' @field kernel_time_segment_duration Duration of one time segment in the kernel
+        kernel_time_segment_duration = NULL,
+        #' @field has_stabilizing_diag Indicate if we add a stabilizing diagonal in the temporal kernel
+        has_stabilizing_diag = NULL,
         #' @field spatial_smoothness_factor Smoothness factor used in the Matern kernel
         spatial_smoothness_factor = NULL,
         #' @field kernel_variance Variance used for all kernels (Paper: \eqn{\sigma^2_s, \sigma^2_t})
@@ -64,6 +70,9 @@ BKTRConfig <- R6::R6Class(
         #' @param burn_in_iter Integer: Iterations used for burn in during MCMC
         #' @param max_iter Integer: Total number of iterations for MCMC
         #' @param temporal_period_length Integer: Period for periodic kernel (\code{7} represent week's length)
+        #' @param temporal_kernel_fn_name String: Temporal kernel function used (periodic_se, se or periodic)
+        #' @param kernel_time_segment_duration Numeric: Duration of one time segment in the kernel
+        #' @param has_stabilizing_diag Boolean: Indicate if we add a stabilizing diagonal in the temporal kernel
         #' @param spatial_smoothness_factor Integer (1,3,5): Matern kernel's smoothness (3 for Matern 3/2)
         #' @param kernel_variance Numeric: Variance used for all kernels
         #' @param sigma_r Numeric: Initial value of white noise's variance (\eqn{\tau^{-1}})
@@ -99,6 +108,9 @@ BKTRConfig <- R6::R6Class(
             max_iter = NULL,
             # Kernel Params
             temporal_period_length = 7,
+            temporal_kernel_fn_name = 'periodic_se',
+            kernel_time_segment_duration = 1,
+            has_stabilizing_diag = FALSE,
             spatial_smoothness_factor = 3,
             kernel_variance = 1,
             # Tau params
@@ -142,6 +154,9 @@ BKTRConfig <- R6::R6Class(
             self$temporal_period_length <- temporal_period_length
             self$spatial_smoothness_factor <- spatial_smoothness_factor
             self$kernel_variance <- kernel_variance
+            self$temporal_kernel_fn_name <- temporal_kernel_fn_name
+            self$kernel_time_segment_duration <- kernel_time_segment_duration
+            self$has_stabilizing_diag <- has_stabilizing_diag
             self$sigma_r <- sigma_r
             self$a_0 <- a_0
             self$b_0 <- b_0

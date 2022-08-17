@@ -70,7 +70,6 @@ BKTRRegressor <- R6::R6Class(
                 tsr$new_tensor(spatial_covariate_matrix),
                 tsr$new_tensor(temporal_covariate_matrix)
             )
-            private$initialize_params()
         },
 
         #' @description Launch the MCMC sampling process. \cr
@@ -89,6 +88,7 @@ BKTRRegressor <- R6::R6Class(
         #' }
         #' @return A list containing the results of the MCMC sampling.
         mcmc_sampling = function() {
+            private$initialize_params()
             for (i in 1:self$config$max_iter) {
                 print(sprintf('*** Running iter %i ***', i))
                 private$sample_kernel_hparam()
@@ -174,10 +174,12 @@ BKTRRegressor <- R6::R6Class(
                 self$config$kernel_variance
             )
             self$temporal_kernel_factory <- TemporalKernelGenerator$new(
-                'periodic_se',
+                self$config$temporal_kernel_fn_name,
                 self$covariates_dim$nb_times,
                 self$config$temporal_period_length,
-                self$config$kernel_variance
+                self$config$kernel_variance,
+                time_segment_duration = self$config$kernel_time_segment_duration,
+                has_stabilizing_diag = self$config$has_stabilizing_diag
             )
         },
 
