@@ -44,7 +44,7 @@ ResultLogger <- R6::R6Class(
             self$logged_params_map <- list()
 
             if (!dir.exists(export_dir)) {
-                torch::value_error(
+                torch:::value_error(
                     sprintf('The selected export directory `%s` does not exists.', export_dir)
                 )
             }
@@ -186,7 +186,7 @@ ResultLogger <- R6::R6Class(
             time_str <- format(Sys.time(), format = "%Y%m%d_%H%M")
             file_name <- paste0(file_prefix, '_', time_str)
             if (!is.null(self$seed)) {
-                file_name <- paste0(file_name, '_s', self$seed)
+                file_name <- paste0(file_name, '__s', self$seed)
             }
             return(file.path(self$export_dir, paste0(file_name, '.csv')))
         }

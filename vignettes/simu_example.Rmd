@@ -100,8 +100,8 @@ run_simu_bktr <- function(
             has_stabilizing_diag = TRUE,
             kernel_time_segment_duration = 1 / 10,
             results_export_dir = './output',
-            sampled_beta_indexes = c(860, 1949, 5519, 6338, 9207, 10435, 15034, 15868, 16059, 16944),
-            sampled_y_indexes = c(52, 4046, 12979, 13129, 15673, 17807),
+            sampled_beta_indexes = c(860, 1949, 5519, 6338, 9207, 10435, 15034, 15868, 16059, 16944) + 1,
+            sampled_y_indexes = c(52, 4046, 12979, 13129, 15673, 17807) + 1,
             torch_seed = torch_seed * i,
             torch_device = torch_device
         )
