@@ -17,8 +17,9 @@ Imports:
 License: MIT
 RoxygenNote: 7.1.2
 Collate: 
-    'sampler.R'
     'tensor_ops.R'
+    'sampler.R'
+    'result_logger.R'
     'marginal_likelihoods.R'
     'kernel_generator.R'
     'bktr.R'

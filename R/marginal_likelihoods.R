@@ -47,11 +47,17 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
                 tsr$khatri_rao_prod(decomp_values, covs_decomp)$reshape(c(-1, self$nb_covariates, rank_decomp))
             ))
             psi_u_mask <- psi_u * self$omega$permute(c(self$permuted_axis))$unsqueeze(2)$expand_as(psi_u)
+
             self$chol_k <- torch::linalg_cholesky(kernel_values)
+            kernel_inverse <- torch::linalg_solve(
+                self$chol_k$t(), torch::linalg_solve(self$chol_k, tsr$eye(kernel_size))
+            )
+            stabilized_kernel_inv <- (kernel_inverse$t() + kernel_inverse) / 2
             self$inv_k <- tsr$kronecker_prod(
                 tsr$eye(rank_decomp),
-                (kernel_values)$inverse()
+                stabilized_kernel_inv
             ) # I_R Kron inv(Ks)
+
             lambda_u <- tau * torch::torch_einsum('ijk,ilk->ijl', c(psi_u_mask, psi_u_mask)) # tau * H_T * H_T'
             # TODO Check the broadcasting here, for sure we can simplify it (We just want to diagonalize lambda_u)
             lambda_u <- lambda_u$permute(c(2, 1, 3))$flatten(start_dim = 1, end_dim = 2)$unsqueeze(2)$expand(
@@ -62,10 +68,13 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
             ) * lambda_u
             lambda_u <- lambda_u + self$inv_k
             self$chol_lu <- torch::linalg_cholesky(lambda_u)
-            uu <- torch::linalg_solve(
+            uu <- torch::torch_triangular_solve(
+                torch::torch_einsum(
+                    'ijk,ik->ji', c(psi_u_mask, self$y_masked$permute(c(self$permuted_axis)))
+                )$flatten()$unsqueeze(2),
                 self$chol_lu,
-                torch::torch_einsum('ijk,ik->ji', c(psi_u_mask, self$y_masked$permute(c(self$permuted_axis))))$flatten()
-            )
+                upper = FALSE
+            )[[1]]$squeeze()
             self$likelihood <- as.numeric((
                 tsr$new_tensor(0.5 * tau ** 2) * uu$t()$matmul(uu)
                 - self$chol_lu$diag()$log()$sum()

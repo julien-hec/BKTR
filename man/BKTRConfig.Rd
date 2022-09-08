@@ -37,6 +37,14 @@ of iterations or decomposition rank).
 
 \item{\code{spatial_length_config}}{spatial length-scale's KernelSamplerConfig (Paper: \eqn{\phi})}
 
+\item{\code{sampled_beta_indexes}}{Indexes of beta estimates that need to be sampled through iterations}
+
+\item{\code{sampled_y_indexes}}{Indexes of y estimates that need to be sampled through iterations}
+
+\item{\code{results_export_dir}}{Path of the folder where the csv file will be exported}
+
+\item{\code{torch_seed}}{Seed used by torch to be able to reproduce results for a given seed}
+
 \item{\code{torch_dtype}}{Type used for floating points in the tensor backend}
 
 \item{\code{torch_device}}{Device used by the tensor backend for calculation (\code{'cuda'} or \code{'cpu'})}
@@ -81,6 +89,10 @@ Create a new \code{BKTRConfig} object.
   spatial_max_hparam_val = log(1000),
   spatial_hparam_mu_prior = 0,
   spatial_hparam_precision_prior = 1,
+  sampled_beta_indexes = c(),
+  sampled_y_indexes = c(),
+  results_export_dir = ".",
+  torch_seed = NULL,
   torch_device = "cpu",
   torch_dtype = torch::torch_float64()
 )}\if{html}{\out{</div>}}
@@ -136,6 +148,14 @@ Create a new \code{BKTRConfig} object.
 \item{\code{spatial_hparam_mu_prior}}{Numeric: Initial value for spatial length scale mean}
 
 \item{\code{spatial_hparam_precision_prior}}{Numeric: Initial value for spatial length scale precision}
+
+\item{\code{sampled_beta_indexes}}{Indexes of beta estimates that need to be sampled through iterations}
+
+\item{\code{sampled_y_indexes}}{Indexes of y estimates that need to be sampled through iterations}
+
+\item{\code{results_export_dir}}{Path of the folder where the csv file will be exported}
+
+\item{\code{torch_seed}}{Seed used by torch to be able to reproduce results for a given seed}
 
 \item{\code{torch_device}}{String ('cpu', 'cuda'): the device used by Torch for computation}
 

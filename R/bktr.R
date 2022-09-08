@@ -1,8 +1,9 @@
 #' @import torch
 #' @include kernel_generator.R
 #' @include marginal_likelihoods.R
-#' @include tensor_ops.R
+#' @include result_logger.R
 #' @include sampler.R
+#' @include tensor_ops.R
 #' @importFrom R6 R6Class
 
 #' @title R6 class encapsulating the BKTR regression steps
@@ -25,11 +26,8 @@ BKTRRegressor <- R6::R6Class(
         spatial_decomp = NULL, # U
         temporal_decomp = NULL, # V
         covs_decomp = NULL, # C or W
-        # Y estimates and errors (change during iter)
-        y_estimate = NULL,
-        total_sq_error = NULL,
-        mae = NULL,
-        rmse = NULL,
+        # Result Logger
+        result_logger = NULL,
         # Kernel factories
         temporal_kernel_factory = NULL,
         spatial_kernel_factory = NULL,
@@ -42,9 +40,6 @@ BKTRRegressor <- R6::R6Class(
         # Likelihood evaluators
         spatial_ll_evaluator = NULL,
         temporal_ll_evaluator = NULL,
-        # used to collect mcmc samples
-        avg_y_est = NULL,
-        sum_beta_est = NULL,
 
         #' @description Create a new \code{BKTRRegressor} object.
         #' @param bktr_config BKTRConfig: Configuration used for the BKTR regression
@@ -75,7 +70,6 @@ BKTRRegressor <- R6::R6Class(
                 tsr$new_tensor(spatial_covariate_matrix),
                 tsr$new_tensor(temporal_covariate_matrix)
             )
-            private$initialize_params()
         },
 
         #' @description Launch the MCMC sampling process. \cr
@@ -94,6 +88,7 @@ BKTRRegressor <- R6::R6Class(
         #' }
         #' @return A list containing the results of the MCMC sampling.
         mcmc_sampling = function() {
+            private$initialize_params()
             for (i in 1:self$config$max_iter) {
                 print(sprintf('*** Running iter %i ***', i))
                 private$sample_kernel_hparam()
@@ -101,14 +96,13 @@ BKTRRegressor <- R6::R6Class(
                 private$sample_spatial_decomp()
                 private$sample_covariate_decomp()
                 private$sample_temporal_decomp()
-                private$set_y_estimate_and_errors(i)
-                private$sample_precision_tau()
-                private$collect_iter_samples(i)
+                private$set_errors_and_sample_precision_tau()
+                private$collect_iter_values(i)
 
                 # Needed to force garbage collection in Cuda
                 gc()
             }
-            return(private$calculate_avg_estimates())
+            return(private$log_iter_results())
         }
     ),
 
@@ -157,69 +151,18 @@ BKTRRegressor <- R6::R6Class(
             )
         },
 
-        #~ @description Calculate error metrics of interest (MAE, RMSE, Total Error)
-        #~ @param y_estimate matrix[numeric]: Estimation of the response variable
-        #~ @param y matrix[numeric]: Response variable that we are trying to predict
-        #~ @param omega matrix[boolean]: Mask showing if a y observation is missing or not
-        #~ @return A list containing the values of the error metrics
-        calculate_error_metrics = function(y_estimate, y, omega) {
-            nb_observ <- omega$sum()
-            err_matrix <- (y_estimate - y) * omega
-            total_sq_error <- err_matrix$norm() ** 2
-            mae <- err_matrix$abs()$sum() / nb_observ
-            rmse <- (total_sq_error / nb_observ)$sqrt()
-            return(list(total_sq_error = total_sq_error, mae = mae, rmse = rmse))
-        },
-
-        #~ @description Calculate the estimated y and set the iteration errors appropriately
-        #~ @param iter Integer: Current iteration index
-        set_y_estimate_and_errors = function(iter) {
-            # Calculate Coefficient Estimation
-            coefficient_estimate <- torch::torch_einsum(
-                'im,jm,km->ijk',
-                c(self$spatial_decomp, self$temporal_decomp, self$covs_decomp)
+        create_result_logger = function() {
+            self$result_logger <- ResultLogger$new(
+                y = self$y,
+                omega = self$omega,
+                covariates = self$covariates,
+                nb_iter = self$config$max_iter,
+                nb_burn_in_iter = self$config$burn_in_iter,
+                export_dir = self$config$results_export_dir,
+                seed = self$config$torch_seed,
+                sampled_beta_indexes = self$config$sampled_beta_indexes,
+                sampled_y_indexes = self$config$sampled_y_indexes
             )
-            self$y_estimate <- torch::torch_einsum(
-                'ijk,ijk->ij',
-                c(self$covariates, coefficient_estimate)
-            )
-
-            # Iteration errors
-            err_metrics <- private$calculate_error_metrics(self$y_estimate, self$y, self$omega)
-            self$total_sq_error <- err_metrics$total_sq_error
-
-            # Average errors
-            max_iter <- self$config$max_iter
-            burn_in_iter <- self$config$burn_in_iter
-            if (iter == 0) {
-                avg_y_est <- self$y_estimate
-            } else {
-                lbound_indx <- max(1, iter - burn_in_iter + 1)
-                sum_y_est <- self$logged_params_tensor$y_estimate[lbound_indx:max_iter]$sum(1) + self$y_estimate
-                avg_y_est <- sum_y_est / (iter - lbound_indx + 1)
-            }
-            avg_err_metrics <- private$calculate_error_metrics(avg_y_est, self$y, self$omega)
-            self$mae <- avg_err_metrics$mae
-            self$rmse <- avg_err_metrics$rmse
-            print(sprintf('Iter Error: MAE is %.4f || RMSE is %.4f', self$mae$cpu(), self$rmse$cpu()))
-
-            # Collect sample for mcmc results
-            self$avg_y_est <- avg_y_est
-            if (iter == burn_in_iter + 1) {
-                self$sum_beta_est <- coefficient_estimate
-            } else if (iter > burn_in_iter + 1) {
-                self$sum_beta_est <- self$sum_beta_est + coefficient_estimate
-            }
-        },
-
-        #~ @description Create the list of tensors that will hold all the historical
-        #~ data gathered through the iterations
-        create_iter_estim_tensors = function() {
-            logged_params <- private$get_logged_params_list()
-            self$logged_params_tensor <- lapply(logged_params, function(x) {
-                if (!torch::is_torch_dtype(x)) x <- tsr$new_tensor(x)
-                iter_estimate <- tsr$zeros(c((self$config$max_iter), x$shape))
-            })
         },
 
         #~ @description Create and set the kernel factories for the spatial and
@@ -231,10 +174,12 @@ BKTRRegressor <- R6::R6Class(
                 self$config$kernel_variance
             )
             self$temporal_kernel_factory <- TemporalKernelGenerator$new(
-                'periodic_se',
+                self$config$temporal_kernel_fn_name,
                 self$covariates_dim$nb_times,
                 self$config$temporal_period_length,
-                self$config$kernel_variance
+                self$config$kernel_variance,
+                time_segment_duration = self$config$kernel_time_segment_duration,
+                has_stabilizing_diag = self$config$has_stabilizing_diag
             )
         },
 
@@ -317,7 +262,11 @@ BKTRRegressor <- R6::R6Class(
         #~ @return A tensor containing the newly sampled covariate decomposition
         sample_decomp_norm = function(initial_decomp, chol_l, uu) {
             precision_mat <- chol_l$t()
-            mean_vec <- self$tau * torch::linalg_solve(precision_mat, uu)
+            mean_vec <- self$tau * torch::torch_triangular_solve(
+                uu$unsqueeze(2),
+                precision_mat,
+                upper = TRUE
+            )[[1]]$squeeze()
             return(
                 sample_norm_multivariate(mean_vec, precision_mat)$reshape_as(initial_decomp$t())$t()
             )
@@ -347,57 +296,58 @@ BKTRRegressor <- R6::R6Class(
             self$temporal_decomp <- private$sample_decomp_norm(self$temporal_decomp, ll_eval$chol_lu, ll_eval$uu)
         },
 
-        #~ @description Sample a new tau
-        sample_precision_tau = function() {
-            self$tau <- self$tau_sampler$sample(self$total_sq_error)
+        #~ @description Set BKTR error values (MAE, RMSE, Total Sq. Error) and sample a new tau
+        set_errors_and_sample_precision_tau = function() {
+            self$result_logger$set_y_and_beta_estimates(private$decomposition_tensors())
+            error_metrics <- self$result_logger$set_error_metrics()
+            self$tau <- self$tau_sampler$sample(error_metrics[['total_sq_error']])
         },
 
-        #~ @description Get a list of current iteration values that are needed to be
+        #~ @description Get a list of current iteration scalar parameters that need to be
         #~ gathered as historical data
-        get_logged_params_list = function() {
+        logged_scalar_params = function() {
             return(list(
-                spatial_decomp = self$spatial_decomp,
-                temporal_decomp = self$temporal_decomp,
-                covs_decomp = self$covs_decomp,
-                tau = self$tau,
-                y_estimate = self$y_estimate,
-                mae = self$mae,
-                rmse = self$rmse,
+                tau = as.double(self$tau),
                 spatial_length = self$spatial_length_sampler$theta_value,
                 decay_scale = self$decay_scale_sampler$theta_value,
                 periodic_length = self$periodic_length_sampler$theta_value
             ))
         },
 
-        #~ @description Collect current iteration values inside the historical data tensor list
-        #~ @param iter Integer: Current iteration index
-        collect_iter_samples = function(iter) {
-            logged_params <- private$get_logged_params_list()
-            for (i in seq_along(logged_params)) {
-                param_name <- names(logged_params)[[i]]
-                self$logged_params_tensor[[param_name]][iter] <- logged_params[[param_name]]
-            }
+        #~ @description List of all used decomposition tensors
+        decomposition_tensors = function() {
+            return(
+                list(
+                    spatial_decomp = self$spatial_decomp,
+                    temporal_decomp = self$temporal_decomp,
+                    covs_decomp = self$covs_decomp
+                )
+            )
+        },
+
+        #~ @description Collect all necessary iteration values
+        collect_iter_values = function(iter) {
+            self$result_logger$collect_iter_samples(iter, private$logged_scalar_params)
         },
 
         #~ @description Calculate the final list of values returned by the MCMC sampling including
         #~ the y estimation, the average estimated betas and the errors
         calculate_avg_estimates = function() {
-            return(list(
-                y_est = self$avg_y_est,
-                beta_est = self$sum_beta_est / (self$config$max_iter - self$config$burn_in_iter + 1),
-                mae = self$mae,
-                rmse = self$rmse
-            ))
+            self$result_logger$get_avg_estimates()
+        },
+
+        #~ @description Log iteration results in via the result logger
+        log_iter_results = function() {
+            self$result_logger$log_final_results()
         },
 
         #~ @description Initialize all parameters that are needed before we start the MCMC sampling
         initialize_params = function() {
             private$init_covariate_decomp()
-            private$set_y_estimate_and_errors(0)
+            private$create_result_logger()
             private$create_kernel_factories()
             private$create_likelihood_evaluators()
             private$create_hparam_samplers()
-            private$create_iter_estim_tensors()
         }
     )
 )

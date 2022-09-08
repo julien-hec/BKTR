@@ -46,3 +46,6 @@ vignettes/*.pdf
 
 # VS code config
 .vscode
+
+# Related to project
+/output

@@ -101,14 +101,16 @@ HyperParamSampler <- R6::R6Class(
 #'
 #' @export
 #' @keywords internal
-sample_norm_multivariate <- function(mean_vec, precision_lower_tri) {
+sample_norm_multivariate <- function(mean_vec, precision_upper_tri) {
     # TODO Open PR & Issue for https://github.com/mlverse/torch/blob/main/R/distributions-multivariate_normal.R L:86
     # Not Able to use the precision matrix because of priority of ops (!is.null(NULL) + !is.null(1) + !is.null(1)) == F
     # ERROR comes from torch::distr_multivariate_normal(torch::torch_zeros(2), precision_matrix = torch::torch_eye(2))
     return(
-        torch::linalg_solve(
-            precision_lower_tri, tsr$new_tensor(torch::torch_randn_like(mean_vec))
-        ) + mean_vec
+        torch::torch_triangular_solve(
+            tsr$new_tensor(torch::torch_randn_like(mean_vec))$unsqueeze(2),
+            precision_upper_tri,
+            upper = TRUE
+        )[[1]]$squeeze() + mean_vec
     )
 }
 
@@ -155,7 +157,7 @@ TauSampler <- R6::R6Class(
         sample = function(total_sq_error) {
             b_tau <- self$b_0 + 0.5 * total_sq_error
             return(tsr$new_tensor(
-                torch::distr_gamma(self$a_tau$cpu(), b_tau$cpu())$sample()
+                torch::distr_gamma(self$a_tau$cpu(), b_tau)$sample()
             ))
         }
     )
