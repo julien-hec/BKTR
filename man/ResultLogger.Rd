@@ -13,7 +13,6 @@ logging iteration information during the BKTR algorithm
 \itemize{
 \item \href{#method-new}{\code{ResultLogger$new()}}
 \item \href{#method-collect_iter_samples}{\code{ResultLogger$collect_iter_samples()}}
-\item \href{#method-get_avg_estimates}{\code{ResultLogger$get_avg_estimates()}}
 \item \href{#method-set_error_metrics}{\code{ResultLogger$set_error_metrics()}}
 \item \href{#method-set_y_and_beta_estimates}{\code{ResultLogger$set_y_and_beta_estimates()}}
 \item \href{#method-log_final_results}{\code{ResultLogger$log_final_results()}}
@@ -45,15 +44,6 @@ logging iteration information during the BKTR algorithm
 \subsection{Method \code{collect_iter_samples()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ResultLogger$collect_iter_samples(iter, iter_logged_params)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_avg_estimates"></a>}}
-\if{latex}{\out{\hypertarget{method-get_avg_estimates}{}}}
-\subsection{Method \code{get_avg_estimates()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$get_avg_estimates()}\if{html}{\out{</div>}}
 }
 
 }

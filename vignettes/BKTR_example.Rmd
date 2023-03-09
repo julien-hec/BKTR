@@ -1,8 +1,8 @@
 ---
-title: "BIXI Data Example"
+title: "BIXI Regression Example"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Distributions}
+  %\VignetteIndexEntry{BIXI Regression Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -1,8 +1,8 @@
 ---
-title: "Simu Data Example"
+title: "Simulation Regression Example"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Distributions}
+  %\VignetteIndexEntry{Simulation Regression Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -21,6 +21,12 @@ of iterations or decomposition rank).
 
 \item{\code{temporal_period_length}}{Period used in the periodic kernel (Paper: \eqn{T})}
 
+\item{\code{temporal_kernel_fn_name}}{Temporal kernel function used (periodic_se, se or periodic)}
+
+\item{\code{kernel_time_segment_duration}}{Duration of one time segment in the kernel}
+
+\item{\code{has_stabilizing_diag}}{Indicate if we add a stabilizing diagonal in the temporal kernel}
+
 \item{\code{spatial_smoothness_factor}}{Smoothness factor used in the Matern kernel}
 
 \item{\code{kernel_variance}}{Variance used for all kernels (Paper: \eqn{\sigma^2_s, \sigma^2_t})}
@@ -69,6 +75,9 @@ Create a new \code{BKTRConfig} object.
   burn_in_iter = NULL,
   max_iter = NULL,
   temporal_period_length = 7,
+  temporal_kernel_fn_name = "periodic_se",
+  kernel_time_segment_duration = 1,
+  has_stabilizing_diag = FALSE,
   spatial_smoothness_factor = 3,
   kernel_variance = 1,
   sigma_r = 0.01,
@@ -108,6 +117,12 @@ Create a new \code{BKTRConfig} object.
 \item{\code{max_iter}}{Integer: Total number of iterations for MCMC}
 
 \item{\code{temporal_period_length}}{Integer: Period for periodic kernel (\code{7} represent week's length)}
+
+\item{\code{temporal_kernel_fn_name}}{String: Temporal kernel function used (periodic_se, se or periodic)}
+
+\item{\code{kernel_time_segment_duration}}{Numeric: Duration of one time segment in the kernel}
+
+\item{\code{has_stabilizing_diag}}{Boolean: Indicate if we add a stabilizing diagonal in the temporal kernel}
 
 \item{\code{spatial_smoothness_factor}}{Integer (1,3,5): Matern kernel's smoothness (3 for Matern 3/2)}
 

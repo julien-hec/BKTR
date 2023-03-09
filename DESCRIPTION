@@ -27,3 +27,4 @@ Collate:
     'bktr_config.R'
     'data_import_utils.R'
 LazyData: true
+VignetteBuilder: knitr, rmarkdown
