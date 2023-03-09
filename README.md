@@ -41,9 +41,13 @@ From the project root folder run the following line to regenerate the documentat
 ```r
 library(devtools)
 ```
-then to build the manual
+run the following to build the documentation
 ```r
 devtools::document()
+```
+then to build the manual
+```r
+devtools::build_manual(pkg = ".", path = NULL)
 ```
 and to build the vignettes
 ```r

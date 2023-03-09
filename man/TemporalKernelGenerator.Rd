@@ -28,7 +28,9 @@ Create a new \code{TemporalKernelGenerator} object.
   period_length,
   kernel_variance,
   ini_period_length_scale = NULL,
-  ini_decay_time_scale = NULL
+  ini_decay_time_scale = NULL,
+  has_stabilizing_diag = FALSE,
+  time_segment_duration = 1
 )}\if{html}{\out{</div>}}
 }
 
@@ -46,6 +48,10 @@ Create a new \code{TemporalKernelGenerator} object.
 \item{\code{ini_period_length_scale}}{Numeric: Initial value for the periodic length scale}
 
 \item{\code{ini_decay_time_scale}}{Numeric: Initial value for the decay time scale}
+
+\item{\code{ini_decay_time_scale}}{Numeric:  Duration between all segments in the kernel}
+
+\item{\code{has_stabilizing_diag}}{Boolean: Indicate if adding a stabilizing diagonal to help cholesky decomp}
 }
 \if{html}{\out{</div>}}
 }

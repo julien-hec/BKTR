@@ -4,7 +4,7 @@
 \alias{sample_norm_multivariate}
 \title{Sample a tensor of random values from a normal multivariate distribution}
 \usage{
-sample_norm_multivariate(mean_vec, precision_lower_tri)
+sample_norm_multivariate(mean_vec, precision_upper_tri)
 }
 \description{
 The sampling use a tensor of
