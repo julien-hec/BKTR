@@ -4,45 +4,24 @@
 
 #' @title R6 class for kernel's hyperparameter sampling
 #'
-#' @description The HyperParamSampler encapsulate all the behavior related to
+#' @description The KernelParamSampler encapsulate all the behavior related to
 #' the sampling of the kernel hyperparameters
 #'
 #' @export
 #' @keywords internal
-HyperParamSampler <- R6::R6Class(
-    'HyperParamSampler',
+KernelParamSampler <- R6::R6Class(
+    'KernelParamSampler',
     public = list(
-        # Coming from config
-        slice_sampling_scale = NULL,
-        min_hyper_value = NULL,
-        max_hyper_value = NULL,
-        hyper_mu_prior = NULL,
-        hyper_precision_prior = NULL,
-        # Passed params
-        kernel_generator = NULL,
+        kernel = NULL
         marginal_ll_eval_fn = NULL,
-        kernel_hparam_name = NULL, # Used for reference to the param's name in the kernel generator
-
-        theta_value = NULL,
-        theta_min = NULL,
-        theta_max = NULL,
 
         initialize = function(
             config,
-            kernel_generator,
+            kernel,
             marginal_ll_eval_fn,
-            kernel_hparam_name
         ) {
-            self$hyper_mu_prior <- config$hyper_mu_prior
-            self$hyper_precision_prior <- config$hyper_precision_prior
-            self$slice_sampling_scale <- config$slice_sampling_scale
-            self$min_hyper_value <- config$min_hyper_value
-            self$max_hyper_value <- config$max_hyper_value
-
-            self$kernel_generator <- kernel_generator
+            self$kernel = kernel
             self$marginal_ll_eval_fn <- marginal_ll_eval_fn
-            self$kernel_hparam_name <- kernel_hparam_name
-            self$set_theta_value(self$hyper_mu_prior)
         },
 
         set_theta_value = function(theta) {
@@ -50,45 +29,44 @@ HyperParamSampler <- R6::R6Class(
             self$kernel_generator[[self$kernel_hparam_name]] <- exp(theta)
         },
 
-        initialize_theta_bounds = function() {
-            theta_range <- self$slice_sampling_scale * runif(1)
-            self$theta_min <- max(self$theta_value - theta_range, self$min_hyper_value)
-            self$theta_max <- min(self$theta_min + self$slice_sampling_scale, self$max_hyper_value)
+        initialize_theta_bounds = function(param) {
+            theta_range <- param$slice_sampling_scale * as.numeric(tsr$rand(1))
+            theta_min <- max(log(param$value) - theta_range, param$lower_bound)
+            theta_max <- min(theta_min + param$slice_sampling_scale, param$upper_bound)
+            return (list(min=theta_min, max=theta_max))
         },
 
-        prior_fn = function(theta) {
-            return(-0.5 * self$hyper_precision_prior * (theta - self$hyper_mu_prior) ** 2)
+        prior_fn = function(param) {
+            return(-0.5 * param$hparam_precision * log(param$value) ** 2)
         },
 
-        sample_rand_theta_value = function() {
-            return(self$theta_min + (self$theta_max - self$theta_min) * runif(1))
+        sample_rand_theta_value = function(theta_min, theta_max) {
+            return(theta_min + (theta_max - theta_min) * as.numeric(tsr$rand(1)))
         },
 
-        sample = function() {
-            initial_theta <- self$theta_value
-            self$initialize_theta_bounds()
-
-            self$kernel_generator$kernel_gen()
-            initial_marginal_likelihood <- self$marginal_ll_eval_fn() + self$prior_fn(self$theta_value)
-
-            density_threshold <- runif(1)
+        sample_param = function() {
+            theta_bounds <- self$initialize_theta_bounds()
+            theta_min <- theta_bounds$min
+            theta_max <- theta_bounds$max
+            initial_theta <- log(param$value)
+            self$kernel$kernel_gen()
+            initial_marginal_likelihood <- self$marginal_ll_eval_fn() + self$prior_fn(param)
+            density_threshold <- as.numeric(tsr$rand(1))
 
             while (TRUE) {
-                new_theta <- self$sample_rand_theta_value()
-                self$set_theta_value(new_theta)
-                self$kernel_generator$kernel_gen()
-                # Rarely the generated kernel is not a positive definite matrix (so we resample theta)
-                # TODO find how we can circumvent those non PD matrix generation
-                new_marginal_likelihood <- self$marginal_ll_eval_fn() + self$prior_fn(new_theta)
+                new_theta <- self$sample_rand_theta_value(theta_min, theta_max)
+                param$value <- exp(new_theta)
+                self$kernel$kernel_gen()
+                new_marginal_likelihood <- self$marginal_ll_eval_fn() + self$prior_fn(param)
 
-                if (exp(new_marginal_likelihood - initial_marginal_likelihood) > density_threshold) {
-                    return(exp(new_theta))
+                marg_ll_diff <- new_marginal_likelihood - initial_marginal_likelihood
+                if (exp(marg_ll_diff) > density_threshold) {
+                    return(param$value)
                 }
                 if (new_theta < initial_theta) {
-                    self$theta_min <- new_theta;
-                }
-                else {
-                    self$theta_max <- new_theta;
+                    theta_min <- new_theta;
+                } else {
+                    theta_max <- new_theta;
                 }
             }
         }
@@ -97,7 +75,7 @@ HyperParamSampler <- R6::R6Class(
 
 #' @title Sample a tensor of random values from a normal multivariate distribution
 #'
-#' @description The sampling use a tensor of 
+#' @description The sampling use a tensor of mean and the upper triangular portion of the precision matrix
 #'
 #' @export
 #' @keywords internal

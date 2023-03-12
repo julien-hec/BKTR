@@ -18,17 +18,19 @@ ResultLogger <- R6::R6Class(
         covariates = NULL,
         nb_iter = NULL,
         nb_burn_in_iter = NULL,
-        export_dir = NULL,
         sampled_beta_indexes = NULL,
         sampled_y_indexes = NULL,
         logged_params_map = NULL,
         beta_estimates = NULL,
+        beta_stdev = NULL,
         y_estimates = NULL,
+        total_elapsed_time = NULL,
         sum_beta_est = NULL,
         sum_y_est = NULL,
         last_time_stamp = NULL,
+        export_path = NULL,
+        export_suffix = NULL,
         error_metrics = NULL,
-        seed = NULL,
 
         initialize = function(
             y,
@@ -36,23 +38,30 @@ ResultLogger <- R6::R6Class(
             covariates,
             nb_iter,
             nb_burn_in_iter,
-            export_dir,
-            seed,
-            sampled_beta_indexes,
-            sampled_y_indexes
+            results_export_dir = NULL,
+            results_export_suffix = NULL,
+            sampled_beta_indexes = c(),
+            sampled_y_indexes = c()
         ) {
             self$logged_params_map <- list()
 
-            if (!dir.exists(export_dir)) {
+            if (is.null(results_export_dir) && !is.null(results_export_suffix)) {
+                torch:::value_error(
+                    'Cannot set a suffix for the export file if no export directory is provided.'
+                )
+            }
+            if (!is.null(results_export_dir) && !dir.exists(results_export_dir)) {
                 torch:::value_error(
                     sprintf('The selected export directory `%s` does not exists.', export_dir)
                 )
             }
-            self$export_dir <- export_dir
-            self$seed <- seed
+            self$export_path <- results_export_suffix
+            self$export_suffix <- results_export_suffix
 
             self$sum_beta_est <- tsr$zeros(covariates$shape)
+            self$sum_sq_beta_est <- tsr$zeros(covariates$shape)
             self$sum_y_est <- tsr$zeros(y$shape)
+            self$total_elapsed_time <- 0
 
             self$y <- y
             self$omega <- omega
@@ -78,6 +87,7 @@ ResultLogger <- R6::R6Class(
 
             if (iter > self$nb_burn_in_iter) {
                 self$sum_beta_est <- self$sum_beta_est + self$beta_estimates
+                self$sum_sq_beta_est <- self$sum_sq_beta_est + self$beta_estimates ** 2
                 self$sum_y_est <- self$sum_y_est + self$y_estimates
             }
 
@@ -126,28 +136,37 @@ ResultLogger <- R6::R6Class(
             self$y_estimates <- torch::torch_einsum('ijk,ijk->ij', c(self$covariates, self$beta_estimates))
         },
 
-        log_final_results = function() {
+        log_iter_results = function() {
             iter_results_df <- as.data.frame(do.call(cbind, self$logged_params_map))
-            avg_estimates <- private$get_avg_estimates()
-            write.csv(iter_results_df, private$get_file_name('iter_results'), row.names = FALSE)
-            y_est <- as.array(avg_estimates[['y_est']]$cpu()$flatten())
-            beta_est <- as.array(avg_estimates[['beta_est']]$cpu()$flatten())
-            write.table(y_est, private$get_file_name('y_estimates'), row.names = FALSE, col.names = FALSE)
-            write.table(beta_est, private$get_file_name('beta_estimates'), row.names = FALSE, col.names = FALSE)
+            avg_estimates <- private$get_and_print_avg_estimates()
+            if (!is.null(self$export_path)) {
+                write.csv(iter_results_df, private$get_file_name('iter_results'), row.names = FALSE)
+                y_est <- as.array(avg_estimates[['y_est']]$cpu()$flatten())
+                beta_est <- as.array(avg_estimates[['beta_est']]$cpu()$flatten())
+                write.table(y_est, private$get_file_name('y_estimates'), row.names = FALSE, col.names = FALSE)
+                write.table(beta_est, private$get_file_name('beta_estimates'), row.names = FALSE, col.names = FALSE)
+            }
             return(avg_estimates)
         }
     ),
 
     private = list(
-        get_avg_estimates = function() {
-            nb_sample_iter <- self$nb_iter - self$nb_burn_in_iter
-            self$beta_estimates <- self$sum_beta_est / nb_sample_iter
-            self$y_estimates <- self$sum_y_est / nb_sample_iter
+        get_and_print_avg_estimates = function() {
+            nb_sampling_iter <- self$nb_iter - self$nb_burn_in_iter
+            self$beta_estimates <- self$sum_beta_est / nb_sampling_iter
+            self$beta_stdev <- (
+                (self$sum_sq_beta_est / nb_sampling_iter) - self$beta_estimates ** 2
+            )$sqrt()
+            self$y_estimates <- self$sum_y_est / nb_sampling_iter
             error_metrics <- self$set_error_metrics()
-            private$print_iter_result(-1, error_metrics)
-            avg_estimates <- append(
-                list(y_est = self$y_estimates, beta_est = self$beta_estimates),
+            iters_summary_dict <- c(
+                list(elapsed_time = self$total_elapsed_time),
                 error_metrics
+            )
+            private$print_iter_result('TOTAL', iters_summary_dict)
+            avg_estimates <- c(
+                error_metrics,
+                list(y_est = self$y_estimates, beta_est = self$beta_estimates)
             )
             return(avg_estimates)
         },
@@ -174,7 +193,7 @@ ResultLogger <- R6::R6Class(
         },
 
         print_iter_result = function(iter, result_dict) {
-            iter_result_str <- sprintf('Results for iter %4d', iter)
+            iter_result_str <- sprintf('Results for iter %4s', toString(iter))
             for (i in seq_len(length(result_dict))) {
                 result_item_str <- sprintf('%s is %.4f', names(result_dict)[[i]], result_dict[[i]])
                 iter_result_str <- paste(iter_result_str, '||', result_item_str)
@@ -182,11 +201,11 @@ ResultLogger <- R6::R6Class(
             print(iter_result_str)
         },
 
-        get_file_name = function(file_prefix) {
+        get_file_name = function(export_type_name) {
             time_str <- format(Sys.time(), format = "%Y%m%d_%H%M")
-            file_name <- paste0(file_prefix, '_', time_str)
-            if (!is.null(self$seed)) {
-                file_name <- paste0(file_name, '__s', self$seed)
+            file_name <- paste0(export_type_name, '_', time_str)
+            if (!is.null(self$export_suffix)) {
+                file_name <- paste0(file_name, '_', self$export_suffix)
             }
             return(file.path(self$export_dir, paste0(file_name, '.csv')))
         }

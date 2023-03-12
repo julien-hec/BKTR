@@ -13,7 +13,7 @@
 MarginalLikelihoodEvaluator <- R6::R6Class(
     'MarginalLikelihoodEvaluator',
     public = list(
-        permuted_axis = NULL,
+        axis_permutation = c(),
         rank_decomp = NULL,
         nb_covariates = NULL,
         covariates = NULL,
@@ -33,7 +33,7 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
             self$nb_covariates <- nb_covariates
             self$covariates <- covariates
             self$omega <- omega
-            self$permuted_axis <- if (is_transposed) c(2, 1) else c(1, 2)
+            self$axis_permutation <- if (is_transposed) c(2, 1) else c(1, 2)
             self$y_masked <- y * omega
         },
 
@@ -43,10 +43,10 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
             lambda_size <- kernel_size * self$rank_decomp
 
             psi_u <- torch::torch_einsum("ijk,jkl->ilj", c(
-                self$covariates$permute(c(self$permuted_axis, 3)),
+                self$covariates$permute(c(self$axis_permutation, 3)),
                 tsr$khatri_rao_prod(decomp_values, covs_decomp)$reshape(c(-1, self$nb_covariates, rank_decomp))
             ))
-            psi_u_mask <- psi_u * self$omega$permute(c(self$permuted_axis))$unsqueeze(2)$expand_as(psi_u)
+            psi_u_mask <- psi_u * self$omega$permute(c(self$axis_permutation))$unsqueeze(2)$expand_as(psi_u)
 
             self$chol_k <- torch::linalg_cholesky(kernel_values)
             kernel_inverse <- torch::linalg_solve(
@@ -59,18 +59,14 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
             ) # I_R Kron inv(Ks)
 
             lambda_u <- tau * torch::torch_einsum('ijk,ilk->ijl', c(psi_u_mask, psi_u_mask)) # tau * H_T * H_T'
-            # TODO Check the broadcasting here, for sure we can simplify it (We just want to diagonalize lambda_u)
-            lambda_u <- lambda_u$permute(c(2, 1, 3))$flatten(start_dim = 1, end_dim = 2)$unsqueeze(2)$expand(
-                c(-1, kernel_size, -1))$permute(c(1, 3, 2))$reshape(c(lambda_size, lambda_size))
-            lambda_u <- tsr$kronecker_prod(
-                tsr$ones(c(rank_decomp, rank_decomp)),
-                tsr$eye(kernel_size)
-            ) * lambda_u
+            lamda_u <- (
+                lambda_u$transpose(1, -1)$unsqueeze(-1) * tsr$eye(kernel_size)
+            )$transpose(2, 3)$reshape(c(lambda_size, lambda_size))
             lambda_u <- lambda_u + self$inv_k
             self$chol_lu <- torch::linalg_cholesky(lambda_u)
             uu <- torch::torch_triangular_solve(
                 torch::torch_einsum(
-                    'ijk,ik->ji', c(psi_u_mask, self$y_masked$permute(c(self$permuted_axis)))
+                    'ijk,ik->ji', c(psi_u_mask, self$y_masked$permute(c(self$axis_permutation)))
                 )$flatten()$unsqueeze(2),
                 self$chol_lu,
                 upper = FALSE
