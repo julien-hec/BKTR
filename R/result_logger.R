@@ -26,6 +26,7 @@ ResultLogger <- R6::R6Class(
         y_estimates = NULL,
         total_elapsed_time = NULL,
         sum_beta_est = NULL,
+        sum_sq_beta_est = NULL,
         sum_y_est = NULL,
         last_time_stamp = NULL,
         export_path = NULL,
@@ -173,6 +174,7 @@ ResultLogger <- R6::R6Class(
 
         get_elapsed_time_dict = function() {
             iter_elapsed_time <- Sys.time() - self$last_time_stamp
+            self$total_elapsed_time <- self$total_elapsed_time + iter_elapsed_time
             self$last_time_stamp <- Sys.time()
             return(list(elapsed_time = iter_elapsed_time))
         },
@@ -193,7 +195,7 @@ ResultLogger <- R6::R6Class(
         },
 
         print_iter_result = function(iter, result_dict) {
-            iter_result_str <- sprintf('Results for iter %4s', toString(iter))
+            iter_result_str <- sprintf('Results for iter %5s', toString(iter))
             for (i in seq_len(length(result_dict))) {
                 result_item_str <- sprintf('%s is %.4f', names(result_dict)[[i]], result_dict[[i]])
                 iter_result_str <- paste(iter_result_str, '||', result_item_str)

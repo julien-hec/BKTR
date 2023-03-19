@@ -2,6 +2,11 @@ DEFAULT_LBOUND = log(1e-3)
 DEFAULT_UBOUND = log(1e3)
 
 
+#' @title R6 class for kernel's hyperparameter
+#'
+#' @description KernelParameter contains all information and behaviour related to parameters for kernels.
+#'
+#' @export
 KernelParameter <- R6::R6Class(
     public = list(
         value = 0,
@@ -112,7 +117,8 @@ Kernel <- R6::R6Class(
             if (is.null(x) == is.null(distance_matrix)) {
                 stop('Either `x` or `distance_matrix` must be provided.')
             } else if (!is.null(x)) {
-                self$distance_matrix <- DistanceCalculator$get_matrix(x, self$distance_type)
+                # TODO check to see if we can use static method
+                self$distance_matrix <- DistanceCalculator$new()$get_matrix(x, self$distance_type)
             } else {
                 self$distance_matrix <- distance_matrix
             }
@@ -120,6 +126,11 @@ Kernel <- R6::R6Class(
     )
 )
 
+#' @title R6 class for White Noise Kernels
+#'
+#' @description R6 class for White Noise Kernels
+#'
+#' @export
 KernelWhiteNoise <- R6::R6Class(
     inherit = Kernel,
     public = list(
@@ -142,6 +153,11 @@ KernelWhiteNoise <- R6::R6Class(
     )
 )
 
+#' @title R6 class for Dot Product Kernels
+#'
+#' @description R6 class for Dot Product Kernels
+#'
+#' @export
 KernelDotProduct <- R6::R6Class(
     inherit = Kernel,
     public = list(
@@ -164,6 +180,11 @@ KernelDotProduct <- R6::R6Class(
     )
 )
 
+#' @title R6 class for Square Exponential Kernels
+#'
+#' @description R6 class for Square Exponential Kernels
+#'
+#' @export
 KernelSE <- R6::R6Class(
     inherit = Kernel,
     public = list(
@@ -186,6 +207,11 @@ KernelSE <- R6::R6Class(
     )
 )
 
+#' @title R6 class for Square Exponential Kernels
+#'
+#' @description R6 class for Square Exponential Kernels
+#'
+#' @export
 KernelRQ <- R6::R6Class(
     inherit = Kernel,
     public = list(
@@ -214,6 +240,11 @@ KernelRQ <- R6::R6Class(
     )
 )
 
+#' @title R6 class for Periodic Kernels
+#'
+#' @description R6 class for Periodic Kernels
+#'
+#' @export
 KernelPeriodic <- R6::R6Class(
     inherit = Kernel,
     public = list(
@@ -243,6 +274,11 @@ KernelPeriodic <- R6::R6Class(
     )
 )
 
+#' @title R6 class for Matern Kernels
+#'
+#' @description R6 class for Matern Kernels
+#'
+#' @export
 KernelMatern <- R6::R6Class(
     inherit = Kernel,
     public = list(
@@ -285,11 +321,23 @@ KernelMatern <- R6::R6Class(
     ),
 )
 
+#' @title Kernel Composition Operations
+#'
+#' @description Kernel Composition Operations Enum. Possibilities of operation between
+#' two kernels to generate a new composed kernel.
+#'
+#' @export
 CompositionOps = list(
     'MUL' = 'MUL',
     'ADD' = 'ADD'
 )
 
+#' @title R6 class for Composed Kernels
+#'
+#' @description R6 class for Composed Kernels
+#'
+#' @export
+#' @keywords internal
 KernelComposed <- R6::R6Class(
     inherit = Kernel,
     public = list(

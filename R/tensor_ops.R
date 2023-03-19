@@ -13,12 +13,12 @@ TensorOperator <- R6::R6Class(
     'TensorOperator',
     inherit = R6P::Singleton,
     private = list(
-        tensor_dtype = torch::torch_float64(),
-        tensor_device = 'cpu'
+        tensor_dtype = NULL,
+        tensor_device = NULL
     ),
     public = list(
         initialize = function(
-            tensor_dtype = torch::torch_float64(),
+            tensor_dtype = torch::torch_float64,
             tensor_device = 'cpu'
         ) {
             private$tensor_dtype <- tensor_dtype
@@ -39,7 +39,7 @@ TensorOperator <- R6::R6Class(
             return(
                 torch::torch_tensor(
                     tensor_dim,
-                    dtype = private$tensor_dtype,
+                    dtype = private$tensor_dtype(),
                     device = private$tensor_device
                 )
             )
@@ -53,7 +53,7 @@ TensorOperator <- R6::R6Class(
             return(
                 torch::torch_zeros(
                     tensor_dim,
-                    dtype = private$tensor_dtype,
+                    dtype = private$tensor_dtype(),
                     device = private$tensor_device
                 )
             )
@@ -62,7 +62,7 @@ TensorOperator <- R6::R6Class(
             return(
                 torch::torch_ones(
                     tensor_dim,
-                    dtype = private$tensor_dtype,
+                    dtype = private$tensor_dtype(),
                     device = private$tensor_device
                 )
             )
@@ -72,22 +72,22 @@ TensorOperator <- R6::R6Class(
             return(
                 torch::torch_eye(
                     eye_dim,
-                    dtype = private$tensor_dtype,
+                    dtype = private$tensor_dtype(),
                     device = private$tensor_device
                 )
             )
         },
 
         rand = function(size) {
-            return(torch::torch_rand(size, dtype = private$tensor_dtype, device = private$tensor_device))
+            return(torch::torch_rand(size, dtype = private$tensor_dtype(), device = private$tensor_device))
         },
 
         randn = function(size) {
-            return(torch::torch_randn(size, dtype = private$tensor_dtype, device = private$tensor_device))
+            return(torch::torch_randn(size, dtype = private$tensor_dtype(), device = private$tensor_device))
         },
 
         randn_like = function(input_tensor) {
-            return(torch::torch_randn_like(input_tensor, dtype = private$tensor_dtype, device = private$tensor_device))
+            return(torch::torch_randn_like(input_tensor, dtype = private$tensor_dtype(), device = private$tensor_device))
         },
 
         arange = function(start, end) {
@@ -119,15 +119,15 @@ TensorOperator <- R6::R6Class(
             if (is.null(df)) {
                 return(NULL)
             }
-            return(self$new_tensor(df))
+            return(self$new_tensor(as.matrix(df)))
         }
     ),
 
     active = list(
         default_jitter = function() {
-            if (private$tensor_dtype == torch::torch_float64()) {
+            if (private$tensor_dtype() == torch::torch_float64()) {
                 return(1e-8)
-            } else if (private$tensor_dtype == torch::torch_float32()) {
+            } else if (private$tensor_dtype() == torch::torch_float32()) {
                 return(1e-4)
             }
             stop('The dtype used by TSR has no default mapped jitter value')

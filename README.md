@@ -53,3 +53,11 @@ and to build the vignettes
 ```r
 devtools::build_vignettes()
 ```
+
+
+### Development Installation
+If you want to install a local version of the repository, you can install it via devtools
+```r
+library(devtools)
+devtools::install()
+```

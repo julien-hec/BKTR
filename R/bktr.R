@@ -1,9 +1,9 @@
 #' @import torch
-#' @include kernel_generator.R
+#' @include tensor_ops.R
+#' @include kernels.R
 #' @include marginal_likelihoods.R
 #' @include result_logger.R
 #' @include sampler.R
-#' @include tensor_ops.R
 #' @importFrom R6 R6Class
 
 #' @title R6 class encapsulating the BKTR regression steps
@@ -93,10 +93,10 @@ BKTRRegressor <- R6::R6Class(
             rank_decomp,
             burn_in_iter,
             sampling_iter,
-            spatial_kernel = KernelMatern(smoothness_factor = 3),
+            spatial_kernel = KernelMatern$new(smoothness_factor=3),
             spatial_x_df = NULL,
             spatial_dist_df = NULL,
-            temporal_kernel = KernelSE(),
+            temporal_kernel = KernelSE$new(),
             temporal_x_df = NULL,
             temporal_dist_df = NULL,
             sigma_r = 1E-2,
@@ -110,7 +110,7 @@ BKTRRegressor <- R6::R6Class(
             private$verify_input_labels(
                 y_df,
                 spatial_covariates_df,
-                temporal_covariates_df
+                temporal_covariates_df,
                 spatial_x_df,
                 spatial_dist_df,
                 temporal_x_df,
@@ -130,9 +130,9 @@ BKTRRegressor <- R6::R6Class(
             # Y should replace all NA values by 0
             y_matrix[is.na(y_matrix)] <- 0.0
             self$y <- tsr$new_tensor(y_matrix)
-            self$spatial_covariates <- tsr$new_tensor(as.matrix(spatial_covariates_df))
-            self$temporal_covariates <- tsr$new_tensor(as.matrix(temporal_covariates_df))
-            self$tau <- 1 / tsr$new_tensor(self$config$sigma_r)
+            spatial_covariates <- tsr$new_tensor(as.matrix(spatial_covariates_df))
+            temporal_covariates <- tsr$new_tensor(as.matrix(temporal_covariates_df))
+            self$tau <- 1 / tsr$new_tensor(sigma_r)
             temporal_x_tsr <- tsr$get_df_tensor_or_null(temporal_x_df)
             temporal_dist_tsr <- tsr$get_df_tensor_or_null(temporal_dist_df)
             spatial_x_tsr <- tsr$get_df_tensor_or_null(spatial_x_df)
@@ -151,10 +151,7 @@ BKTRRegressor <- R6::R6Class(
             self$results_export_suffix <- results_export_suffix
 
             # Reshape Covariates
-            private$reshape_covariates(
-                tsr$new_tensor(spatial_covariate_matrix),
-                tsr$new_tensor(temporal_covariate_matrix)
-            )
+            private$reshape_covariates(spatial_covariates, temporal_covariates)
 
             #Kernel Assignation
             self$spatial_kernel <- spatial_kernel
@@ -184,8 +181,7 @@ BKTRRegressor <- R6::R6Class(
         #' @return A list containing the results of the MCMC sampling.
         mcmc_sampling = function() {
             private$initialize_params()
-            for (i in 1:self$config$max_iter) {
-                print(sprintf('*** Running iter %i ***', i))
+            for (i in 1:self$max_iter) {
                 private$sample_kernel_hparam()
                 private$sample_precision_wish()
                 private$sample_spatial_decomp()
@@ -219,7 +215,7 @@ BKTRRegressor <- R6::R6Class(
                 torch:::value_error('Y estimates can only be accessed after running the MCMC sampling.')
             }
             return(self$result_logger$y_estimates)
-        },
+        }
 
     ),
 
@@ -338,15 +334,15 @@ BKTRRegressor <- R6::R6Class(
                 nb_iter = self$max_iter,
                 nb_burn_in_iter = self$burn_in_iter,
                 sampled_beta_indexes = self$sampled_beta_indexes,
-                sampled_y_indexes = self$sampled_y_indexes
+                sampled_y_indexes = self$sampled_y_indexes,
                 results_export_dir = self$results_export_dir,
-                results_export_suffix = self$results_export_suffix,
+                results_export_suffix = self$results_export_suffix
             )
         },
 
         #~ @description Create and set the evaluators for the spatial and the temporal likelihoods
         create_likelihood_evaluators = function() {
-            rank_decomp <- self$config$rank_decomp
+            rank_decomp <- self$rank_decomp
 
             self$spatial_ll_evaluator <- MarginalLikelihoodEvaluator$new(
                 rank_decomp, self$covariates_dim$nb_covariates, self$covariates,
@@ -363,11 +359,11 @@ BKTRRegressor <- R6::R6Class(
         create_hparam_samplers = function() {
             self$spatial_params_sampler <- KernelParamSampler$new(
                 kernel=self$spatial_kernel,
-                marginal_ll_eval_fn=private$calc_spatial_marginal_ll,
+                marginal_ll_eval_fn=private$calc_spatial_marginal_ll
             )
             self$temporal_params_sampler <- KernelParamSampler$new(
                 kernel=self$temporal_kernel,
-                marginal_ll_eval_fn=private$calc_temporal_marginal_ll,
+                marginal_ll_eval_fn=private$calc_temporal_marginal_ll
             )
 
             self$tau_sampler <- TauSampler$new(
@@ -431,7 +427,7 @@ BKTRRegressor <- R6::R6Class(
         sample_covariate_decomp = function() {
             chol_res <- get_cov_decomp_chol(
                 self$spatial_decomp, self$temporal_decomp, self$covariates,
-                self$config$rank_decomp, self$omega, self$tau, self$y,
+                self$rank_decomp, self$omega, self$tau, self$y,
                 self$precision_matrix_sampler$wish_precision_tensor
             )
             self$covs_decomp <- private$sample_decomp_norm(self$covs_decomp, chol_res$chol_lc, chol_res$cc)
@@ -490,7 +486,6 @@ BKTRRegressor <- R6::R6Class(
         initialize_params = function() {
             private$init_covariate_decomp()
             private$create_result_logger()
-            private$create_kernel_factories()
             private$create_likelihood_evaluators()
             private$create_hparam_samplers()
 

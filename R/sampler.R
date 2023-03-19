@@ -12,13 +12,13 @@
 KernelParamSampler <- R6::R6Class(
     'KernelParamSampler',
     public = list(
-        kernel = NULL
+        kernel = NULL,
         marginal_ll_eval_fn = NULL,
 
         initialize = function(
             config,
             kernel,
-            marginal_ll_eval_fn,
+            marginal_ll_eval_fn
         ) {
             self$kernel = kernel
             self$marginal_ll_eval_fn <- marginal_ll_eval_fn
@@ -44,8 +44,8 @@ KernelParamSampler <- R6::R6Class(
             return(theta_min + (theta_max - theta_min) * as.numeric(tsr$rand(1)))
         },
 
-        sample_param = function() {
-            theta_bounds <- self$initialize_theta_bounds()
+        sample_param = function(param) {
+            theta_bounds <- self$initialize_theta_bounds(param)
             theta_min <- theta_bounds$min
             theta_max <- theta_bounds$max
             initial_theta <- log(param$value)
@@ -68,6 +68,12 @@ KernelParamSampler <- R6::R6Class(
                 } else {
                     theta_max <- new_theta;
                 }
+            }
+        },
+
+        sample = function() {
+            for (param in self$kernel$parameters) {
+                self$sample_param(param)
             }
         }
     )

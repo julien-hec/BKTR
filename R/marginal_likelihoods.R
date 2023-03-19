@@ -59,7 +59,7 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
             ) # I_R Kron inv(Ks)
 
             lambda_u <- tau * torch::torch_einsum('ijk,ilk->ijl', c(psi_u_mask, psi_u_mask)) # tau * H_T * H_T'
-            lamda_u <- (
+            lambda_u <- (
                 lambda_u$transpose(1, -1)$unsqueeze(-1) * tsr$eye(kernel_size)
             )$transpose(2, 3)$reshape(c(lambda_size, lambda_size))
             lambda_u <- lambda_u + self$inv_k

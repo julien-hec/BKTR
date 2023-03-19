@@ -10,41 +10,93 @@ algorithm (\strong{Algorithm 1} of the paper).
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{BKTRRegressor$new()}}
-\item \href{#method-mcmc_sampling}{\code{BKTRRegressor$mcmc_sampling()}}
-\item \href{#method-clone}{\code{BKTRRegressor$clone()}}
+\item \href{#method-NA-new}{\code{BKTRRegressor$new()}}
+\item \href{#method-NA-mcmc_sampling}{\code{BKTRRegressor$mcmc_sampling()}}
+\item \href{#method-NA-get_beta_estimates}{\code{BKTRRegressor$get_beta_estimates()}}
+\item \href{#method-NA-get_beta_stdev}{\code{BKTRRegressor$get_beta_stdev()}}
+\item \href{#method-NA-get_y_estimates}{\code{BKTRRegressor$get_y_estimates()}}
+\item \href{#method-unknown-clone}{\code{BKTRRegressor$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-NA-new"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new \code{BKTRRegressor} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$new(
-  bktr_config,
-  temporal_covariate_matrix,
-  spatial_covariate_matrix,
-  spatial_distance_matrix,
-  y,
-  omega
+  spatial_covariates_df,
+  temporal_covariates_df,
+  y_df,
+  rank_decomp,
+  burn_in_iter,
+  sampling_iter,
+  spatial_kernel = KernelMatern(smoothness_factor = 3),
+  spatial_x_df = NULL,
+  spatial_dist_df = NULL,
+  temporal_kernel = KernelSE(),
+  temporal_x_df = NULL,
+  temporal_dist_df = NULL,
+  sigma_r = 0.01,
+  a_0 = 1e-06,
+  b_0 = 1e-06,
+  sampled_beta_indexes = c(),
+  sampled_y_indexes = c(),
+  results_export_dir = NULL,
+  results_export_suffix = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{bktr_config}}{BKTRConfig: Configuration used for the BKTR regression}
+\item{\code{spatial_covariates_df}}{df: Spatial Covariates, 2D dataframe (spatial points x spatial features)}
 
-\item{\code{temporal_covariate_matrix}}{matrix[numeric]: Temporal Covariates}
+\item{\code{temporal_covariates_df}}{df: Temporal Covariates, 2D dataframe (temporal points x temporal features)}
 
-\item{\code{spatial_covariate_matrix}}{matrix[numeric]: Spatial Covariates}
+\item{\code{y_df}}{df: Variable that we try to predict, 2D dataframe (spatial points x temporal points)}
 
-\item{\code{spatial_distance_matrix}}{matrix[numeric]: Distance between spatial entities}
+\item{\code{rank_decomp}}{Integer: Rank of the CP decomposition (Paper -- \eqn{R})}
 
-\item{\code{y}}{matrix[numeric]: Response variable that we are trying to predict}
+\item{\code{burn_in_iter}}{Integer: Number of iteration before sampling (Paper -- :math:`K_1`)}
 
-\item{\code{omega}}{matrix[boolean]: Mask showing if a y observation is missing or not}
+\item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- :math:`K_2`)}
+
+\item{\code{spatial_x_df}}{df: Spatial kernel input tensor used to calculate covariate distance.
+Vector of length equal to nb spatial points. Defaults to NULL.}
+
+\item{\code{spatial_dist_df}}{df: Spatial kernel covariate distance. A two dimensions df
+(nb spatial points x nb spatial points).  Should be used instead of `spatial_kernel_x`
+if distance was already calculated. Defaults to NULL.}
+
+\item{\code{sigma_r}}{Numeric: Initial value of white noise's variance (\eqn{\tau^{-1}})}
+
+\item{\code{a_0}}{Numeric: Initial value for the shape (\eqn{\alpha}) in the gamma function generating tau}
+
+\item{\code{b_0}}{Numeric: Initial value for the rate (\eqn{\beta}) in the gamma function generating tau}
+
+\item{\code{sampled_beta_indexes}}{vector(Integer): Indexes of beta estimates that need to be sampled
+through iterations. Defaults to c().}
+
+\item{\code{sampled_y_indexes}}{vector(Integer): Indexes of y estimates that need to be sampled through
+iterations. Defaults to c().}
+
+\item{\code{results_export_dir}}{(str): Path of the folder where the csv file will be exported
+(if NULL it is only printed). Defaults to NULL.}
+
+\item{\code{results_export_suffix}}{(str): Suffix added at the end of the csv file name
+(if NULL, no suffix is added). Defaults to NULL.}
+
+\item{\code{spatial_kernel:}}{Kernel: Spatial kernel Used. Defaults to KernelMatern(smoothness_factor=3).}
+
+\item{\code{temporal_kernel:}}{Kernel: Temporal kernel Used. Defaults to KernelSE().}
+
+\item{\code{temporal_x_df:}}{df: Temporal kernel input tensor used to calculate covariate distance.
+Vector of length equal to nb temporal points. Defaults to Null.}
+
+\item{\code{temporal_dist_df:}}{df: Spatial kernel covariate distance. A two dimensions df
+(nb spatial points x nb spatial points).  Should be used instead of `spatial_kernel_x`
+if distance was already calculated. Defaults to NULL.}
 }
 \if{html}{\out{</div>}}
 }
@@ -53,8 +105,8 @@ A new \code{BKTRRegressor} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-mcmc_sampling"></a>}}
-\if{latex}{\out{\hypertarget{method-mcmc_sampling}{}}}
+\if{html}{\out{<a id="method-NA-mcmc_sampling"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-mcmc_sampling}{}}}
 \subsection{Method \code{mcmc_sampling()}}{
 Launch the MCMC sampling process. \cr
 For a predefined number of iterations:
@@ -79,8 +131,35 @@ A list containing the results of the MCMC sampling.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-NA-get_beta_estimates"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get_beta_estimates}{}}}
+\subsection{Method \code{get_beta_estimates()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_beta_estimates()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-get_beta_stdev"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get_beta_stdev}{}}}
+\subsection{Method \code{get_beta_stdev()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_beta_stdev()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-get_y_estimates"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-get_y_estimates}{}}}
+\subsection{Method \code{get_y_estimates()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_y_estimates()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-unknown-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

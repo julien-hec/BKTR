@@ -11,17 +11,17 @@ logging iteration information during the BKTR algorithm
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ResultLogger$new()}}
-\item \href{#method-collect_iter_samples}{\code{ResultLogger$collect_iter_samples()}}
-\item \href{#method-set_error_metrics}{\code{ResultLogger$set_error_metrics()}}
-\item \href{#method-set_y_and_beta_estimates}{\code{ResultLogger$set_y_and_beta_estimates()}}
-\item \href{#method-log_final_results}{\code{ResultLogger$log_final_results()}}
-\item \href{#method-clone}{\code{ResultLogger$clone()}}
+\item \href{#method-ResultLogger-new}{\code{ResultLogger$new()}}
+\item \href{#method-ResultLogger-collect_iter_samples}{\code{ResultLogger$collect_iter_samples()}}
+\item \href{#method-ResultLogger-set_error_metrics}{\code{ResultLogger$set_error_metrics()}}
+\item \href{#method-ResultLogger-set_y_and_beta_estimates}{\code{ResultLogger$set_y_and_beta_estimates()}}
+\item \href{#method-ResultLogger-log_iter_results}{\code{ResultLogger$log_iter_results()}}
+\item \href{#method-ResultLogger-clone}{\code{ResultLogger$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ResultLogger-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ResultLogger$new(
@@ -30,17 +30,17 @@ logging iteration information during the BKTR algorithm
   covariates,
   nb_iter,
   nb_burn_in_iter,
-  export_dir,
-  seed,
-  sampled_beta_indexes,
-  sampled_y_indexes
+  results_export_dir = NULL,
+  results_export_suffix = NULL,
+  sampled_beta_indexes = c(),
+  sampled_y_indexes = c()
 )}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-collect_iter_samples"></a>}}
-\if{latex}{\out{\hypertarget{method-collect_iter_samples}{}}}
+\if{html}{\out{<a id="method-ResultLogger-collect_iter_samples"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-collect_iter_samples}{}}}
 \subsection{Method \code{collect_iter_samples()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ResultLogger$collect_iter_samples(iter, iter_logged_params)}\if{html}{\out{</div>}}
@@ -48,8 +48,8 @@ logging iteration information during the BKTR algorithm
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_error_metrics"></a>}}
-\if{latex}{\out{\hypertarget{method-set_error_metrics}{}}}
+\if{html}{\out{<a id="method-ResultLogger-set_error_metrics"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-set_error_metrics}{}}}
 \subsection{Method \code{set_error_metrics()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ResultLogger$set_error_metrics()}\if{html}{\out{</div>}}
@@ -57,8 +57,8 @@ logging iteration information during the BKTR algorithm
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-set_y_and_beta_estimates"></a>}}
-\if{latex}{\out{\hypertarget{method-set_y_and_beta_estimates}{}}}
+\if{html}{\out{<a id="method-ResultLogger-set_y_and_beta_estimates"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-set_y_and_beta_estimates}{}}}
 \subsection{Method \code{set_y_and_beta_estimates()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ResultLogger$set_y_and_beta_estimates(decomp_tensors_map)}\if{html}{\out{</div>}}
@@ -66,17 +66,17 @@ logging iteration information during the BKTR algorithm
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-log_final_results"></a>}}
-\if{latex}{\out{\hypertarget{method-log_final_results}{}}}
-\subsection{Method \code{log_final_results()}}{
+\if{html}{\out{<a id="method-ResultLogger-log_iter_results"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-log_iter_results}{}}}
+\subsection{Method \code{log_iter_results()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$log_final_results()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$log_iter_results()}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ResultLogger-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
