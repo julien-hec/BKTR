@@ -97,15 +97,11 @@ dis = sqrt((x-x').^2 + (y-y').^2);
 
 
 raw_spacM = zeros(M, 1);
-for i = 1:1
-    raw_spacM(:,i) = mvnrnd(zeros(1,M), eye(M), 1)';
-end
+raw_spacM(:,1) = mvnrnd(zeros(1,M), eye(M), 1)';
 spacM = raw_spacM;
 
 raw_temcM = zeros(N, 1);
-for i = 1:1
-    raw_temcM(:,i) = mvnrnd(zeros(1,N), eye(N), 1)';
-end
+raw_temcM(:,1) = mvnrnd(zeros(1,N), eye(N), 1)';
 temcM = raw_temcM;
 
 temcT = repmat(temcM,[1,1, M]);
