@@ -80,7 +80,6 @@ BKTRBetaPlotMaker <- R6::R6Class(
             plot_point_label,
             geo_coordinates,
             nb_cols = 1,
-            mapbox_zoom = 9,
             use_dark_mode = TRUE
         ) {
             beta_est <- self$bktr_regressor$beta_estimates
