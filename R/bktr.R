@@ -194,29 +194,7 @@ BKTRRegressor <- R6::R6Class(
                 gc()
             }
             return(private$log_iter_results())
-        },
-
-        get_beta_estimates = function() {
-            if (self$result_logger == NULL) {
-                torch:::value_error('Beta estimates can only be accessed after running the MCMC sampling.')
-            }
-            return(self$result_logger$beta_estimates)
-        },
-
-        get_beta_stdev = function() {
-            if (self$result_logger == NULL) {
-                torch:::value_error('Beta standard dev can only be accessed after running the MCMC sampling.')
-            }
-            return(self$result_logger$beta_stdev)
-        },
-
-        get_y_estimates = function() {
-            if (self$result_logger == NULL) {
-                torch:::value_error('Y estimates can only be accessed after running the MCMC sampling.')
-            }
-            return(self$result_logger$y_estimates)
         }
-
     ),
 
     private = list(
@@ -492,6 +470,26 @@ BKTRRegressor <- R6::R6Class(
             # Calculate first likelihoods
             private$calc_spatial_marginal_ll()
             private$calc_temporal_marginal_ll()
+        }
+    ),
+    active = list(
+        beta_estimates = function(value) {
+            if (is.null(self$result_logger)) {
+                torch:::value_error('Beta estimates can only be accessed after running the MCMC sampling.')
+            }
+            return(self$result_logger$beta_estimates)
+        },
+        beta_stdev = function() {
+            if (is.null(self$result_logger)) {
+                torch:::value_error('Beta standard dev can only be accessed after running the MCMC sampling.')
+            }
+            return(self$result_logger$beta_stdev)
+        },
+        y_estimates = function() {
+            if (self$result_logger == NULL) {
+                torch:::value_error('Y estimates can only be accessed after running the MCMC sampling.')
+            }
+            return(self$result_logger$y_estimates)
         }
     )
 )

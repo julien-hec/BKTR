@@ -12,9 +12,6 @@ algorithm (\strong{Algorithm 1} of the paper).
 \itemize{
 \item \href{#method-NA-new}{\code{BKTRRegressor$new()}}
 \item \href{#method-NA-mcmc_sampling}{\code{BKTRRegressor$mcmc_sampling()}}
-\item \href{#method-NA-get_beta_estimates}{\code{BKTRRegressor$get_beta_estimates()}}
-\item \href{#method-NA-get_beta_stdev}{\code{BKTRRegressor$get_beta_stdev()}}
-\item \href{#method-NA-get_y_estimates}{\code{BKTRRegressor$get_y_estimates()}}
 \item \href{#method-unknown-clone}{\code{BKTRRegressor$clone()}}
 }
 }
@@ -31,10 +28,10 @@ Create a new \code{BKTRRegressor} object.
   rank_decomp,
   burn_in_iter,
   sampling_iter,
-  spatial_kernel = KernelMatern(smoothness_factor = 3),
+  spatial_kernel = KernelMatern$new(smoothness_factor = 3),
   spatial_x_df = NULL,
   spatial_dist_df = NULL,
-  temporal_kernel = KernelSE(),
+  temporal_kernel = KernelSE$new(),
   temporal_x_df = NULL,
   temporal_dist_df = NULL,
   sigma_r = 0.01,
@@ -129,33 +126,6 @@ For a predefined number of iterations:
 \subsection{Returns}{
 A list containing the results of the MCMC sampling.
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-get_beta_estimates"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-get_beta_estimates}{}}}
-\subsection{Method \code{get_beta_estimates()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_beta_estimates()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-get_beta_stdev"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-get_beta_stdev}{}}}
-\subsection{Method \code{get_beta_stdev()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_beta_stdev()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-get_y_estimates"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-get_y_estimates}{}}}
-\subsection{Method \code{get_y_estimates()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_y_estimates()}\if{html}{\out{</div>}}
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-unknown-clone"></a>}}

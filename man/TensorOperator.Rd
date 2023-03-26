@@ -37,10 +37,7 @@ in BKTR
 \if{latex}{\out{\hypertarget{method-TensorOperator-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new(
-  tensor_dtype = torch::torch_float64(),
-  tensor_device = "cpu"
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new(tensor_dtype = torch::torch_float64, tensor_device = "cpu")}\if{html}{\out{</div>}}
 }
 
 }

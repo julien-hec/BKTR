@@ -17,6 +17,7 @@ the sampling of the kernel hyperparameters
 \item \href{#method-KernelParamSampler-prior_fn}{\code{KernelParamSampler$prior_fn()}}
 \item \href{#method-KernelParamSampler-sample_rand_theta_value}{\code{KernelParamSampler$sample_rand_theta_value()}}
 \item \href{#method-KernelParamSampler-sample_param}{\code{KernelParamSampler$sample_param()}}
+\item \href{#method-KernelParamSampler-sample}{\code{KernelParamSampler$sample()}}
 \item \href{#method-KernelParamSampler-clone}{\code{KernelParamSampler$clone()}}
 }
 }
@@ -70,7 +71,16 @@ the sampling of the kernel hyperparameters
 \if{latex}{\out{\hypertarget{method-KernelParamSampler-sample_param}{}}}
 \subsection{Method \code{sample_param()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{KernelParamSampler$sample_param()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{KernelParamSampler$sample_param(param)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-KernelParamSampler-sample"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelParamSampler-sample}{}}}
+\subsection{Method \code{sample()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{KernelParamSampler$sample()}\if{html}{\out{</div>}}
 }
 
 }
