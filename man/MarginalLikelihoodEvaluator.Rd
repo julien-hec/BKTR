@@ -12,14 +12,14 @@ process.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{MarginalLikelihoodEvaluator$new()}}
-\item \href{#method-calc_likelihood}{\code{MarginalLikelihoodEvaluator$calc_likelihood()}}
-\item \href{#method-clone}{\code{MarginalLikelihoodEvaluator$clone()}}
+\item \href{#method-MarginalLikelihoodEvaluator-new}{\code{MarginalLikelihoodEvaluator$new()}}
+\item \href{#method-MarginalLikelihoodEvaluator-calc_likelihood}{\code{MarginalLikelihoodEvaluator$calc_likelihood()}}
+\item \href{#method-MarginalLikelihoodEvaluator-clone}{\code{MarginalLikelihoodEvaluator$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-MarginalLikelihoodEvaluator-new"></a>}}
+\if{latex}{\out{\hypertarget{method-MarginalLikelihoodEvaluator-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{MarginalLikelihoodEvaluator$new(
@@ -34,8 +34,8 @@ process.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-calc_likelihood"></a>}}
-\if{latex}{\out{\hypertarget{method-calc_likelihood}{}}}
+\if{html}{\out{<a id="method-MarginalLikelihoodEvaluator-calc_likelihood"></a>}}
+\if{latex}{\out{\hypertarget{method-MarginalLikelihoodEvaluator-calc_likelihood}{}}}
 \subsection{Method \code{calc_likelihood()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{MarginalLikelihoodEvaluator$calc_likelihood(
@@ -48,8 +48,8 @@ process.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-MarginalLikelihoodEvaluator-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-MarginalLikelihoodEvaluator-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

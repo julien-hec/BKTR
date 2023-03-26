@@ -10,14 +10,14 @@ Encapsulate all the behavior that allows to generate new tau values
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{TauSampler$new()}}
-\item \href{#method-sample}{\code{TauSampler$sample()}}
-\item \href{#method-clone}{\code{TauSampler$clone()}}
+\item \href{#method-TauSampler-new}{\code{TauSampler$new()}}
+\item \href{#method-TauSampler-sample}{\code{TauSampler$sample()}}
+\item \href{#method-TauSampler-clone}{\code{TauSampler$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-TauSampler-new"></a>}}
+\if{latex}{\out{\hypertarget{method-TauSampler-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TauSampler$new(a_0, b_0, nb_observations)}\if{html}{\out{</div>}}
@@ -25,8 +25,8 @@ Encapsulate all the behavior that allows to generate new tau values
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-sample"></a>}}
-\if{latex}{\out{\hypertarget{method-sample}{}}}
+\if{html}{\out{<a id="method-TauSampler-sample"></a>}}
+\if{latex}{\out{\hypertarget{method-TauSampler-sample}{}}}
 \subsection{Method \code{sample()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TauSampler$sample(total_sq_error)}\if{html}{\out{</div>}}
@@ -34,8 +34,8 @@ Encapsulate all the behavior that allows to generate new tau values
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-TauSampler-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-TauSampler-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

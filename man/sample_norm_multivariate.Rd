@@ -7,6 +7,6 @@
 sample_norm_multivariate(mean_vec, precision_upper_tri)
 }
 \description{
-The sampling use a tensor of
+The sampling use a tensor of mean and the upper triangular portion of the precision matrix
 }
 \keyword{internal}

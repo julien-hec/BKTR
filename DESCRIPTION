@@ -13,18 +13,20 @@ Depends:
 Imports:
     torch,
     R6,
-    R6P
+    R6P,
+    ggplot2,
+    ggmap
 License: MIT
-RoxygenNote: 7.1.2
-Collate: 
-    'tensor_ops.R'
+RoxygenNote: 7.2.3
+Collate:
     'sampler.R'
+    'tensor_ops.R'
     'result_logger.R'
     'marginal_likelihoods.R'
-    'kernel_generator.R'
+    'kernels.R'
     'bktr.R'
-    'sampler_config.R'
-    'bktr_config.R'
     'data_import_utils.R'
+    'distances.R'
+    'plots.R'
 LazyData: true
 VignetteBuilder: knitr, rmarkdown
