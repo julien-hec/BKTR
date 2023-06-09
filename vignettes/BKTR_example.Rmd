@@ -23,6 +23,7 @@ library(BKTR)
 The BKTRConfig Object contains all the hyperparameters and configuration necessary to do a BKTR regression.
 Feel free to change the default values of the configuration and to consult the BKTR manual for more information.
 ```{r}
+# TODO delete whole file
 ex_bktr_config <- BKTR::BKTRConfig$new(
   rank_decomp = 10,
   burn_in_iter = 1,
