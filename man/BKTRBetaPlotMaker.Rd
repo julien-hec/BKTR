@@ -63,7 +63,6 @@ to create plots of the beta estimates for the spatial and temporal features.
   plot_point_label,
   geo_coordinates,
   nb_cols = 1,
-  mapbox_zoom = 9,
   use_dark_mode = TRUE
 )}\if{html}{\out{</div>}}
 }

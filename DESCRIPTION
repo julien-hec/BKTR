@@ -15,7 +15,8 @@ Imports:
     R6,
     R6P,
     ggplot2,
-    ggmap
+    ggmap,
+    data.table
 License: MIT
 RoxygenNote: 7.2.3
 Collate:
@@ -27,6 +28,7 @@ Collate:
     'bktr.R'
     'data_import_utils.R'
     'distances.R'
+    'examples.R'
     'plots.R'
 LazyData: true
 VignetteBuilder: knitr, rmarkdown
