@@ -1,8 +1,8 @@
 #' @import ggplot2
 
 
-DEFAULT_LBOUND = 1e-3
-DEFAULT_UBOUND = 1e3
+DEFAULT_LBOUND <- 1e-3
+DEFAULT_UBOUND <- 1e3
 
 
 #' @title R6 class for kernel's hyperparameter
