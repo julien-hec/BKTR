@@ -118,7 +118,7 @@ Kernel <- R6::R6Class(
             }
             self$positions_df <- positions_df
             positions_tensor <- tsr$tensor(self$positions_df)
-            # TODO: check to transform that into a function `get_distance_matrix`
+            # TODO: check to transform that into a function `get_distance_matrix` #13
             self$distance_matrix <- DistanceCalculator$new()$get_matrix(positions_tensor, self$distance_type)
         },
 
