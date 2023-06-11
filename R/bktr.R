@@ -3,7 +3,7 @@
 #' @include kernels.R
 #' @include marginal_likelihoods.R
 #' @include result_logger.R
-#' @include sampler.R
+#' @include samplers.R
 #' @importFrom R6 R6Class
 
 #' @title R6 class encapsulating the BKTR regression steps

@@ -16,11 +16,10 @@ KernelParamSampler <- R6::R6Class(
         marginal_ll_eval_fn = NULL,
 
         initialize = function(
-            config,
             kernel,
             marginal_ll_eval_fn
         ) {
-            self$kernel = kernel
+            self$kernel <- kernel
             self$marginal_ll_eval_fn <- marginal_ll_eval_fn
         },
 
@@ -31,9 +30,9 @@ KernelParamSampler <- R6::R6Class(
 
         initialize_theta_bounds = function(param) {
             theta_range <- param$slice_sampling_scale * as.numeric(tsr$rand(1))
-            theta_min <- max(log(param$value) - theta_range, param$lower_bound)
-            theta_max <- min(theta_min + param$slice_sampling_scale, param$upper_bound)
-            return (list(min=theta_min, max=theta_max))
+            theta_min <- max(log(param$value) - theta_range, log(param$lower_bound))
+            theta_max <- min(theta_min + param$slice_sampling_scale, log(param$upper_bound))
+            return(list(min = theta_min, max = theta_max))
         },
 
         prior_fn = function(param) {
@@ -64,16 +63,18 @@ KernelParamSampler <- R6::R6Class(
                     return(param$value)
                 }
                 if (new_theta < initial_theta) {
-                    theta_min <- new_theta;
+                    theta_min <- new_theta
                 } else {
-                    theta_max <- new_theta;
+                    theta_max <- new_theta
                 }
             }
         },
 
         sample = function() {
             for (param in self$kernel$parameters) {
-                self$sample_param(param)
+                if (!param$is_fixed) {
+                    self$sample_param(param)
+                }
             }
         }
     )
@@ -170,8 +171,8 @@ PrecisionMatrixSampler <- R6::R6Class(
         sample = function(covs_decomp) {
             w <- covs_decomp$matmul(covs_decomp$t()) + tsr$eye(self$nb_covariates)
             wish_sigma <- as.matrix(((w + w$t()) * 0.5)$inverse()$cpu())
-            wish_precision_matrix <- rWishart(1, self$wish_df, wish_sigma) # Lambda C
-            self$wish_precision_tensor <- tsr$new_tensor(wish_precision_matrix[, , 1])
+            wish_precision_matrix <- rWishart(1, self$wish_df, wish_sigma)[, , 1]
+            self$wish_precision_tensor <- tsr$new_tensor(wish_precision_matrix)
             return(self$wish_precision_tensor)
         }
     )
