@@ -44,23 +44,23 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
 
             psi_u <- torch::torch_einsum("ijk,jkl->ilj", c(
                 self$covariates$permute(c(self$axis_permutation, 3)),
-                tsr$khatri_rao_prod(decomp_values, covs_decomp)$reshape(c(-1, self$nb_covariates, rank_decomp))
+                TSR$khatri_rao_prod(decomp_values, covs_decomp)$reshape(c(-1, self$nb_covariates, rank_decomp))
             ))
             psi_u_mask <- psi_u * self$omega$permute(c(self$axis_permutation))$unsqueeze(2)$expand_as(psi_u)
 
             self$chol_k <- torch::linalg_cholesky(kernel_values)
             kernel_inverse <- torch::linalg_solve(
-                self$chol_k$t(), torch::linalg_solve(self$chol_k, tsr$eye(kernel_size))
+                self$chol_k$t(), torch::linalg_solve(self$chol_k, TSR$eye(kernel_size))
             )
             stabilized_kernel_inv <- (kernel_inverse$t() + kernel_inverse) / 2
-            self$inv_k <- tsr$kronecker_prod(
-                tsr$eye(rank_decomp),
+            self$inv_k <- TSR$kronecker_prod(
+                TSR$eye(rank_decomp),
                 stabilized_kernel_inv
             ) # I_R Kron inv(Ks)
 
             lambda_u <- tau * torch::torch_einsum('ijk,ilk->ijl', c(psi_u_mask, psi_u_mask)) # tau * H_T * H_T'
             lambda_u <- (
-                lambda_u$transpose(1, -1)$unsqueeze(-1) * tsr$eye(kernel_size)
+                lambda_u$transpose(1, -1)$unsqueeze(-1) * TSR$eye(kernel_size)
             )$transpose(2, 3)$reshape(c(lambda_size, lambda_size))
             lambda_u <- lambda_u + self$inv_k
             self$chol_lu <- torch::linalg_cholesky(lambda_u)
@@ -72,9 +72,9 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
                 upper = FALSE
             )[[1]]$squeeze()
             self$likelihood <- as.numeric((
-                tsr$new_tensor(0.5 * tau ** 2) * uu$t()$matmul(uu)
+                TSR$tensor(0.5 * tau ** 2) * uu$t()$matmul(uu)
                 - self$chol_lu$diag()$log()$sum()
-                - tsr$new_tensor(rank_decomp) * self$chol_k$diag()$log()$sum()
+                - TSR$tensor(rank_decomp) * self$chol_k$diag()$log()$sum()
             )$cpu())
             self$uu <- uu
             return(self$likelihood)

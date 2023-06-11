@@ -29,7 +29,7 @@ KernelParamSampler <- R6::R6Class(
         },
 
         initialize_theta_bounds = function(param) {
-            theta_range <- param$slice_sampling_scale * as.numeric(tsr$rand(1))
+            theta_range <- param$slice_sampling_scale * as.numeric(TSR$rand(1))
             theta_min <- max(log(param$value) - theta_range, log(param$lower_bound))
             theta_max <- min(theta_min + param$slice_sampling_scale, log(param$upper_bound))
             return(list(min = theta_min, max = theta_max))
@@ -40,7 +40,7 @@ KernelParamSampler <- R6::R6Class(
         },
 
         sample_rand_theta_value = function(theta_min, theta_max) {
-            return(theta_min + (theta_max - theta_min) * as.numeric(tsr$rand(1)))
+            return(theta_min + (theta_max - theta_min) * as.numeric(TSR$rand(1)))
         },
 
         sample_param = function(param) {
@@ -50,7 +50,7 @@ KernelParamSampler <- R6::R6Class(
             initial_theta <- log(param$value)
             self$kernel$kernel_gen()
             initial_marginal_likelihood <- self$marginal_ll_eval_fn() + self$prior_fn(param)
-            density_threshold <- as.numeric(tsr$rand(1))
+            density_threshold <- as.numeric(TSR$rand(1))
 
             while (TRUE) {
                 new_theta <- self$sample_rand_theta_value(theta_min, theta_max)
@@ -92,7 +92,7 @@ sample_norm_multivariate <- function(mean_vec, precision_upper_tri) {
     # ERROR comes from torch::distr_multivariate_normal(torch::torch_zeros(2), precision_matrix = torch::torch_eye(2))
     return(
         torch::torch_triangular_solve(
-            tsr$new_tensor(torch::torch_randn_like(mean_vec))$unsqueeze(2),
+            TSR$tensor(torch::torch_randn_like(mean_vec))$unsqueeze(2),
             precision_upper_tri,
             upper = TRUE
         )[[1]]$squeeze() + mean_vec
@@ -107,7 +107,7 @@ get_cov_decomp_chol <- function(
     y_masked <- omega * y
     # TODO Merge some parts with marginal ll of spatial and temporal
     # get corresponding norm multivariate mean
-    b <- tsr$khatri_rao_prod(spatial_decomp, time_decomp)$reshape(
+    b <- TSR$khatri_rao_prod(spatial_decomp, time_decomp)$reshape(
         c(spatial_decomp$shape[1], time_decomp$shape[1], rank_cp)
     )
     psi_c <- torch::torch_einsum('ijk,ijl->ijlk', c(covs, b))
@@ -115,7 +115,7 @@ get_cov_decomp_chol <- function(
     psi_c_mask <- psi_c_mask$permute(c(2, 1, 3, 4))$reshape(
         c(psi_c$shape[1] * psi_c$shape[2], psi_c$shape[3] * psi_c$shape[4])
     )
-    inv_s <- tsr$kronecker_prod(tsr$eye(rank_cp), wish_precision_tensor)
+    inv_s <- TSR$kronecker_prod(TSR$eye(rank_cp), wish_precision_tensor)
     lambda_c <- tau * psi_c_mask$t()$matmul(psi_c_mask) + inv_s
     chol_lc <- torch::linalg_cholesky(lambda_c)
     cc <- torch::linalg_solve(chol_lc, psi_c_mask$t()$matmul(y_masked$t()$flatten()))
@@ -136,12 +136,12 @@ TauSampler <- R6::R6Class(
 
         initialize = function(a_0, b_0, nb_observations) {
             self$b_0 <- b_0
-            self$a_tau <- tsr$new_tensor(a_0 + 0.5 * nb_observations)
+            self$a_tau <- TSR$tensor(a_0 + 0.5 * nb_observations)
         },
 
         sample = function(total_sq_error) {
             b_tau <- self$b_0 + 0.5 * total_sq_error
-            return(tsr$new_tensor(
+            return(TSR$tensor(
                 torch::distr_gamma(self$a_tau$cpu(), b_tau)$sample()
             ))
         }
@@ -169,10 +169,10 @@ PrecisionMatrixSampler <- R6::R6Class(
         },
 
         sample = function(covs_decomp) {
-            w <- covs_decomp$matmul(covs_decomp$t()) + tsr$eye(self$nb_covariates)
+            w <- covs_decomp$matmul(covs_decomp$t()) + TSR$eye(self$nb_covariates)
             wish_sigma <- as.matrix(((w + w$t()) * 0.5)$inverse()$cpu())
             wish_precision_matrix <- rWishart(1, self$wish_df, wish_sigma)[, , 1]
-            self$wish_precision_tensor <- tsr$new_tensor(wish_precision_matrix)
+            self$wish_precision_tensor <- TSR$tensor(wish_precision_matrix)
             return(self$wish_precision_tensor)
         }
     )

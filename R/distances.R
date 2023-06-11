@@ -43,7 +43,7 @@ DistanceCalculator <- R6::R6Class(
         },
 
         check_tensor_dimensions = function(x1, x2, expected_nb_dim, expected_last_dim_shape = NULL) {
-            if (!(tsr$is_tensor(x1) && tsr$is_tensor(x2))) {
+            if (!(TSR$is_tensor(x1) && TSR$is_tensor(x2))) {
                 torch:::value_error('Distance params must be tensors')
             }
             if (!(x1$ndim == x2$ndim && x2$ndim == expected_nb_dim)) {

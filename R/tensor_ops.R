@@ -8,39 +8,44 @@
 #' in BKTR
 #'
 #' @export
-#' @keywords internal
 TensorOperator <- R6::R6Class(
     'TensorOperator',
     inherit = R6P::Singleton,
     private = list(
-        tensor_dtype = NULL,
-        tensor_device = NULL
+        dtype = NULL,
+        device = NULL
     ),
     public = list(
         initialize = function(
-            tensor_dtype = torch::torch_float64,
-            tensor_device = 'cpu'
+            dtype = torch::torch_float64,
+            device = 'cpu'
         ) {
-            private$tensor_dtype <- tensor_dtype
-            private$tensor_device <- tensor_device
+            private$dtype <- dtype
+            private$device <- device
         },
 
-        set_tensor_type = function(tensor_dtype) {
-            private$tensor_dtype <- tensor_dtype
-            return(self)
+        set_params = function(
+            dtype = NULL,
+            device = NULL,
+            seed = NULL
+        ) {
+            if (!is.null(dtype)) {
+                private$dtype <- dtype
+            }
+            if (!is.null(device)) {
+                private$device <- device
+            }
+            if (!is.null(seed)) {
+                torch::torch_manual_seed(seed)
+            }
         },
 
-        set_device_type = function(tensor_device) {
-            private$tensor_device <- tensor_device
-            return(self)
-        },
-
-        new_tensor = function(tensor_dim) {
+        tensor = function(tensor_data) {
             return(
                 torch::torch_tensor(
-                    tensor_dim,
-                    dtype = private$tensor_dtype(),
-                    device = private$tensor_device
+                    tensor_data,
+                    dtype = private$dtype(),
+                    device = private$device
                 )
             )
         },
@@ -49,55 +54,55 @@ TensorOperator <- R6::R6Class(
             return(is(tensor, 'torch_tensor'))
         },
 
-        zeros = function(tensor_dim) {
-            return(
-                torch::torch_zeros(
-                    tensor_dim,
-                    dtype = private$tensor_dtype(),
-                    device = private$tensor_device
-                )
-            )
-        },
-        ones = function(tensor_dim) {
-            return(
-                torch::torch_ones(
-                    tensor_dim,
-                    dtype = private$tensor_dtype(),
-                    device = private$tensor_device
-                )
-            )
-        },
-
         eye = function(eye_dim) {
             return(
                 torch::torch_eye(
                     eye_dim,
-                    dtype = private$tensor_dtype(),
-                    device = private$tensor_device
+                    dtype = private$dtype(),
+                    device = private$device
                 )
             )
         },
 
-        rand = function(size) {
-            return(torch::torch_rand(size, dtype = private$tensor_dtype(), device = private$tensor_device))
+        ones = function(tsr_dim) {
+            return(
+                torch::torch_ones(
+                    tsr_dim,
+                    dtype = private$dtype(),
+                    device = private$device
+                )
+            )
         },
 
-        randn = function(size) {
-            return(torch::torch_randn(size, dtype = private$tensor_dtype(), device = private$tensor_device))
+
+        zeros = function(tsr_dim) {
+            return(
+                torch::torch_zeros(
+                    tsr_dim,
+                    dtype = private$dtype(),
+                    device = private$device
+                )
+            )
+        },
+
+        rand = function(tsr_dim) {
+            return(torch::torch_rand(tsr_dim, dtype = private$dtype(), device = private$device))
+        },
+
+        randn = function(tsr_dim) {
+            return(torch::torch_randn(tsr_dim, dtype = private$dtype(), device = private$device))
         },
 
         randn_like = function(input_tensor) {
-            return(torch::torch_randn_like(input_tensor, dtype = private$tensor_dtype(), device = private$tensor_device))
+            return(torch::torch_randn_like(input_tensor, dtype = private$dtype(), device = private$device))
         },
 
         arange = function(start, end) {
-            return(self$new_tensor(torch::torch_arange(start, end)))
+            return(self$tensor(torch::torch_arange(start, end)))
         },
 
         kronecker_prod = function(a, b) {
-            kron_prod <- torch::torch_einsum("ab,cd->acbd", c(a, b))
-            kron_shape <- c(a$shape[1] * b$shape[1], a$shape[2] * b$shape[2])
-            return(torch::torch_reshape(kron_prod, kron_shape))
+            return(torch::torch_kron(a, b))
         },
 
         khatri_rao_prod = function(a, b) {
@@ -113,21 +118,14 @@ TensorOperator <- R6::R6Class(
                 torch::torch_einsum("ac,bc->abc", c(a, b)),
                 c(-1, a$shape[2])
             ))
-        },
-
-        get_df_tensor_or_null = function(df) {
-            if (is.null(df)) {
-                return(NULL)
-            }
-            return(self$new_tensor(as.matrix(df)))
         }
     ),
 
     active = list(
         default_jitter = function() {
-            if (private$tensor_dtype() == torch::torch_float64()) {
+            if (private$dtype() == torch::torch_float64()) {
                 return(1e-8)
-            } else if (private$tensor_dtype() == torch::torch_float32()) {
+            } else if (private$dtype() == torch::torch_float32()) {
                 return(1e-4)
             }
             stop('The dtype used by TSR has no default mapped jitter value')
@@ -135,5 +133,10 @@ TensorOperator <- R6::R6Class(
     )
 )
 
-# Singleton containing all the information for the used API, Tensor default type and device
-tsr <- TensorOperator$new()
+#' @title Tensor Operator Singleton
+#'
+#' @description Singleton instance of the \code{TensorOperator} class that contains
+#' all informations related the tensor API; tensor methods, used data type and used device.
+#'
+#' @export
+TSR <- TensorOperator$new()
