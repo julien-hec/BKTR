@@ -126,17 +126,17 @@ BKTRRegressor <- R6::R6Class(
             # Tensor Assignation
             y_matrix <- as.matrix(y_df)
             # Omega is 1 if y is not NA, 0 otherwise
-            self$omega <- tsr$new_tensor(ifelse(is.na(y_matrix), 0.0, 1.0))
+            self$omega <- TSR$tensor(ifelse(is.na(y_matrix), 0.0, 1.0))
             # Y should replace all NA values by 0
             y_matrix[is.na(y_matrix)] <- 0.0
-            self$y <- tsr$new_tensor(y_matrix)
-            spatial_covariates <- tsr$new_tensor(as.matrix(spatial_covariates_df))
-            temporal_covariates <- tsr$new_tensor(as.matrix(temporal_covariates_df))
-            self$tau <- 1 / tsr$new_tensor(sigma_r)
-            temporal_x_tsr <- tsr$get_df_tensor_or_null(temporal_x_df)
-            temporal_dist_tsr <- tsr$get_df_tensor_or_null(temporal_dist_df)
-            spatial_x_tsr <- tsr$get_df_tensor_or_null(spatial_x_df)
-            spatial_dist_tsr <- tsr$get_df_tensor_or_null(spatial_dist_df)
+            self$y <- TSR$tensor(y_matrix)
+            spatial_covariates <- TSR$tensor(as.matrix(spatial_covariates_df))
+            temporal_covariates <- TSR$tensor(as.matrix(temporal_covariates_df))
+            self$tau <- 1 / TSR$tensor(sigma_r)
+            temporal_x_tsr <- TSR$get_df_tensor_or_null(temporal_x_df)
+            temporal_dist_tsr <- TSR$get_df_tensor_or_null(temporal_dist_df)
+            spatial_x_tsr <- TSR$get_df_tensor_or_null(spatial_x_df)
+            spatial_dist_tsr <- TSR$get_df_tensor_or_null(spatial_dist_df)
 
             # Params Assignation
             self$rank_decomp <- rank_decomp
@@ -275,7 +275,7 @@ BKTRRegressor <- R6::R6Class(
                 nb_covariates = 1 + space_cov_shape[2] + time_cov_shape[2] # P
             )
 
-            intersect_covs <- tsr$ones(c(covs_dim$nb_spaces, covs_dim$nb_times, 1))
+            intersect_covs <- TSR$ones(c(covs_dim$nb_spaces, covs_dim$nb_times, 1))
             spatial_covs <- spatial_covariate_tensor$unsqueeze(2)$expand(
                 c(covs_dim$nb_spaces, covs_dim$nb_times, covs_dim$nb_spatial_covariates)
             )
@@ -293,14 +293,14 @@ BKTRRegressor <- R6::R6Class(
             rank_decomp <- self$rank_decomp
             covs_dim <- self$covariates_dim
 
-            self$spatial_decomp <- tsr$new_tensor(
-                tsr$randn(c(covs_dim$nb_spaces, rank_decomp))
+            self$spatial_decomp <- TSR$tensor(
+                TSR$randn(c(covs_dim$nb_spaces, rank_decomp))
             )
-            self$temporal_decomp <- tsr$new_tensor(
-                tsr$randn(c(covs_dim$nb_times, rank_decomp))
+            self$temporal_decomp <- TSR$tensor(
+                TSR$randn(c(covs_dim$nb_times, rank_decomp))
             )
-            self$covs_decomp <- tsr$new_tensor(
-                tsr$randn(c(covs_dim$nb_covariates, rank_decomp))
+            self$covs_decomp <- TSR$tensor(
+                TSR$randn(c(covs_dim$nb_covariates, rank_decomp))
             )
         },
 

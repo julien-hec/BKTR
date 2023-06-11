@@ -59,9 +59,9 @@ ResultLogger <- R6::R6Class(
             self$export_path <- results_export_suffix
             self$export_suffix <- results_export_suffix
 
-            self$sum_beta_est <- tsr$zeros(covariates$shape)
-            self$sum_sq_beta_est <- tsr$zeros(covariates$shape)
-            self$sum_y_est <- tsr$zeros(y$shape)
+            self$sum_beta_est <- TSR$zeros(covariates$shape)
+            self$sum_sq_beta_est <- TSR$zeros(covariates$shape)
+            self$sum_y_est <- TSR$zeros(y$shape)
             self$total_elapsed_time <- 0
 
             self$y <- y

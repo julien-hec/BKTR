@@ -7,7 +7,6 @@
 Tensor backend configuration and methods for all the tensor operations
 in BKTR
 }
-\keyword{internal}
 \section{Super class}{
 \code{\link[R6P:Singleton]{R6P::Singleton}} -> \code{TensorOperator}
 }
@@ -15,20 +14,18 @@ in BKTR
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-TensorOperator-new}{\code{TensorOperator$new()}}
-\item \href{#method-TensorOperator-set_tensor_type}{\code{TensorOperator$set_tensor_type()}}
-\item \href{#method-TensorOperator-set_device_type}{\code{TensorOperator$set_device_type()}}
-\item \href{#method-TensorOperator-new_tensor}{\code{TensorOperator$new_tensor()}}
+\item \href{#method-TensorOperator-set_params}{\code{TensorOperator$set_params()}}
+\item \href{#method-TensorOperator-tensor}{\code{TensorOperator$tensor()}}
 \item \href{#method-TensorOperator-is_tensor}{\code{TensorOperator$is_tensor()}}
-\item \href{#method-TensorOperator-zeros}{\code{TensorOperator$zeros()}}
-\item \href{#method-TensorOperator-ones}{\code{TensorOperator$ones()}}
 \item \href{#method-TensorOperator-eye}{\code{TensorOperator$eye()}}
+\item \href{#method-TensorOperator-ones}{\code{TensorOperator$ones()}}
+\item \href{#method-TensorOperator-zeros}{\code{TensorOperator$zeros()}}
 \item \href{#method-TensorOperator-rand}{\code{TensorOperator$rand()}}
 \item \href{#method-TensorOperator-randn}{\code{TensorOperator$randn()}}
 \item \href{#method-TensorOperator-randn_like}{\code{TensorOperator$randn_like()}}
 \item \href{#method-TensorOperator-arange}{\code{TensorOperator$arange()}}
 \item \href{#method-TensorOperator-kronecker_prod}{\code{TensorOperator$kronecker_prod()}}
 \item \href{#method-TensorOperator-khatri_rao_prod}{\code{TensorOperator$khatri_rao_prod()}}
-\item \href{#method-TensorOperator-get_df_tensor_or_null}{\code{TensorOperator$get_df_tensor_or_null()}}
 \item \href{#method-TensorOperator-clone}{\code{TensorOperator$clone()}}
 }
 }
@@ -37,34 +34,25 @@ in BKTR
 \if{latex}{\out{\hypertarget{method-TensorOperator-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new(tensor_dtype = torch::torch_float64, tensor_device = "cpu")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new(dtype = torch::torch_float64, device = "cpu")}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-TensorOperator-set_tensor_type"></a>}}
-\if{latex}{\out{\hypertarget{method-TensorOperator-set_tensor_type}{}}}
-\subsection{Method \code{set_tensor_type()}}{
+\if{html}{\out{<a id="method-TensorOperator-set_params"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorOperator-set_params}{}}}
+\subsection{Method \code{set_params()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$set_tensor_type(tensor_dtype)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$set_params(dtype = NULL, device = NULL, seed = NULL)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-TensorOperator-set_device_type"></a>}}
-\if{latex}{\out{\hypertarget{method-TensorOperator-set_device_type}{}}}
-\subsection{Method \code{set_device_type()}}{
+\if{html}{\out{<a id="method-TensorOperator-tensor"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorOperator-tensor}{}}}
+\subsection{Method \code{tensor()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$set_device_type(tensor_device)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-TensorOperator-new_tensor"></a>}}
-\if{latex}{\out{\hypertarget{method-TensorOperator-new_tensor}{}}}
-\subsection{Method \code{new_tensor()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new_tensor(tensor_dim)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$tensor(tensor_data)}\if{html}{\out{</div>}}
 }
 
 }
@@ -78,24 +66,6 @@ in BKTR
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-TensorOperator-zeros"></a>}}
-\if{latex}{\out{\hypertarget{method-TensorOperator-zeros}{}}}
-\subsection{Method \code{zeros()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$zeros(tensor_dim)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-TensorOperator-ones"></a>}}
-\if{latex}{\out{\hypertarget{method-TensorOperator-ones}{}}}
-\subsection{Method \code{ones()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$ones(tensor_dim)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-eye"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-eye}{}}}
 \subsection{Method \code{eye()}}{
@@ -105,11 +75,29 @@ in BKTR
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-TensorOperator-ones"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorOperator-ones}{}}}
+\subsection{Method \code{ones()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$ones(tsr_dim)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-TensorOperator-zeros"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorOperator-zeros}{}}}
+\subsection{Method \code{zeros()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$zeros(tsr_dim)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-rand"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-rand}{}}}
 \subsection{Method \code{rand()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$rand(size)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$rand(tsr_dim)}\if{html}{\out{</div>}}
 }
 
 }
@@ -118,7 +106,7 @@ in BKTR
 \if{latex}{\out{\hypertarget{method-TensorOperator-randn}{}}}
 \subsection{Method \code{randn()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$randn(size)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$randn(tsr_dim)}\if{html}{\out{</div>}}
 }
 
 }
@@ -155,15 +143,6 @@ in BKTR
 \subsection{Method \code{khatri_rao_prod()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$khatri_rao_prod(a, b)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-TensorOperator-get_df_tensor_or_null"></a>}}
-\if{latex}{\out{\hypertarget{method-TensorOperator-get_df_tensor_or_null}{}}}
-\subsection{Method \code{get_df_tensor_or_null()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$get_df_tensor_or_null(df)}\if{html}{\out{</div>}}
 }
 
 }
