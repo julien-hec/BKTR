@@ -4,19 +4,23 @@
 \alias{KernelParameter}
 \title{R6 class for kernel's hyperparameter}
 \description{
-KernelParameter contains all information and behaviour related to parameters for kernels.
+KernelParameter contains all information and behaviour related to a kernel parameters.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{The}}{kernel associated with the parameter (it is set at kernel instanciation}
+\item{\code{The}}{kernel associated with the parameter (it is set at kernel instanciation)}
+
+\item{\code{The}}{kernel parameter's name}
 }
 \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{The}}{kernel associated with the parameter (it is set at kernel instanciation}
+\item{\code{The}}{kernel associated with the parameter (it is set at kernel instanciation)}
+
+\item{\code{The}}{kernel parameter's name}
 }
 \if{html}{\out{</div>}}
 }
@@ -25,7 +29,6 @@ KernelParameter contains all information and behaviour related to parameters for
 \itemize{
 \item \href{#method-NA-new}{\code{KernelParameter$new()}}
 \item \href{#method-NA-set_kernel}{\code{KernelParameter$set_kernel()}}
-\item \href{#method-NA-get_full_name}{\code{KernelParameter$get_full_name()}}
 \item \href{#method-unknown-clone}{\code{KernelParameter$clone()}}
 }
 }
@@ -37,8 +40,7 @@ Create a new \code{KernelParameter} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelParameter$new(
   value,
-  name,
-  is_constant = FALSE,
+  is_fixed = FALSE,
   lower_bound = DEFAULT_LBOUND,
   upper_bound = DEFAULT_UBOUND,
   slice_sampling_scale = log(10),
@@ -51,13 +53,11 @@ Create a new \code{KernelParameter} object.
 \describe{
 \item{\code{value}}{Numeric: The hyperparameter mean's prior value (Paper - \eqn{\phi}) or its constant value}
 
-\item{\code{name}}{String: The name of the paramater (used in logging and in kernel representation)}
+\item{\code{is_fixed}}{Boolean: Says if the kernel parameter is fixed or not (if fixed, there is no sampling)}
 
-\item{\code{is_constant}}{Boolean: Says if the kernel parameter is constant or not (if it is constant, there is no sampling)}
+\item{\code{lower_bound}}{Numeric: Hyperparameter's minimal value during sampling (Paper - \eqn{\phi_{min}})}
 
-\item{\code{lower_bound}}{Numeric: The hyperparameter's minimal admissible value in sampling (Paper - \eqn{\phi_{min}})}
-
-\item{\code{upper_bound}}{Numeric: The hyperparameter's maximal admissible value in sampling (Paper - \eqn{\phi_{max}})}
+\item{\code{upper_bound}}{Numeric: Hyperparameter's maximal value during sampling (Paper - \eqn{\phi_{max}})}
 
 \item{\code{slice_sampling_scale}}{Numeric: The sampling range's amplitude (Paper - \eqn{\rho})}
 
@@ -75,7 +75,7 @@ A new \code{KernelParameter} object.
 \subsection{Method \code{set_kernel()}}{
 Set \code{Kernel} for a given \code{KernelParameter} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{KernelParameter$set_kernel(kernel)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{KernelParameter$set_kernel(kernel, param_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -88,15 +88,6 @@ Set \code{Kernel} for a given \code{KernelParameter} object.
 \subsection{Returns}{
 NULL, set a new kernel for the parameter
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-get_full_name"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-get_full_name}{}}}
-\subsection{Method \code{get_full_name()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{KernelParameter$get_full_name()}\if{html}{\out{</div>}}
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-unknown-clone"></a>}}

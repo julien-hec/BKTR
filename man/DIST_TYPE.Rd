@@ -5,7 +5,7 @@
 \alias{DIST_TYPE}
 \title{Distance Types}
 \format{
-An object of class \code{list} of length 4.
+An object of class \code{list} of length 5.
 }
 \usage{
 DIST_TYPE

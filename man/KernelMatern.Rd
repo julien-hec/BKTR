@@ -22,9 +22,9 @@ R6 class for Matern Kernels
 <details open><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="add_jitter_to_kernel"><a href='../../BKTR/html/Kernel.html#method-Kernel-add_jitter_to_kernel'><code>BKTR::Kernel$add_jitter_to_kernel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="get_name"><a href='../../BKTR/html/Kernel.html#method-Kernel-get_name'><code>BKTR::Kernel$get_name()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="kernel_gen"><a href='../../BKTR/html/Kernel.html#method-Kernel-kernel_gen'><code>BKTR::Kernel$kernel_gen()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="set_distance_matrix"><a href='../../BKTR/html/Kernel.html#method-Kernel-set_distance_matrix'><code>BKTR::Kernel$set_distance_matrix()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="plot"><a href='../../BKTR/html/Kernel.html#method-Kernel-plot'><code>BKTR::Kernel$plot()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="set_positions"><a href='../../BKTR/html/Kernel.html#method-Kernel-set_positions'><code>BKTR::Kernel$set_positions()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -35,7 +35,7 @@ R6 class for Matern Kernels
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$new(
   smoothness_factor = 1,
-  lengthscale = KernelParameter$new(log(2), "lengthscale"),
+  lengthscale = KernelParameter$new(log(2)),
   kernel_variance = 1,
   distance_type = DIST_TYPE$HAVERSINE,
   jitter_value = NULL

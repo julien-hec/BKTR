@@ -11,10 +11,10 @@ R6 class for Composed Kernels
 \itemize{
 \item \href{#method-NA-get_matrix}{\code{DistanceCalculator$get_matrix()}}
 \item \href{#method-NA-check_tensor_dimensions}{\code{DistanceCalculator$check_tensor_dimensions()}}
-\item \href{#method-NA-calc_linear_dist}{\code{DistanceCalculator$calc_linear_dist()}}
 \item \href{#method-NA-calc_euclidean_dist}{\code{DistanceCalculator$calc_euclidean_dist()}}
 \item \href{#method-NA-calc_haversine_dist}{\code{DistanceCalculator$calc_haversine_dist()}}
-\item \href{#method-NA-calc_dotproduct_dist}{\code{DistanceCalculator$calc_dotproduct_dist()}}
+\item \href{#method-NA-calc_manhattan_dist}{\code{DistanceCalculator$calc_manhattan_dist()}}
+\item \href{#method-NA-calc_chebyshev_dist}{\code{DistanceCalculator$calc_chebyshev_dist()}}
 \item \href{#method-unknown-clone}{\code{DistanceCalculator$clone()}}
 }
 }
@@ -36,17 +36,8 @@ R6 class for Composed Kernels
   x1,
   x2,
   expected_nb_dim,
-  expected_last_dim_shape
+  expected_last_dim_shape = NULL
 )}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-calc_linear_dist"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-calc_linear_dist}{}}}
-\subsection{Method \code{calc_linear_dist()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DistanceCalculator$calc_linear_dist(x1, x2)}\if{html}{\out{</div>}}
 }
 
 }
@@ -69,11 +60,20 @@ R6 class for Composed Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-calc_dotproduct_dist"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-calc_dotproduct_dist}{}}}
-\subsection{Method \code{calc_dotproduct_dist()}}{
+\if{html}{\out{<a id="method-NA-calc_manhattan_dist"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-calc_manhattan_dist}{}}}
+\subsection{Method \code{calc_manhattan_dist()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DistanceCalculator$calc_dotproduct_dist(x1, x2)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DistanceCalculator$calc_manhattan_dist(x1, x2)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-calc_chebyshev_dist"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-calc_chebyshev_dist}{}}}
+\subsection{Method \code{calc_chebyshev_dist()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DistanceCalculator$calc_chebyshev_dist(x1, x2)}\if{html}{\out{</div>}}
 }
 
 }

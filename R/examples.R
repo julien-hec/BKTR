@@ -1,6 +1,7 @@
 #' @importFrom R6 R6Class
 #' @import data.table
 
+# Private function to normalize a vector to [0, 1]
 normalize_0_1 <- function(x) {
     return((x - min(x)) / (max(x) - min(x)))
 }
@@ -37,8 +38,12 @@ BixiData <- R6::R6Class(
             self$spatial_positions_df <- BKTR::bixi_spatial_locations
             self$temporal_positions_df <- BKTR::bixi_temporal_locations
 
-            # TODO - reshape data
-            self$data_df <- NULL
+            self$data_df <- reshape_covariate_dfs(
+                spatial_df = self$spatial_features_df,
+                temporal_df = self$temporal_features_df,
+                y_df = self$departure_df,
+                y_column_name = 'nb_departure'
+            )
         }
     )
 )
