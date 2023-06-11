@@ -4,7 +4,7 @@
 \alias{BixiData}
 \title{BIXI Data Class}
 \description{
-R6 class encapsulating the BIXI data
+R6 class encapsulating all BIXI dataframes
 }
 \section{Methods}{
 \subsection{Public methods}{

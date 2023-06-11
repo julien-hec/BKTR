@@ -15,7 +15,7 @@ R6 class for Composed Kernels
 \itemize{
 \item \href{#method-NA-new}{\code{KernelComposed$new()}}
 \item \href{#method-NA-core_kernel_fn}{\code{KernelComposed$core_kernel_fn()}}
-\item \href{#method-NA-set_distance_matrix}{\code{KernelComposed$set_distance_matrix()}}
+\item \href{#method-NA-set_positions}{\code{KernelComposed$set_positions()}}
 \item \href{#method-unknown-clone}{\code{KernelComposed$clone()}}
 }
 }
@@ -23,8 +23,8 @@ R6 class for Composed Kernels
 <details open><summary>Inherited methods</summary>
 <ul>
 <li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="add_jitter_to_kernel"><a href='../../BKTR/html/Kernel.html#method-Kernel-add_jitter_to_kernel'><code>BKTR::Kernel$add_jitter_to_kernel()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="get_name"><a href='../../BKTR/html/Kernel.html#method-Kernel-get_name'><code>BKTR::Kernel$get_name()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="kernel_gen"><a href='../../BKTR/html/Kernel.html#method-Kernel-kernel_gen'><code>BKTR::Kernel$kernel_gen()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="BKTR" data-topic="Kernel" data-id="plot"><a href='../../BKTR/html/Kernel.html#method-Kernel-plot'><code>BKTR::Kernel$plot()</code></a></span></li>
 </ul>
 </details>
 }}
@@ -47,11 +47,11 @@ R6 class for Composed Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-set_distance_matrix"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-set_distance_matrix}{}}}
-\subsection{Method \code{set_distance_matrix()}}{
+\if{html}{\out{<a id="method-NA-set_positions"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-set_positions}{}}}
+\subsection{Method \code{set_positions()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{KernelComposed$set_distance_matrix(x = NULL, distance_matrix = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{KernelComposed$set_positions(positions_df)}\if{html}{\out{</div>}}
 }
 
 }

@@ -42,7 +42,7 @@ DistanceCalculator <- R6::R6Class(
             )
         },
 
-        check_tensor_dimensions = function(x1, x2, expected_nb_dim, expected_last_dim_shape) {
+        check_tensor_dimensions = function(x1, x2, expected_nb_dim, expected_last_dim_shape = NULL) {
             if (!(tsr$is_tensor(x1) && tsr$is_tensor(x2))) {
                 torch:::value_error('Distance params must be tensors')
             }
@@ -50,7 +50,7 @@ DistanceCalculator <- R6::R6Class(
                 torch:::value_error(sprintf('Distance params should have %s dimension(s)', expected_nb_dim))
             }
             if (
-                expected_last_dim_shape != NULL && !(
+                !is.null(expected_last_dim_shape) && !(
                     expected_last_dim_shape == x1$shape[-1] && expected_last_dim_shape == x2$shape[-1]
                 )
             ) {

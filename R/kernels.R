@@ -53,7 +53,7 @@ KernelParameter <- R6::R6Class(
             self$kernel <- kernel
             self$name <- param_name
             self$kernel$parameters <- c(self$kernel$parameters, self)
-        },
+        }
     ),
     active = list(
         full_name = function() {
@@ -99,8 +99,8 @@ Kernel <- R6::R6Class(
             if (!has_null_jitter && self$jitter_value == 0) {
                 return()
             }
-            jitter_val <- ifelse(has_null_jitter, tsr$default_jitter, self$jitter_value)
-            self$covariance_matrix <- self$covariance_matrix + jitter_val * tsr$eye(nrow(self$covariance_matrix))
+            jitter_val <- ifelse(has_null_jitter, BKTR:::tsr$default_jitter, self$jitter_value)
+            self$covariance_matrix <- self$covariance_matrix + jitter_val * BKTR:::tsr$eye(nrow(self$covariance_matrix))
         },
 
         kernel_gen = function() {
@@ -113,11 +113,12 @@ Kernel <- R6::R6Class(
         },
 
         set_positions = function(positions_df) {
-            if (is.null(indices(positions_df)) || length(indices(positions_df)) != 1) {
+            pos_df_indx <- indices(positions_df)
+            if (is.null(pos_df_indx) || length(pos_df_indx) != 1) {
                 stop('`positions_df` must have one and only index set via setindex.')
             }
             self$positions_df <- positions_df
-            positions_tensor <- tsr$tensor(self$positions_df)
+            positions_tensor <- BKTR:::tsr$new_tensor(as.matrix(positions_df[, !..pos_df_indx]))
             # TODO: check to transform that into a function `get_distance_matrix` #13
             self$distance_matrix <- DistanceCalculator$new()$get_matrix(positions_tensor, self$distance_type)
         },
@@ -160,7 +161,7 @@ KernelWhiteNoise <- R6::R6Class(
             super$initialize(kernel_variance, DIST_TYPE$NONE, jitter_value)
         },
         core_kernel_fn = function() {
-            return(tsr$eye(nrow(self$positions_df)))
+            return(BKTR:::tsr$eye(nrow(self$positions_df)))
         }
     )
 )
@@ -345,7 +346,7 @@ KernelComposed <- R6::R6Class(
             new_jitter_val <- max(
                 left_kernel$jitter_value,
                 right_kernel$jitter_value,
-                tsr$default_jitter
+                BKTR:::tsr$default_jitter
             )
             super$initialize(composed_variance, left_kernel$distance_type, new_jitter_val)
             self$left_kernel <- left_kernel

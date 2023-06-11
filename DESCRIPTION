@@ -26,9 +26,9 @@ Collate:
     'marginal_likelihoods.R'
     'kernels.R'
     'bktr.R'
-    'data_import_utils.R'
     'distances.R'
     'examples.R'
     'plots.R'
+    'utils.R'
 LazyData: true
 VignetteBuilder: knitr, rmarkdown
