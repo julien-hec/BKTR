@@ -1,7 +1,7 @@
 #' @import torch
 #' @include tensor_ops.R
 #' @include kernels.R
-#' @include marginal_likelihoods.R
+#' @include likelihood_evaluator.R
 #' @include result_logger.R
 #' @include samplers.R
 #' @importFrom R6 R6Class

@@ -23,7 +23,7 @@ Collate:
     'samplers.R'
     'tensor_ops.R'
     'result_logger.R'
-    'marginal_likelihoods.R'
+    'likelihood_evaluator.R'
     'kernels.R'
     'bktr.R'
     'distances.R'
