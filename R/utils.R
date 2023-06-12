@@ -1,4 +1,5 @@
 #' @import torch
+#' @include tensor_ops.R
 
 # Private utility function to do a cross join between two data.tables.
 # Taken from https://github.com/Rdatatable/data.table/issues/1717
@@ -39,33 +40,33 @@ reshape_covariate_dfs <- function(
 ) {
     spa_index_name <- 'location'
     temp_index_name <- 'time'
-    if (indices(spatial_df) != c(spa_index_name) || indices(y_df) != c(spa_index_name)) {
-        stop(paste('Index names of spatial_df and y_df must be', spa_index_name))
+    if (
+      is.null(key(spatial_df)) || is.null(key(y_df)) ||
+      key(spatial_df) != c(spa_index_name) || key(y_df) != c(spa_index_name)
+    ) {
+        stop(paste('Key column names of spatial_df and y_df must be', spa_index_name))
     }
-    if (indices(temporal_df) != c(temp_index_name)) {
-        stop(paste('Index name of temporal_df must be', temp_index_name))
+    if (is.null(key(temporal_df)) || key(temporal_df) != c(temp_index_name)) {
+        stop(paste('Key column name of temporal_df must be', temp_index_name))
     }
     spatial_df_cp <- spatial_df
     temporal_df_cp <- temporal_df
     y_df_cp <- y_df
 
     # Sort indexes and columns
-    for (df in list(spatial_df_cp, temporal_df_cp, y_df_cp)) {
-        setorderv(df, indices(df)[1])
-    }
+    # Indexes (keys) are already sorted by data.table
     y_df_col_names <- sort(colnames(y_df_cp)[!colnames(y_df_cp) == spa_index_name])
     setcolorder(y_df_cp, c(spa_index_name, y_df_col_names))
 
     # Compare indexes values
-    if (!identical(spatial_df_cp[[indices(spatial_df_cp)[1]]], y_df_cp[[indices(y_df_cp)[1]]])) {
+    if (!identical(spatial_df_cp[[key(spatial_df_cp)[1]]], y_df_cp[[key(y_df_cp)[1]]])) {
         stop('Index values of spatial_df and y_df must be the same')
     }
-    if (!identical(as.character(temporal_df_cp[[indices(temporal_df_cp)[1]]]), y_df_col_names)) {
+    if (!identical(as.character(temporal_df_cp[[key(temporal_df_cp)[1]]]), y_df_col_names)) {
         stop('temporal_df index values and y_df columns names must be the same')
     }
     data_df <- cross_join_dt(spatial_df_cp, temporal_df_cp)
-    setindexv(data_df, c(spa_index_name, temp_index_name))
-    setorderv(data_df, c(spa_index_name, temp_index_name))
+    setkeyv(data_df, c(spa_index_name, temp_index_name))
     y_flat_values <- as.vector(unlist(y_df_cp[, ..y_df_col_names]))
     data_df[, (y_column_name) := y_flat_values]
     setcolorder(data_df, c(spa_index_name, temp_index_name, y_column_name))
@@ -104,8 +105,8 @@ simulate_spatiotemporal_data <- function(
     temporal_kernel,
     noise_variance_scale
 ) {
-    spa_pos <- BKTR:::TSR$rand(c(nb_locations, nb_spatial_dimensions)) * spatial_scale
-    temp_pos <- BKTR:::TSR$arange(0, nb_time_points - 1) * time_scale / (nb_time_points - 1)
+    spa_pos <- TSR$rand(c(nb_locations, nb_spatial_dimensions)) * spatial_scale
+    temp_pos <- TSR$arange(0, nb_time_points - 1) * time_scale / (nb_time_points - 1)
     temp_pos <- temp_pos$reshape(c(nb_time_points, 1))
 
     # Dimension labels
@@ -117,21 +118,21 @@ simulate_spatiotemporal_data <- function(
 
     spa_pos_df <- cbind(data.table(s_locs), data.table(as.matrix(spa_pos)))
     setnames(spa_pos_df, c('location', s_dims))
-    setindexv(spa_pos_df, 'location')
+    setkeyv(spa_pos_df, 'location')
     temp_pos_df <- cbind(data.table(t_points), data.table(as.matrix(temp_pos)))
     setnames(temp_pos_df, c('time', 'time_val'))
-    setindexv(temp_pos_df, 'time')
+    setkeyv(temp_pos_df, 'time')
 
-    spa_means <- BKTR:::TSR$tensor(spatial_covariates_means)
+    spa_means <- TSR$tensor(spatial_covariates_means)
     nb_spa_covariates <- length(spa_means)
-    spa_covariates <- BKTR:::TSR$randn(c(nb_locations, nb_spa_covariates))
+    spa_covariates <- TSR$randn(c(nb_locations, nb_spa_covariates))
     spa_covariates <- spa_covariates + spa_means
 
-    temp_means <- BKTR:::TSR$tensor(temporal_covariates_means)
+    temp_means <- TSR$tensor(temporal_covariates_means)
     nb_temp_covariates <- length(temp_means)
-    temp_covariates <- BKTR:::TSR$randn(c(nb_time_points, nb_temp_covariates))
+    temp_covariates <- TSR$randn(c(nb_time_points, nb_temp_covariates))
     temp_covariates <- temp_covariates + temp_means
-    intercept_covariates <- BKTR:::TSR$ones(c(nb_locations, nb_time_points, 1))
+    intercept_covariates <- TSR$ones(c(nb_locations, nb_time_points, 1))
     covs <- torch::torch_cat(
         c(
             intercept_covariates,
@@ -143,7 +144,7 @@ simulate_spatiotemporal_data <- function(
     nb_covs <- 1 + nb_spa_covariates + nb_temp_covariates
 
     covs_covariance_mat <- rWishart(1, nb_covs, diag(nb_covs))[,,1]
-    covs_covariance <- BKTR:::TSR$tensor(covs_covariance_mat)
+    covs_covariance <- TSR$tensor(covs_covariance_mat)
 
     spatial_kernel$set_positions(spa_pos_df)
     spatial_covariance <- spatial_kernel$kernel_gen()
@@ -154,13 +155,13 @@ simulate_spatiotemporal_data <- function(
     # the second covariance matrix is the Kronecker product of temporal and covariates covariances
     chol_spa <- torch::linalg_cholesky(spatial_covariance)
     chol_temp_covs <- torch::linalg_cholesky(
-        BKTR:::TSR$kronecker_prod(temporal_covariance, covs_covariance)
+        TSR$kronecker_prod(temporal_covariance, covs_covariance)
     )
     beta_values <- (
-        chol_spa$matmul(BKTR:::TSR$randn(c(nb_locations, nb_time_points * nb_covs)))$matmul(chol_temp_covs$t())
+        chol_spa$matmul(TSR$randn(c(nb_locations, nb_time_points * nb_covs)))$matmul(chol_temp_covs$t())
     )$reshape(c(nb_locations, nb_time_points, nb_covs))
     y_val <- torch:::torch_einsum('ijk,ijk->ij', c(covs, beta_values))
-    err <- BKTR:::TSR$randn(c(nb_locations, nb_time_points)) * (noise_variance_scale ** 0.5)
+    err <- TSR$randn(c(nb_locations, nb_time_points)) * (noise_variance_scale ** 0.5)
     y_val <- y_val + err
     y_val <- y_val$reshape(c(nb_locations * nb_time_points, 1))
     # We remove the intercept from the covariates
@@ -171,11 +172,11 @@ simulate_spatiotemporal_data <- function(
     data_df <- data.table(cbind(as.matrix(y_val), as.matrix(covs)))
     setnames(data_df, c('y', s_covs, t_covs))
     data_df <- cbind(index_cols_df, data_df)
-    setindexv(data_df, c('location', 'time'))
+    setkeyv(data_df, c('location', 'time'))
     beta_df <- data.table(as.matrix(beta_values$reshape(c(nb_locations * nb_time_points, nb_covs))))
     setnames(beta_df, c('Intercept', s_covs, t_covs))
     beta_df <- cbind(index_cols_df, beta_df)
-    setindexv(beta_df, c('location', 'time'))
+    setkeyv(beta_df, c('location', 'time'))
 
     return(list(
         data_df = data_df,

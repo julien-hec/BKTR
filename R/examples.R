@@ -25,15 +25,18 @@ BixiData <- R6::R6Class(
             self$departure_df <- BKTR::bixi_station_departures
             # Normalize departure counts to [0, 1]
             max_val <- max(self$departure_df[, !c('location')], na.rm = TRUE)
-            self$departure_df[, .SD / max_val, .SDcols = !c('location')]
+            cols <- colnames(self$departure_df[, !c('location')])
+            self$departure_df[, (cols) := .SD / max_val, .SDcols = cols]
 
             # Normalize spatial features column wise to [0, 1]
             self$spatial_features_df <- BKTR::bixi_spatial_features
-            self$spatial_features_df[, lapply(.SD, normalize_0_1), .SDcols = !c('location')]
+            cols <- colnames(self$spatial_features_df[, !c('location')])
+            self$spatial_features_df[, (cols) := lapply(.SD, normalize_0_1), .SDcols = cols]
 
             # Normalize temporal features column wise to [0, 1]
             self$temporal_features_df <- BKTR::bixi_temporal_features
-            self$temporal_features_df[, lapply(.SD, normalize_0_1), .SDcols = !c('time')]
+            cols <- colnames(self$temporal_features_df[, !c('time')])
+            self$temporal_features_df[, (cols) := lapply(.SD, normalize_0_1), .SDcols = cols]
 
             self$spatial_positions_df <- BKTR::bixi_spatial_locations
             self$temporal_positions_df <- BKTR::bixi_temporal_locations
