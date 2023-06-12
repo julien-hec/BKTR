@@ -1,4 +1,5 @@
 #' @import torch
+#' @include tensor_ops.R
 
 # Private utility function to do a cross join between two data.tables.
 # Taken from https://github.com/Rdatatable/data.table/issues/1717
@@ -104,8 +105,8 @@ simulate_spatiotemporal_data <- function(
     temporal_kernel,
     noise_variance_scale
 ) {
-    spa_pos <- BKTR:::TSR$rand(c(nb_locations, nb_spatial_dimensions)) * spatial_scale
-    temp_pos <- BKTR:::TSR$arange(0, nb_time_points - 1) * time_scale / (nb_time_points - 1)
+    spa_pos <- TSR$rand(c(nb_locations, nb_spatial_dimensions)) * spatial_scale
+    temp_pos <- TSR$arange(0, nb_time_points - 1) * time_scale / (nb_time_points - 1)
     temp_pos <- temp_pos$reshape(c(nb_time_points, 1))
 
     # Dimension labels
@@ -122,16 +123,16 @@ simulate_spatiotemporal_data <- function(
     setnames(temp_pos_df, c('time', 'time_val'))
     setkeyv(temp_pos_df, 'time')
 
-    spa_means <- BKTR:::TSR$tensor(spatial_covariates_means)
+    spa_means <- TSR$tensor(spatial_covariates_means)
     nb_spa_covariates <- length(spa_means)
-    spa_covariates <- BKTR:::TSR$randn(c(nb_locations, nb_spa_covariates))
+    spa_covariates <- TSR$randn(c(nb_locations, nb_spa_covariates))
     spa_covariates <- spa_covariates + spa_means
 
-    temp_means <- BKTR:::TSR$tensor(temporal_covariates_means)
+    temp_means <- TSR$tensor(temporal_covariates_means)
     nb_temp_covariates <- length(temp_means)
-    temp_covariates <- BKTR:::TSR$randn(c(nb_time_points, nb_temp_covariates))
+    temp_covariates <- TSR$randn(c(nb_time_points, nb_temp_covariates))
     temp_covariates <- temp_covariates + temp_means
-    intercept_covariates <- BKTR:::TSR$ones(c(nb_locations, nb_time_points, 1))
+    intercept_covariates <- TSR$ones(c(nb_locations, nb_time_points, 1))
     covs <- torch::torch_cat(
         c(
             intercept_covariates,
@@ -143,7 +144,7 @@ simulate_spatiotemporal_data <- function(
     nb_covs <- 1 + nb_spa_covariates + nb_temp_covariates
 
     covs_covariance_mat <- rWishart(1, nb_covs, diag(nb_covs))[,,1]
-    covs_covariance <- BKTR:::TSR$tensor(covs_covariance_mat)
+    covs_covariance <- TSR$tensor(covs_covariance_mat)
 
     spatial_kernel$set_positions(spa_pos_df)
     spatial_covariance <- spatial_kernel$kernel_gen()
@@ -154,13 +155,13 @@ simulate_spatiotemporal_data <- function(
     # the second covariance matrix is the Kronecker product of temporal and covariates covariances
     chol_spa <- torch::linalg_cholesky(spatial_covariance)
     chol_temp_covs <- torch::linalg_cholesky(
-        BKTR:::TSR$kronecker_prod(temporal_covariance, covs_covariance)
+        TSR$kronecker_prod(temporal_covariance, covs_covariance)
     )
     beta_values <- (
-        chol_spa$matmul(BKTR:::TSR$randn(c(nb_locations, nb_time_points * nb_covs)))$matmul(chol_temp_covs$t())
+        chol_spa$matmul(TSR$randn(c(nb_locations, nb_time_points * nb_covs)))$matmul(chol_temp_covs$t())
     )$reshape(c(nb_locations, nb_time_points, nb_covs))
     y_val <- torch:::torch_einsum('ijk,ijk->ij', c(covs, beta_values))
-    err <- BKTR:::TSR$randn(c(nb_locations, nb_time_points)) * (noise_variance_scale ** 0.5)
+    err <- TSR$randn(c(nb_locations, nb_time_points)) * (noise_variance_scale ** 0.5)
     y_val <- y_val + err
     y_val <- y_val$reshape(c(nb_locations * nb_time_points, 1))
     # We remove the intercept from the covariates
