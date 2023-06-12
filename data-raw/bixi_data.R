@@ -6,11 +6,11 @@ bixi_station_departures <- fread('data-raw/bixi_station_departures.csv', header 
 bixi_temporal_features <- fread('data-raw/bixi_temporal_features.csv', header = TRUE)
 bixi_temporal_locations <- fread('data-raw/bixi_temporal_locations.csv', header = TRUE)
 
-setindex(bixi_spatial_features, location)
-setindex(bixi_spatial_locations, location)
-setindex(bixi_station_departures, location)
-setindex(bixi_temporal_features, time)
-setindex(bixi_temporal_locations, time)
+setkey(bixi_spatial_features, location)
+setkey(bixi_spatial_locations, location)
+setkey(bixi_station_departures, location)
+setkey(bixi_temporal_features, time)
+setkey(bixi_temporal_locations, time)
 
 usethis::use_data(
     bixi_spatial_features,

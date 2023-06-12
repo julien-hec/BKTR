@@ -15,7 +15,7 @@ logging iteration information during the BKTR algorithm
 \item \href{#method-ResultLogger-collect_iter_samples}{\code{ResultLogger$collect_iter_samples()}}
 \item \href{#method-ResultLogger-set_error_metrics}{\code{ResultLogger$set_error_metrics()}}
 \item \href{#method-ResultLogger-set_y_and_beta_estimates}{\code{ResultLogger$set_y_and_beta_estimates()}}
-\item \href{#method-ResultLogger-log_iter_results}{\code{ResultLogger$log_iter_results()}}
+\item \href{#method-ResultLogger-log_final_iter_results}{\code{ResultLogger$log_final_iter_results()}}
 \item \href{#method-ResultLogger-clone}{\code{ResultLogger$clone()}}
 }
 }
@@ -28,12 +28,15 @@ logging iteration information during the BKTR algorithm
   y,
   omega,
   covariates,
-  nb_iter,
   nb_burn_in_iter,
-  results_export_dir = NULL,
-  results_export_suffix = NULL,
-  sampled_beta_indexes = c(),
-  sampled_y_indexes = c()
+  nb_sampling_iter,
+  rank_decomp,
+  formula,
+  spatial_labels,
+  temporal_labels,
+  feature_labels,
+  spatial_kernel,
+  temporal_kernel
 )}\if{html}{\out{</div>}}
 }
 
@@ -43,7 +46,7 @@ logging iteration information during the BKTR algorithm
 \if{latex}{\out{\hypertarget{method-ResultLogger-collect_iter_samples}{}}}
 \subsection{Method \code{collect_iter_samples()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$collect_iter_samples(iter, iter_logged_params)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$collect_iter_samples(iter, tau_value)}\if{html}{\out{</div>}}
 }
 
 }
@@ -61,16 +64,16 @@ logging iteration information during the BKTR algorithm
 \if{latex}{\out{\hypertarget{method-ResultLogger-set_y_and_beta_estimates}{}}}
 \subsection{Method \code{set_y_and_beta_estimates()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$set_y_and_beta_estimates(decomp_tensors_map)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$set_y_and_beta_estimates(decomp_tensors_map, iter)}\if{html}{\out{</div>}}
 }
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ResultLogger-log_iter_results"></a>}}
-\if{latex}{\out{\hypertarget{method-ResultLogger-log_iter_results}{}}}
-\subsection{Method \code{log_iter_results()}}{
+\if{html}{\out{<a id="method-ResultLogger-log_final_iter_results"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-log_final_iter_results}{}}}
+\subsection{Method \code{log_final_iter_results()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$log_iter_results()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$log_final_iter_results()}\if{html}{\out{</div>}}
 }
 
 }

@@ -39,33 +39,33 @@ reshape_covariate_dfs <- function(
 ) {
     spa_index_name <- 'location'
     temp_index_name <- 'time'
-    if (indices(spatial_df) != c(spa_index_name) || indices(y_df) != c(spa_index_name)) {
-        stop(paste('Index names of spatial_df and y_df must be', spa_index_name))
+    if (
+      is.null(key(spatial_df)) || is.null(key(y_df)) ||
+      key(spatial_df) != c(spa_index_name) || key(y_df) != c(spa_index_name)
+    ) {
+        stop(paste('Key names of spatial_df and y_df must be', spa_index_name))
     }
-    if (indices(temporal_df) != c(temp_index_name)) {
-        stop(paste('Index name of temporal_df must be', temp_index_name))
+    if (is.null(key(temporal_df)) || key(temporal_df) != c(temp_index_name)) {
+        stop(paste('Key name of temporal_df must be', temp_index_name))
     }
     spatial_df_cp <- spatial_df
     temporal_df_cp <- temporal_df
     y_df_cp <- y_df
 
     # Sort indexes and columns
-    for (df in list(spatial_df_cp, temporal_df_cp, y_df_cp)) {
-        setorderv(df, indices(df)[1])
-    }
+    # Indexes (keys) are already sorted by data.table
     y_df_col_names <- sort(colnames(y_df_cp)[!colnames(y_df_cp) == spa_index_name])
     setcolorder(y_df_cp, c(spa_index_name, y_df_col_names))
 
     # Compare indexes values
-    if (!identical(spatial_df_cp[[indices(spatial_df_cp)[1]]], y_df_cp[[indices(y_df_cp)[1]]])) {
+    if (!identical(spatial_df_cp[[key(spatial_df_cp)[1]]], y_df_cp[[key(y_df_cp)[1]]])) {
         stop('Index values of spatial_df and y_df must be the same')
     }
-    if (!identical(as.character(temporal_df_cp[[indices(temporal_df_cp)[1]]]), y_df_col_names)) {
+    if (!identical(as.character(temporal_df_cp[[key(temporal_df_cp)[1]]]), y_df_col_names)) {
         stop('temporal_df index values and y_df columns names must be the same')
     }
     data_df <- cross_join_dt(spatial_df_cp, temporal_df_cp)
-    setindexv(data_df, c(spa_index_name, temp_index_name))
-    setorderv(data_df, c(spa_index_name, temp_index_name))
+    setkeyv(data_df, c(spa_index_name, temp_index_name))
     y_flat_values <- as.vector(unlist(y_df_cp[, ..y_df_col_names]))
     data_df[, (y_column_name) := y_flat_values]
     setcolorder(data_df, c(spa_index_name, temp_index_name, y_column_name))
@@ -117,10 +117,10 @@ simulate_spatiotemporal_data <- function(
 
     spa_pos_df <- cbind(data.table(s_locs), data.table(as.matrix(spa_pos)))
     setnames(spa_pos_df, c('location', s_dims))
-    setindexv(spa_pos_df, 'location')
+    setkeyv(spa_pos_df, 'location')
     temp_pos_df <- cbind(data.table(t_points), data.table(as.matrix(temp_pos)))
     setnames(temp_pos_df, c('time', 'time_val'))
-    setindexv(temp_pos_df, 'time')
+    setkeyv(temp_pos_df, 'time')
 
     spa_means <- BKTR:::TSR$tensor(spatial_covariates_means)
     nb_spa_covariates <- length(spa_means)
@@ -171,11 +171,11 @@ simulate_spatiotemporal_data <- function(
     data_df <- data.table(cbind(as.matrix(y_val), as.matrix(covs)))
     setnames(data_df, c('y', s_covs, t_covs))
     data_df <- cbind(index_cols_df, data_df)
-    setindexv(data_df, c('location', 'time'))
+    setkeyv(data_df, c('location', 'time'))
     beta_df <- data.table(as.matrix(beta_values$reshape(c(nb_locations * nb_time_points, nb_covs))))
     setnames(beta_df, c('Intercept', s_covs, t_covs))
     beta_df <- cbind(index_cols_df, beta_df)
-    setindexv(beta_df, c('location', 'time'))
+    setkeyv(beta_df, c('location', 'time'))
 
     return(list(
         data_df = data_df,

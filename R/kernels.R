@@ -57,7 +57,7 @@ KernelParameter <- R6::R6Class(
     ),
     active = list(
         full_name = function() {
-            if (self$kernel == NULL) {
+            if (is.null(self$kernel)) {
                 return(self$name)
             }
             return(sprintf('%s - %s', self$kernel$name, self$name))
@@ -113,9 +113,9 @@ Kernel <- R6::R6Class(
         },
 
         set_positions = function(positions_df) {
-            pos_df_indx <- indices(positions_df)
+            pos_df_indx <- key(positions_df)
             if (is.null(pos_df_indx) || length(pos_df_indx) != 1) {
-                stop('`positions_df` must have one and only index set via setindex.')
+                stop('`positions_df` must have one and only key set via setkey.')
             }
             self$positions_df <- positions_df
             positions_tensor <- BKTR:::TSR$tensor(as.matrix(positions_df[, !..pos_df_indx]))
@@ -124,7 +124,7 @@ Kernel <- R6::R6Class(
         },
 
         plot = function(self, show_figure = TRUE) {
-            x_name <- indices(self$positions_df)[1]
+            x_name <- key(self$positions_df)[1]
             y_name <- paste0(x_name, "'")
             df <- data.table(self$covariance_matrix)
             pos_labels <- as.character(self$positions_df[[x_name]])

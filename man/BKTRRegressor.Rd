@@ -12,6 +12,7 @@ algorithm (\strong{Algorithm 1} of the paper).
 \itemize{
 \item \href{#method-NA-new}{\code{BKTRRegressor$new()}}
 \item \href{#method-NA-mcmc_sampling}{\code{BKTRRegressor$mcmc_sampling()}}
+\item \href{#method-NA-predict}{\code{BKTRRegressor$predict()}}
 \item \href{#method-unknown-clone}{\code{BKTRRegressor$clone()}}
 }
 }
@@ -22,36 +23,39 @@ algorithm (\strong{Algorithm 1} of the paper).
 Create a new \code{BKTRRegressor} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$new(
-  spatial_covariates_df,
-  temporal_covariates_df,
-  y_df,
+  data_df,
+  spatial_positions_df,
+  temporal_positions_df,
   rank_decomp,
   burn_in_iter,
   sampling_iter,
+  formula = NULL,
   spatial_kernel = KernelMatern$new(smoothness_factor = 3),
-  spatial_x_df = NULL,
-  spatial_dist_df = NULL,
   temporal_kernel = KernelSE$new(),
-  temporal_x_df = NULL,
-  temporal_dist_df = NULL,
   sigma_r = 0.01,
   a_0 = 1e-06,
-  b_0 = 1e-06,
-  sampled_beta_indexes = c(),
-  sampled_y_indexes = c(),
-  results_export_dir = NULL,
-  results_export_suffix = NULL
+  b_0 = 1e-06
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{spatial_covariates_df}}{df: Spatial Covariates, 2D dataframe (spatial points x spatial features)}
+\item{\code{data_df}}{data.table: A dataframe containing all the covariates
+through time and space. It is important that the dataframe has a two
+indexes named `location` and `time` respectively. The dataframe should
+also contain every possible combinations of `location` and `time`
+(i.e. even missing rows should be filled present but filled with NaN).
+So if the dataframe has 10 locations and 5 time points, it should have
+50 rows (10 x 5). If formula is None, the dataframe should contain
+the response variable `Y` as the first column. Note that the covariate
+columns cannot contain NaN values, but the response variable can.}
 
-\item{\code{temporal_covariates_df}}{df: Temporal Covariates, 2D dataframe (temporal points x temporal features)}
+\item{\code{spatial_positions_df}}{data.table: Spatial kernel input tensor used
+to calculate covariates' distance. Vector of length equal to the number of location points.}
 
-\item{\code{y_df}}{df: Variable that we try to predict, 2D dataframe (spatial points x temporal points)}
+\item{\code{temporal_positions_df}}{data.table: Temporal kernel input tensor used to
+calculate covariate distance. Vector of length equal to the number of time points.}
 
 \item{\code{rank_decomp}}{Integer: Rank of the CP decomposition (Paper -- \eqn{R})}
 
@@ -59,41 +63,24 @@ Create a new \code{BKTRRegressor} object.
 
 \item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- :math:`K_2`)}
 
-\item{\code{spatial_x_df}}{df: Spatial kernel input tensor used to calculate covariate distance.
-Vector of length equal to nb spatial points. Defaults to NULL.}
+\item{\code{formula}}{A Wilkinson formula string to specify the relation
+between the response variable `Y` and the covariates. If Null, the first
+column of the data frame will be used as the response variable and all the
+other columns will be used as the covariates.  Defaults to Null.}
 
-\item{\code{spatial_dist_df}}{df: Spatial kernel covariate distance. A two dimensions df
-(nb spatial points x nb spatial points).  Should be used instead of `spatial_kernel_x`
-if distance was already calculated. Defaults to NULL.}
+\item{\code{spatial_kernel}}{Kernel: Spatial kernel Used. Defaults to
+a KernelMatern(smoothness_factor=3).}
 
-\item{\code{sigma_r}}{Numeric: Initial value of white noise's variance (\eqn{\tau^{-1}})}
+\item{\code{temporal_kernel}}{Kernel: Temporal kernel used. Defaults to KernelSE().}
 
-\item{\code{a_0}}{Numeric: Initial value for the shape (\eqn{\alpha}) in the gamma function generating tau}
+\item{\code{sigma_r}}{Numeric:  Variance of the white noise process (\eqn{\tau^{-1}})
+defaults to 1E-2.}
 
-\item{\code{b_0}}{Numeric: Initial value for the rate (\eqn{\beta}) in the gamma function generating tau}
+\item{\code{a_0}}{Numeric: Initial value for the shape (\eqn{\alpha}) in the gamma function
+generating tau defaults to 1E-6.}
 
-\item{\code{sampled_beta_indexes}}{vector(Integer): Indexes of beta estimates that need to be sampled
-through iterations. Defaults to c().}
-
-\item{\code{sampled_y_indexes}}{vector(Integer): Indexes of y estimates that need to be sampled through
-iterations. Defaults to c().}
-
-\item{\code{results_export_dir}}{(str): Path of the folder where the csv file will be exported
-(if NULL it is only printed). Defaults to NULL.}
-
-\item{\code{results_export_suffix}}{(str): Suffix added at the end of the csv file name
-(if NULL, no suffix is added). Defaults to NULL.}
-
-\item{\code{spatial_kernel:}}{Kernel: Spatial kernel Used. Defaults to KernelMatern(smoothness_factor=3).}
-
-\item{\code{temporal_kernel:}}{Kernel: Temporal kernel Used. Defaults to KernelSE().}
-
-\item{\code{temporal_x_df:}}{df: Temporal kernel input tensor used to calculate covariate distance.
-Vector of length equal to nb temporal points. Defaults to Null.}
-
-\item{\code{temporal_dist_df:}}{df: Spatial kernel covariate distance. A two dimensions df
-(nb spatial points x nb spatial points).  Should be used instead of `spatial_kernel_x`
-if distance was already calculated. Defaults to NULL.}
+\item{\code{b_0}}{Numeric: Initial value for the rate (\eqn{\beta}) in the gamma function
+generating tau defaults to 1E-6.}
 }
 \if{html}{\out{</div>}}
 }
@@ -108,12 +95,11 @@ A new \code{BKTRRegressor} object.
 Launch the MCMC sampling process. \cr
 For a predefined number of iterations:
 \enumerate{
-\item{Sample the spatial length scale hyperparameter}
-\item{Sample the decay time scale hyperparameter}
-\item{Sample the periodic length scale hyperparameter}
+\item{Sample spatial kernel hyperparameters}
+\item{Sample temporal kernel hyperparameters}
 \item{Sample the precision matrix from a wishart distribution}
 \item{Sample a new spatial covariate decomposition}
-\item{Sample a new covariate decomposition}
+\item{Sample a new feature covariate decomposition}
 \item{Sample a new temporal covariate decomposition}
 \item{Calculate respective errors for the iterations}
 \item{Sample a new tau value}
@@ -126,6 +112,15 @@ For a predefined number of iterations:
 \subsection{Returns}{
 A list containing the results of the MCMC sampling.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-NA-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-NA-predict}{}}}
+\subsection{Method \code{predict()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$predict()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-unknown-clone"></a>}}
