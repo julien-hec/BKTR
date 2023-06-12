@@ -44,10 +44,10 @@ reshape_covariate_dfs <- function(
       is.null(key(spatial_df)) || is.null(key(y_df)) ||
       key(spatial_df) != c(spa_index_name) || key(y_df) != c(spa_index_name)
     ) {
-        stop(paste('Key names of spatial_df and y_df must be', spa_index_name))
+        stop(paste('Key column names of spatial_df and y_df must be', spa_index_name))
     }
     if (is.null(key(temporal_df)) || key(temporal_df) != c(temp_index_name)) {
-        stop(paste('Key name of temporal_df must be', temp_index_name))
+        stop(paste('Key column name of temporal_df must be', temp_index_name))
     }
     spatial_df_cp <- spatial_df
     temporal_df_cp <- temporal_df
