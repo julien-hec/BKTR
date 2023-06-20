@@ -160,6 +160,7 @@ plot_spatial_betas <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 6.
+#' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
 plot_beta_dists <- function(
@@ -206,6 +207,7 @@ plot_beta_dists <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 6.
+#' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
 plot_covariates_beta_dists <- function(
@@ -257,6 +259,7 @@ plot_covariates_beta_dists <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 6.
+#' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
 plot_hyperparams_dists <- function(
@@ -311,6 +314,7 @@ plot_hyperparams_dists <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 5.5.
+#' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
 plot_hyperparams_traceplot <- function(
