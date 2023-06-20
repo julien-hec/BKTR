@@ -10,15 +10,17 @@ algorithm (\strong{Algorithm 1} of the paper).
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-NA-new}{\code{BKTRRegressor$new()}}
-\item \href{#method-NA-mcmc_sampling}{\code{BKTRRegressor$mcmc_sampling()}}
-\item \href{#method-NA-predict}{\code{BKTRRegressor$predict()}}
-\item \href{#method-unknown-clone}{\code{BKTRRegressor$clone()}}
+\item \href{#method-BKTRRegressor-new}{\code{BKTRRegressor$new()}}
+\item \href{#method-BKTRRegressor-mcmc_sampling}{\code{BKTRRegressor$mcmc_sampling()}}
+\item \href{#method-BKTRRegressor-predict}{\code{BKTRRegressor$predict()}}
+\item \href{#method-BKTRRegressor-get_iterations_betas}{\code{BKTRRegressor$get_iterations_betas()}}
+\item \href{#method-BKTRRegressor-get_beta_summary_df}{\code{BKTRRegressor$get_beta_summary_df()}}
+\item \href{#method-BKTRRegressor-clone}{\code{BKTRRegressor$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-new"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-new}{}}}
+\if{html}{\out{<a id="method-BKTRRegressor-new"></a>}}
+\if{latex}{\out{\hypertarget{method-BKTRRegressor-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new \code{BKTRRegressor} object.
 \subsection{Usage}{
@@ -89,8 +91,8 @@ A new \code{BKTRRegressor} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-mcmc_sampling"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-mcmc_sampling}{}}}
+\if{html}{\out{<a id="method-BKTRRegressor-mcmc_sampling"></a>}}
+\if{latex}{\out{\hypertarget{method-BKTRRegressor-mcmc_sampling}{}}}
 \subsection{Method \code{mcmc_sampling()}}{
 Launch the MCMC sampling process. \cr
 For a predefined number of iterations:
@@ -114,8 +116,8 @@ A list containing the results of the MCMC sampling.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-predict}{}}}
+\if{html}{\out{<a id="method-BKTRRegressor-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-BKTRRegressor-predict}{}}}
 \subsection{Method \code{predict()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$predict()}\if{html}{\out{</div>}}
@@ -123,8 +125,34 @@ A list containing the results of the MCMC sampling.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-unknown-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
+\if{html}{\out{<a id="method-BKTRRegressor-get_iterations_betas"></a>}}
+\if{latex}{\out{\hypertarget{method-BKTRRegressor-get_iterations_betas}{}}}
+\subsection{Method \code{get_iterations_betas()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_iterations_betas(
+  spatial_label,
+  temporal_label,
+  feature_label
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BKTRRegressor-get_beta_summary_df"></a>}}
+\if{latex}{\out{\hypertarget{method-BKTRRegressor-get_beta_summary_df}{}}}
+\subsection{Method \code{get_beta_summary_df()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_beta_summary_df(
+  spatial_labels,
+  temporal_labels,
+  feature_labels
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-BKTRRegressor-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-BKTRRegressor-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

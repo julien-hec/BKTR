@@ -7,14 +7,14 @@
 R6 class for Periodic Kernels
 }
 \section{Super class}{
-\code{BKTR::Kernel}
+\code{BKTR::Kernel} -> \code{KernelPeriodic}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-NA-new}{\code{KernelPeriodic$new()}}
-\item \href{#method-NA-core_kernel_fn}{\code{KernelPeriodic$core_kernel_fn()}}
-\item \href{#method-unknown-clone}{\code{KernelPeriodic$clone()}}
+\item \href{#method-KernelPeriodic-new}{\code{KernelPeriodic$new()}}
+\item \href{#method-KernelPeriodic-core_kernel_fn}{\code{KernelPeriodic$core_kernel_fn()}}
+\item \href{#method-KernelPeriodic-clone}{\code{KernelPeriodic$clone()}}
 }
 }
 \if{html}{\out{
@@ -28,8 +28,8 @@ R6 class for Periodic Kernels
 </details>
 }}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-new"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-new}{}}}
+\if{html}{\out{<a id="method-KernelPeriodic-new"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelPeriodic-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelPeriodic$new(
@@ -43,8 +43,8 @@ R6 class for Periodic Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-core_kernel_fn"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-core_kernel_fn}{}}}
+\if{html}{\out{<a id="method-KernelPeriodic-core_kernel_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelPeriodic-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelPeriodic$core_kernel_fn()}\if{html}{\out{</div>}}
@@ -52,8 +52,8 @@ R6 class for Periodic Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-unknown-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
+\if{html}{\out{<a id="method-KernelPeriodic-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelPeriodic-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

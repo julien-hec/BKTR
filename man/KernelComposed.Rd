@@ -8,15 +8,15 @@ R6 class for Composed Kernels
 }
 \keyword{internal}
 \section{Super class}{
-\code{BKTR::Kernel}
+\code{BKTR::Kernel} -> \code{KernelComposed}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-NA-new}{\code{KernelComposed$new()}}
-\item \href{#method-NA-core_kernel_fn}{\code{KernelComposed$core_kernel_fn()}}
-\item \href{#method-NA-set_positions}{\code{KernelComposed$set_positions()}}
-\item \href{#method-unknown-clone}{\code{KernelComposed$clone()}}
+\item \href{#method-KernelComposed-new}{\code{KernelComposed$new()}}
+\item \href{#method-KernelComposed-core_kernel_fn}{\code{KernelComposed$core_kernel_fn()}}
+\item \href{#method-KernelComposed-set_positions}{\code{KernelComposed$set_positions()}}
+\item \href{#method-KernelComposed-clone}{\code{KernelComposed$clone()}}
 }
 }
 \if{html}{\out{
@@ -29,8 +29,8 @@ R6 class for Composed Kernels
 </details>
 }}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-new"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-new}{}}}
+\if{html}{\out{<a id="method-KernelComposed-new"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelComposed-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelComposed$new(left_kernel, right_kernel, new_name, composition_operation)}\if{html}{\out{</div>}}
@@ -38,8 +38,8 @@ R6 class for Composed Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-core_kernel_fn"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-core_kernel_fn}{}}}
+\if{html}{\out{<a id="method-KernelComposed-core_kernel_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelComposed-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelComposed$core_kernel_fn()}\if{html}{\out{</div>}}
@@ -47,8 +47,8 @@ R6 class for Composed Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-set_positions"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-set_positions}{}}}
+\if{html}{\out{<a id="method-KernelComposed-set_positions"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelComposed-set_positions}{}}}
 \subsection{Method \code{set_positions()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelComposed$set_positions(positions_df)}\if{html}{\out{</div>}}
@@ -56,8 +56,8 @@ R6 class for Composed Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-unknown-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
+\if{html}{\out{<a id="method-KernelComposed-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelComposed-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

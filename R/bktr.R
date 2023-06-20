@@ -13,6 +13,7 @@
 #'
 #' @export
 BKTRRegressor <- R6::R6Class(
+    classname = 'BKTRRegressor',
     public = list(
         data_df = NULL,
         y = NULL,
@@ -64,7 +65,7 @@ BKTRRegressor <- R6::R6Class(
         #' 50 rows (10 x 5). If formula is None, the dataframe should contain
         #' the response variable `Y` as the first column. Note that the covariate
         #' columns cannot contain NaN values, but the response variable can.
-        #' @param formula A Wilkinson formula string to specify the relation
+        #' @param formula A Wilkinson R formula to specify the relation
         #' between the response variable `Y` and the covariates. If Null, the first
         #' column of the data frame will be used as the response variable and all the
         #' other columns will be used as the covariates.  Defaults to Null.
@@ -180,6 +181,37 @@ BKTRRegressor <- R6::R6Class(
 
         predict = function() {
             stop("Not implemented yet")
+        },
+
+        #~ @description Return all sampled betas through sampling iterations for a given
+        #~ set of spatial, temporal and feature labels. Useful for plotting the
+        #~ distribution of sampled beta values.
+        #~ @param spatial_label String: The spatial label for which we want to get the betas
+        #~ @param temporal_label String: The temporal label for which we want to get the betas
+        #~ @param feature_label String: The feature label for which we want to get the betas
+        #~ @return A list containing the sampled betas through iteration for the given labels
+        get_iterations_betas = function(spatial_label, temporal_label, feature_label) {
+            if (!self$has_completed_sampling) {
+                stop('Beta values can only be accessed after MCMC sampling.')
+            }
+            beta_per_iter_tensor <- self$result_logger$get_iteration_betas_tensor(
+                c(spatial_label), c(temporal_label), c(feature_label)
+            )[1]
+            return(as.array(beta_per_iter_tensor))
+        },
+
+        #' @description Get a summary of estimated beta values. If no labels are given,
+        #' then the summary is for all the betas. If labels are given, then the summary
+        #' is for the given labels.
+        #' @param spatial_labels vector: The spatial labels to get the summary for the summary.
+        #' @param temporal_labels vector: The temporal labels to get the summary for the summary.
+        #' @param feature_labels vector: The feature labels to get the summary for the summary.
+        #' @return A new data.table with the summary for the given label.
+        get_beta_summary_df = function(spatial_labels, temporal_labels, feature_labels) {
+            if (!self$has_completed_sampling) {
+                stop('Beta values can only be accessed after MCMC sampling.')
+            }
+            return(self$result_logger$get_beta_summary_df(spatial_labels, temporal_labels, feature_labels))
         }
     ),
 
@@ -232,15 +264,11 @@ BKTRRegressor <- R6::R6Class(
             private$verify_kernel_labels(temporal_positions_df, time_set, 'temporal')
         },
 
-        # Use formula to get x and y dataframes.
-        # Args:
-        #     data_df (pd.DataFrame): The initial dataframe used to obtain the x and y dataframes.
-        #     formula (str | None): Formula to give the y and X dataframes matrix. If formula is
-        #         None, use the first column as y and all other columns as covariates.
-        # Raises:
-        #     ValueError: The formula provided does not contain 1 response variable.
-        # Returns:
-        #     list: A list containing the y and x dataframes.
+        #~ @description Use formula to get x and y dataframes.
+        #~ @param data_df data.table: The initial dataframe used to obtain the x and y dataframes.
+        #~ @param formula: Formula to give the y and X dataframes matrix. If formula is
+        #~     None, use the first column as y and all other columns as covariates.
+        #~ @return A list containing the y and x dataframes.
         get_x_and_y_dfs_from_formula = function(data_df, formula = NULL) {
             if (is.null(formula)) {
                 formula <- paste0(colnames(data_df)[1], ' ~ .')
@@ -450,20 +478,46 @@ BKTRRegressor <- R6::R6Class(
     ),
 
     active = list(
-        # TODO
+        summary = function() {
+            if (!self$has_completed_sampling) {
+                stop('Summary can only be accessed after running the MCMC sampling.')
+            }
+            return(self$result_logger$summary())
+        },
+        beta_covariates_summary = function() {
+            if (!self$has_completed_sampling) {
+                stop('Beta covariates summary can only be accessed after running the MCMC sampling.')
+            }
+            return(self$result_logger$beta_covariates_summary_df)
+        },
+        y_estimates = function() {
+            if (!self$has_completed_sampling) {
+                stop('Y estimates can only be accessed after running the MCMC sampling.')
+            }
+            y_est <- bktr_regressor$result_logger$y_estimates_df
+            y_est[as.array(bktr_regressor$omega$flatten()$cpu()) == 0, 3] <- NaN
+            return(y_est)
+        },
+        imputed_y_estimates = function() {
+            if (!self$has_completed_sampling) {
+                stop('Imputed Y estimates can only be accessed after running the MCMC sampling.')
+            }
+            return(self$result_logger$y_estimates_df)
+        },
         beta_estimates = function(value) {
             if (!self$has_completed_sampling) {
                 stop('Beta estimates can only be accessed after running the MCMC sampling.')
             }
             return(self$result_logger$beta_estimates_df)
         },
-        y_estimates = function() {
+        hyperparameters_per_iter_df = function() {
             if (!self$has_completed_sampling) {
-                stop('Y estimates can only be accessed after running the MCMC sampling.')
+                stop('Hyperparameters trace can only be accessed after running the MCMC sampling.')
             }
-            return(self$result_logger$y_estimates_df)
+            return(self$result_logger$hyperparameters_per_iter_df)
         },
         #~ @description List of all used decomposition tensors
+        # TODO this could be transformed as params in the related functions
         decomposition_tensors = function() {
             return(
                 list(
@@ -476,3 +530,16 @@ BKTRRegressor <- R6::R6Class(
 
     )
 )
+
+#' @title Summarize a BKTRRegressor instance
+#' @export
+summary.BKTRRegressor <- function(bktr_reg) {
+    cat(bktr_reg$summary)
+}
+
+
+#' @title Print the summary of a BKTRRegressor instance
+#' @export
+print.BKTRRegressor <- function(bktr_reg) {
+    cat(bktr_reg$summary)
+}

@@ -7,14 +7,14 @@
 R6 class for Square Exponential Kernels
 }
 \section{Super class}{
-\code{BKTR::Kernel}
+\code{BKTR::Kernel} -> \code{KernelSE}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-NA-new}{\code{KernelSE$new()}}
-\item \href{#method-NA-core_kernel_fn}{\code{KernelSE$core_kernel_fn()}}
-\item \href{#method-unknown-clone}{\code{KernelSE$clone()}}
+\item \href{#method-KernelSE-new}{\code{KernelSE$new()}}
+\item \href{#method-KernelSE-core_kernel_fn}{\code{KernelSE$core_kernel_fn()}}
+\item \href{#method-KernelSE-clone}{\code{KernelSE$clone()}}
 }
 }
 \if{html}{\out{
@@ -28,8 +28,8 @@ R6 class for Square Exponential Kernels
 </details>
 }}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-new"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-new}{}}}
+\if{html}{\out{<a id="method-KernelSE-new"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelSE-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelSE$new(
@@ -42,8 +42,8 @@ R6 class for Square Exponential Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-core_kernel_fn"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-core_kernel_fn}{}}}
+\if{html}{\out{<a id="method-KernelSE-core_kernel_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelSE-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelSE$core_kernel_fn()}\if{html}{\out{</div>}}
@@ -51,8 +51,8 @@ R6 class for Square Exponential Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-unknown-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
+\if{html}{\out{<a id="method-KernelSE-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelSE-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
