@@ -150,6 +150,7 @@ Kernel <- R6::R6Class(
 #'
 #' @export
 KernelWhiteNoise <- R6::R6Class(
+    'KernelWhiteNoise',
     inherit = Kernel,
     public = list(
         variance = NULL,
@@ -174,6 +175,7 @@ KernelWhiteNoise <- R6::R6Class(
 #'
 #' @export
 KernelSE <- R6::R6Class(
+    'KernelSE',
     inherit = Kernel,
     public = list(
         lengthscale = NULL,
@@ -201,6 +203,7 @@ KernelSE <- R6::R6Class(
 #'
 #' @export
 KernelRQ <- R6::R6Class(
+    'KernelRQ',
     inherit = Kernel,
     public = list(
         lengthscale = NULL,
@@ -234,6 +237,7 @@ KernelRQ <- R6::R6Class(
 #'
 #' @export
 KernelPeriodic <- R6::R6Class(
+    'KernelPeriodic',
     inherit = Kernel,
     public = list(
         lengthscale = NULL,
@@ -268,6 +272,7 @@ KernelPeriodic <- R6::R6Class(
 #'
 #' @export
 KernelMatern <- R6::R6Class(
+    'KernelMatern',
     inherit = Kernel,
     public = list(
         lengthscale = NULL,
@@ -327,6 +332,7 @@ CompositionOps = list(
 #' @export
 #' @keywords internal
 KernelComposed <- R6::R6Class(
+    'KernelComposed',
     inherit = Kernel,
     public = list(
         name = '',

@@ -7,15 +7,15 @@
 R6 class for Matern Kernels
 }
 \section{Super class}{
-\code{BKTR::Kernel}
+\code{BKTR::Kernel} -> \code{KernelMatern}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-NA-new}{\code{KernelMatern$new()}}
-\item \href{#method-NA-get_smoothness_kernel_fn}{\code{KernelMatern$get_smoothness_kernel_fn()}}
-\item \href{#method-NA-core_kernel_fn}{\code{KernelMatern$core_kernel_fn()}}
-\item \href{#method-unknown-clone}{\code{KernelMatern$clone()}}
+\item \href{#method-KernelMatern-new}{\code{KernelMatern$new()}}
+\item \href{#method-KernelMatern-get_smoothness_kernel_fn}{\code{KernelMatern$get_smoothness_kernel_fn()}}
+\item \href{#method-KernelMatern-core_kernel_fn}{\code{KernelMatern$core_kernel_fn()}}
+\item \href{#method-KernelMatern-clone}{\code{KernelMatern$clone()}}
 }
 }
 \if{html}{\out{
@@ -29,8 +29,8 @@ R6 class for Matern Kernels
 </details>
 }}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-new"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-new}{}}}
+\if{html}{\out{<a id="method-KernelMatern-new"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelMatern-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$new(
@@ -44,8 +44,8 @@ R6 class for Matern Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-get_smoothness_kernel_fn"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-get_smoothness_kernel_fn}{}}}
+\if{html}{\out{<a id="method-KernelMatern-get_smoothness_kernel_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelMatern-get_smoothness_kernel_fn}{}}}
 \subsection{Method \code{get_smoothness_kernel_fn()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$get_smoothness_kernel_fn()}\if{html}{\out{</div>}}
@@ -53,8 +53,8 @@ R6 class for Matern Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-core_kernel_fn"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-core_kernel_fn}{}}}
+\if{html}{\out{<a id="method-KernelMatern-core_kernel_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelMatern-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$core_kernel_fn()}\if{html}{\out{</div>}}
@@ -62,8 +62,8 @@ R6 class for Matern Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-unknown-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
+\if{html}{\out{<a id="method-KernelMatern-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelMatern-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

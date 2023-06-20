@@ -7,14 +7,14 @@
 R6 class for White Noise Kernels
 }
 \section{Super class}{
-\code{BKTR::Kernel}
+\code{BKTR::Kernel} -> \code{KernelWhiteNoise}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-NA-new}{\code{KernelWhiteNoise$new()}}
-\item \href{#method-NA-core_kernel_fn}{\code{KernelWhiteNoise$core_kernel_fn()}}
-\item \href{#method-unknown-clone}{\code{KernelWhiteNoise$clone()}}
+\item \href{#method-KernelWhiteNoise-new}{\code{KernelWhiteNoise$new()}}
+\item \href{#method-KernelWhiteNoise-core_kernel_fn}{\code{KernelWhiteNoise$core_kernel_fn()}}
+\item \href{#method-KernelWhiteNoise-clone}{\code{KernelWhiteNoise$clone()}}
 }
 }
 \if{html}{\out{
@@ -28,8 +28,8 @@ R6 class for White Noise Kernels
 </details>
 }}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-new"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-new}{}}}
+\if{html}{\out{<a id="method-KernelWhiteNoise-new"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelWhiteNoise-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelWhiteNoise$new(kernel_variance = 1, jitter_value = NULL)}\if{html}{\out{</div>}}
@@ -37,8 +37,8 @@ R6 class for White Noise Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-NA-core_kernel_fn"></a>}}
-\if{latex}{\out{\hypertarget{method-NA-core_kernel_fn}{}}}
+\if{html}{\out{<a id="method-KernelWhiteNoise-core_kernel_fn"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelWhiteNoise-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelWhiteNoise$core_kernel_fn()}\if{html}{\out{</div>}}
@@ -46,8 +46,8 @@ R6 class for White Noise Kernels
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-unknown-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-unknown-clone}{}}}
+\if{html}{\out{<a id="method-KernelWhiteNoise-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-KernelWhiteNoise-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

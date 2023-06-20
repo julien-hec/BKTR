@@ -2,6 +2,8 @@
 
 S3method("*",Kernel)
 S3method("+",Kernel)
+S3method(print,BKTRRegressor)
+S3method(summary,BKTRRegressor)
 export(BKTRBetaPlotMaker)
 export(BKTRRegressor)
 export(BixiData)

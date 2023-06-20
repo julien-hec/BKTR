@@ -16,6 +16,9 @@ logging iteration information during the BKTR algorithm
 \item \href{#method-ResultLogger-set_error_metrics}{\code{ResultLogger$set_error_metrics()}}
 \item \href{#method-ResultLogger-set_y_and_beta_estimates}{\code{ResultLogger$set_y_and_beta_estimates()}}
 \item \href{#method-ResultLogger-log_final_iter_results}{\code{ResultLogger$log_final_iter_results()}}
+\item \href{#method-ResultLogger-summary}{\code{ResultLogger$summary()}}
+\item \href{#method-ResultLogger-get_beta_summary_df}{\code{ResultLogger$get_beta_summary_df()}}
+\item \href{#method-ResultLogger-get_iteration_betas_tensor}{\code{ResultLogger$get_iteration_betas_tensor()}}
 \item \href{#method-ResultLogger-clone}{\code{ResultLogger$clone()}}
 }
 }
@@ -74,6 +77,41 @@ logging iteration information during the BKTR algorithm
 \subsection{Method \code{log_final_iter_results()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ResultLogger$log_final_iter_results()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ResultLogger-summary"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-summary}{}}}
+\subsection{Method \code{summary()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$summary()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ResultLogger-get_beta_summary_df"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-get_beta_summary_df}{}}}
+\subsection{Method \code{get_beta_summary_df()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$get_beta_summary_df(
+  spatial_labels = NULL,
+  temporal_labels = NULL,
+  feature_labels = NULL
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ResultLogger-get_iteration_betas_tensor"></a>}}
+\if{latex}{\out{\hypertarget{method-ResultLogger-get_iteration_betas_tensor}{}}}
+\subsection{Method \code{get_iteration_betas_tensor()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ResultLogger$get_iteration_betas_tensor(
+  spatial_labels,
+  temporal_labels,
+  feature_labels
+)}\if{html}{\out{</div>}}
 }
 
 }

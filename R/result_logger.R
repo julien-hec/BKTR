@@ -57,17 +57,11 @@ ResultLogger <- R6::R6Class(
         quantile_values = c(0, 0.25, 0.5, 0.75, 1, 0.025, 0.975),
 
         # Summary parameters
-        # LINE_NCHAR = 70
-        # TAB_STR = '  '
-        # LINE_SEPARATOR = LINE_NCHAR * '='
-        # COL_WIDTH = 18
-        # DF_DISTRIB_STR_PARAMS = {
-        #     'float_format': '{:,.3f}'.format,
-        #     'col_space': 8,
-        #     'line_width': LINE_NCHAR,
-        #     'max_colwidth': COL_WIDTH,
-        #     'formatters': {'__index__': lambda x, w=COL_WIDTH: f'{x:{w}}'},
-        # }
+        LINE_NCHAR = 70,
+        TAB_STR = '  ',
+        MAIN_COL_WIDTH = 18,
+        OTHER_COL_WIDTH = 8,
+        OTHER_COL_FMT = '%8.3f',
         MAIN_SUMMARY_COLS = c('Mean', 'Median', 'SD'),
         DISTRIB_COLS = c('Mean', 'Median', 'SD', 'Low2.5p', 'Up97.5p'),
 
@@ -212,7 +206,7 @@ ResultLogger <- R6::R6Class(
                 data.table(as.matrix(beta_covariates_summary$t()))
             )
             setnames(self$beta_covariates_summary_df, c('feature', self$moment_metrics, self$quantile_metrics))
-            y_beta_index <- CJ(location=self$spatial_labels, time=self$temporal_labels)
+            y_beta_index <- CJ(location = self$spatial_labels, time = self$temporal_labels)
             self$y_estimates_df <- cbind(
                 y_beta_index,
                 data.table(as.matrix(self$y_estimates$cpu()$flatten()))
@@ -230,6 +224,76 @@ ResultLogger <- R6::R6Class(
             setnames(self$hyperparameters_per_iter_df, c('iter', self$hparam_labels))
             self$set_error_metrics()
             private$print_iter_result('TOTAL', self$total_elapsed_time)
+        },
+
+        # Print a summary of the BKTR regressor instance after MCMC sampling.
+        summary = function() {
+            line_sep <- strrep('=', self$LINE_NCHAR)
+            summary_str <- c(
+                '',
+                line_sep,
+                format('BKTR Regressor Summary', width = self$LINE_NCHAR, justify = 'centre'),
+                line_sep,
+                private$get_formula_str(),
+                '',
+                sprintf('Burn-in iterations: %i', self$nb_burn_in_iter),
+                sprintf('Sampling iterations: %i', self$nb_sampling_iter),
+                sprintf('Rank decomposition: %i', self$rank_decomp),
+                sprintf('Nb Spatial Locations: %i', length(self$spatial_labels)),
+                sprintf('Nb Temporal Points: %i', length(self$temporal_labels)),
+                sprintf('Nb Covariates: %i', length(self$feature_labels)),
+                line_sep,
+                'In Sample Errors:',
+                sprintf('%sRMSE: %.3f', self$TAB_STR, self$error_metrics['RMSE']),
+                sprintf('%sMAE: %.3f', self$TAB_STR, self$error_metrics['MAE']),
+                sprintf('Computation time: %.2fs.', self$total_elapsed_time),
+                line_sep,
+                '-- Spatial Kernel --',
+                private$kernel_summary(self$spatial_kernel, 'spatial'),
+                '',
+                '-- Temporal Kernel --',
+                private$kernel_summary(self$temporal_kernel, 'temporal'),
+                line_sep,
+                private$beta_summary(),
+                line_sep,
+                ''
+            )
+            return(paste(summary_str, collapse = '\n'))
+        },
+
+        get_beta_summary_df = function(
+            spatial_labels = NULL,
+            temporal_labels = NULL,
+            feature_labels = NULL
+        ) {
+            spatial_labs <- if (is.null(spatial_labels)) self$spatial_labels else spatial_labels
+            temporal_labs <- if (is.null(temporal_labels)) self$temporal_labels else temporal_labels
+            feature_labs <- if (is.null(feature_labels)) self$feature_labels else feature_labels
+            iteration_betas <- self$get_iteration_betas_tensor(spatial_labs, temporal_labs, feature_labs)
+            beta_summary <- private$create_distrib_values_summary(iteration_betas, dim = 2)$t()$cpu()
+
+            index_cols <- CJ(location = spatial_labs, time = temporal_labs, feature = feature_labs)
+            df <- cbind(
+                index_cols,
+                data.table(as.matrix(beta_summary))
+            )
+            setnames(df, c('location', 'time', 'feature', self$moment_metrics, self$quantile_metrics))
+            return(df)
+        },
+
+        get_iteration_betas_tensor = function(spatial_labels, temporal_labels, feature_labels) {
+            spatial_indexes <- get_label_indexes(spatial_labels, self$spatial_labels, 'spatial')
+            temporal_indexes <- get_label_indexes(temporal_labels, self$temporal_labels, 'temporal')
+            feature_indexes <- get_label_indexes(feature_labels, self$feature_labels, 'feature')
+            betas_per_iterations <- torch::torch_einsum(
+                'sri,tri,cri->stci',
+                c(
+                    self$spatial_decomp_per_iter[spatial_indexes, , , drop = FALSE],
+                    self$temporal_decomp_per_iter[temporal_indexes, , , drop = FALSE],
+                    self$covs_decomp_per_iter[feature_indexes, , , drop = FALSE]
+                )
+            )
+            return(betas_per_iterations$reshape(c(-1, self$nb_sampling_iter)))
         }
     ),
 
@@ -253,14 +317,12 @@ ResultLogger <- R6::R6Class(
             print(paste0(result_items, collapse = ' | '))
         },
 
-        # Create a summary for a given tensor of beta values across a given dimension
-        # for the metrics set in the class.
-        # Args:
-        #    values (Tensor): Values to summarize
-        #    dim (Integer): Dimension of the tensor we want to summarize. If None,
-        #        we want to summarize the whole tensor and flatten it. Defaults to None.
-        # Returns:
-        #    Tensor: A tensor with summaries for the given beta values
+        #~ @description Create a summary for a given tensor of beta values across a given dimension
+        #~ for the metrics set in the class.
+        #~ @param values Tensor: Values to summarize
+        #~ @param dim Integer: Dimension of the tensor we want to summarize. If NULL,
+        #~     we want to summarize the whole tensor and flatten it. Defaults to NULL.
+        #~ @return A tensor with summaries for the given beta values
         create_distrib_values_summary = function(values, dim) {
             all_metrics <- c(self$moment_metrics, self$quantile_metrics)
             summary_shape <- c(length(all_metrics))
@@ -284,6 +346,131 @@ ResultLogger <- R6::R6Class(
                 values, TSR$tensor(self$quantile_values), dim = dim
             )
             return(beta_summaries)
+        },
+
+        get_formula_str = function() {
+            formula_str <- paste(self$formula[2], self$formula[3], sep = " ~ ")
+            formula_str <- paste('Formula:', formula_str)
+            f_wrap <- strwrap(formula_str, width = self$LINE_NCHAR)
+            return(paste(f_wrap, collapse = paste0('\n', self$TAB_STR)))
+        },
+
+        #~ @description Get a string representation of a given kernel. Since the kernel can be
+        #~ composed, this function needs to be recursive.
+        #~ @param kernel Kernel: The kernel we want summarize.
+        #~ @param kernel_type ('spatial' or 'temporal'): The type of kernel.
+        #~ @param indent_count Integer: Indentation level (related to the depth of composition).
+        #~    Defaults to 0.
+        #~ @return A string representation of the kernel. Containing the name of the kernel,
+        #~   the estimated parameters distribution and the fixed parameters.
+        kernel_summary = function(kernel, kernel_type, indent_count = 0) {
+            params <- kernel$parameters
+            if (class(kernel)[1] == 'KernelComposed') {
+                new_ind_nb <- indent_count + 1
+                op_str <- capitalize_str(kernel$composition_operation)
+                kernel_elems <- c(
+                    paste0('Composed Kernel (', op_str, ')'),
+                    private$kernel_summary(kernel$left_kernel, kernel_type, new_ind_nb),
+                    paste0(self$TAB_STR, ifelse(op_str == 'Add', '+', '*')),
+                    private$kernel_summary(kernel$right_kernel, kernel_type, new_ind_nb)
+                )
+            } else {
+                fixed_params <- params[sapply(params, function(x) x$is_fixed)]
+                sampled_params <- params[sapply(params, function(x) !x$is_fixed)]
+                sampled_par_indexes <- sapply(
+                    sampled_params,
+                    function(x) which(self$hparam_labels == paste0(capitalize_str(kernel_type), ' - ', x$full_name))
+                )
+                sampled_par_tsr <- self$hparam_per_iter[sampled_par_indexes, drop = FALSE]
+                sampled_par_summary <- private$create_distrib_values_summary(sampled_par_tsr, dim = 2)
+                sampled_par_df <- cbind(
+                    data.table(sapply(sampled_params, function(x) x$name)),
+                    data.table(as.matrix(sampled_par_summary$t()$cpu()))
+                )
+                setnames(sampled_par_df, c('Parameter', self$moment_metrics, self$quantile_metrics))
+                out_cols <- c('Parameter', self$DISTRIB_COLS)
+                sampled_par_df <- sampled_par_df[, ..out_cols]
+                sampled_par_strs <- private$get_formatted_df_rows(sampled_par_df)
+                fixed_par_strs <- sapply(
+                    fixed_params,
+                    function(x) sprintf('%-20s   Fixed Value: %.3f', x$name, x$value)
+                )
+                kernel_elems <- c(
+                    kernel$name,
+                    'Parameter(s):',
+                    sampled_par_strs,
+                    fixed_par_strs
+                )
+            }
+            kernel_elems <- paste0(rep(self$TAB_STR, indent_count), kernel_elems)
+            return(paste(kernel_elems, collapse = '\n'))
+        },
+
+        #~ @description Get a string representation of the beta estimates aggregated per
+        #~    covariates. (This shows the distribution of the beta hats per covariates)
+        #~ @return A string representation of the beta estimates.
+        beta_summary = function() {
+            beta_est_cols <- c('feature', self$MAIN_SUMMARY_COLS)
+            distrib_df <- self$beta_covariates_summary_df[, ..beta_est_cols]
+            beta_distrib_str_rows <- private$get_formatted_df_rows(distrib_df)
+            beta_summary_strs <- c(
+                'Beta Estimates Summary (Aggregated Per Covariates)',
+                '',
+                beta_distrib_str_rows
+            )
+            return(paste(beta_summary_strs, collapse = '\n'))
+        },
+
+        format_df_row = function(df_row) {
+            df_cols <- c(
+                format(trunc_str(df_row[, 1], self$MAIN_COL_WIDTH), width = self$MAIN_COL_WIDTH, justify = 'left'),
+                sapply(unlist(df_row[, -1]), function(x) sprintf(self$OTHER_COL_FMT, x))
+            )
+            return(paste(df_cols, collapse = ' '))
+        },
+
+        # Format a dataframe to be printed in a table.
+        get_formatted_df_rows = function(df) {
+            df_header_cols <- c(
+                strrep(' ', self$MAIN_COL_WIDTH),
+                sapply(colnames(df)[-1], function(x) format(x, width = self$OTHER_COL_WIDTH, justify = 'right'))
+            )
+            df_header_row <- paste(df_header_cols, collapse = ' ')
+            df_str_rows <- by(df, seq_len(nrow(df)), private$format_df_row)
+            return(c(df_header_row, df_str_rows))
         }
     )
 )
+
+#' @description return the indexes of a given set of labels that can
+#'     be found in a list of available labels.
+#' @param labels vector: The labels for which we want to get the indexes
+#' @param available_labels vector: A vector of available labels
+#' @param label_type (spatial, temporal, feature): Type of label for
+#'     which we want to get indexes
+#' @return The indexes of the labels in the vector of available labels
+get_label_indexes <- function(labels, available_labels, label_type) {
+    if (length(labels) == 0) {
+        stop(sprintf('No %s labels provided.', label_type))
+    }
+    return(sapply(labels, function(x) get_label_index_or_raise(x, available_labels, label_type)))
+}
+
+capitalize_str <- function(str_val) {
+    return(
+        paste0(
+            toupper(substr(str_val, 1, 1)),
+            tolower(substr(str_val, 2, nchar(str_val)))
+        )
+    )
+}
+
+trunc_str <- function(str_val, trunc_len) {
+    if (trunc_len < 3) {
+        stop('trunc_len must be at least 3')
+    }
+    if (nchar(str_val) <= trunc_len) {
+        return(str_val)
+    }
+    return(paste0(substring(str_val, 1, trunc_len - 3), "..."))
+}

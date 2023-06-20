@@ -210,7 +210,7 @@ get_dim_labels <- function(dim_prefix, max_value) {
 #
 # @return Integer: The index of the label in the list
 get_label_index_or_raise <- function(label, label_list, label_type) {
-    match_indx <- match(label, label_list)
+    match_indx <- match(as.character(label), as.character(label_list))
     if (is.na(match_indx)) {
         stop(sprintf('Label `%s` does not exist in %s labels.', label, label_type))
     }
