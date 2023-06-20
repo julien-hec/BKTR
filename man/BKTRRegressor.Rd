@@ -65,7 +65,7 @@ calculate covariate distance. Vector of length equal to the number of time point
 
 \item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- :math:`K_2`)}
 
-\item{\code{formula}}{A Wilkinson formula string to specify the relation
+\item{\code{formula}}{A Wilkinson R formula to specify the relation
 between the response variable `Y` and the covariates. If Null, the first
 column of the data frame will be used as the response variable and all the
 other columns will be used as the covariates.  Defaults to Null.}
@@ -141,6 +141,9 @@ A list containing the results of the MCMC sampling.
 \if{html}{\out{<a id="method-BKTRRegressor-get_beta_summary_df"></a>}}
 \if{latex}{\out{\hypertarget{method-BKTRRegressor-get_beta_summary_df}{}}}
 \subsection{Method \code{get_beta_summary_df()}}{
+Get a summary of estimated beta values. If no labels are given,
+then the summary is for all the betas. If labels are given, then the summary
+is for the given labels.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_beta_summary_df(
   spatial_labels,
@@ -149,6 +152,20 @@ A list containing the results of the MCMC sampling.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{spatial_labels}}{vector: The spatial labels to get the summary for the summary.}
+
+\item{\code{temporal_labels}}{vector: The temporal labels to get the summary for the summary.}
+
+\item{\code{feature_labels}}{vector: The feature labels to get the summary for the summary.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new data.table with the summary for the given label.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BKTRRegressor-clone"></a>}}
