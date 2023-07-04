@@ -67,7 +67,8 @@ reshape_covariate_dfs <- function(
     }
     data_df <- cross_join_dt(spatial_df_cp, temporal_df_cp)
     setkeyv(data_df, c(spa_index_name, temp_index_name))
-    y_flat_values <- as.vector(unlist(y_df_cp[, ..y_df_col_names]))
+    y_vals_mat <- as.matrix(y_df_cp[, ..y_df_col_names])
+    y_flat_values <- as.vector(t(y_vals_mat))
     data_df[, (y_column_name) := y_flat_values]
     setcolorder(data_df, c(spa_index_name, temp_index_name, y_column_name))
     return(data_df)
@@ -187,13 +188,13 @@ simulate_spatiotemporal_data <- function(
 }
 
 
-# Private utility function to get the dimension labels for a
-#     given dimension prefix and max value.
-# Args:
-#     dim_prefix (str): The prefix of the dimension labels
-#     max_value (int): The maximum value of the dimension labels
-# Returns:
-#     str: The dimension labels
+# Following are private utility functions
+
+#' @description Private utility function to get the dimension labels for a
+#'   given dimension prefix and max value.
+#' @param dim_prefix String: The prefix of the dimension labels
+#' @param max_value Integer: The maximum value of the dimension labels
+#' @return String: The dimension labels
 get_dim_labels <- function(dim_prefix, max_value) {
     max_digits <- nchar(as.character(max_value - 1))
     formatted_numbers <- formatC(0:(max_value - 1), width = max_digits, flag = "0")
@@ -201,18 +202,57 @@ get_dim_labels <- function(dim_prefix, max_value) {
 }
 
 
-# Get the index of a label in a list of labels. If the label is not in the list,
-# raise an error.
-#
-# @param label Any: The label for which we want to get the index
-# @param label_list Vector[Any]: The list of labels
-# label_type String: The label type either 'spatial', 'temporal', 'feature'.
-#
-# @return Integer: The index of the label in the list
+#' @description Get the index of a label in a list of labels. If the
+#'   label is not in the list, raise an error.
+#' @param label Any: The label for which we want to get the index
+#' @param label_list Vector[Any]: The list of labels
+#' @param label_type String: The label type either 'spatial', 'temporal', 'feature'.
+#' @return Integer: The index of the label in the list
 get_label_index_or_raise <- function(label, label_list, label_type) {
     match_indx <- match(as.character(label), as.character(label_list))
     if (is.na(match_indx)) {
         stop(sprintf('Label `%s` does not exist in %s labels.', label, label_type))
     }
     return(match_indx)
+}
+
+
+#' @description return the indexes of a given set of labels that can
+#'     be found in a list of available labels.
+#' @param labels vector: The labels for which we want to get the indexes
+#' @param available_labels vector: A vector of available labels
+#' @param label_type (spatial, temporal, feature): Type of label for
+#'     which we want to get indexes
+#' @return The indexes of the labels in the vector of available labels
+get_label_indexes <- function(labels, available_labels, label_type) {
+    if (length(labels) == 0) {
+        stop(sprintf('No %s labels provided.', label_type))
+    }
+    return(sapply(labels, function(x) get_label_index_or_raise(x, available_labels, label_type)))
+}
+
+#' @description Utility function to capitalize a string (only the first letter)
+#' @param str_val String: The string to capitalize
+#' @return String: The capitalized string
+capitalize_str <- function(str_val) {
+    return(
+        paste0(
+            toupper(substr(str_val, 1, 1)),
+            tolower(substr(str_val, 2, nchar(str_val)))
+        )
+    )
+}
+
+#' @description Utility function to truncate a string with ellipsis
+#' @param str_val String: The string to truncate
+#' @param trunc_len Integer: The maximum length of the string
+#' @return String: The truncated string
+trunc_str <- function(str_val, trunc_len) {
+    if (trunc_len < 3) {
+        stop('trunc_len must be at least 3')
+    }
+    if (nchar(str_val) <= trunc_len) {
+        return(str_val)
+    }
+    return(paste0(substring(str_val, 1, trunc_len - 3), "..."))
 }

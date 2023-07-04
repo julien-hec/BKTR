@@ -37,6 +37,8 @@ TensorOperator <- R6::R6Class(
             }
             if (!is.null(seed)) {
                 torch::torch_manual_seed(seed)
+                # This is for rWishart until it is implemented in R Torch
+                set.seed(seed)
             }
         },
 

@@ -23,11 +23,6 @@ KernelParamSampler <- R6::R6Class(
             self$marginal_ll_eval_fn <- marginal_ll_eval_fn
         },
 
-        set_theta_value = function(theta) {
-            self$theta_value <- theta
-            self$kernel_generator[[self$kernel_hparam_name]] <- exp(theta)
-        },
-
         initialize_theta_bounds = function(param) {
             theta_range <- param$slice_sampling_scale * as.numeric(TSR$rand(1))
             theta_min <- max(log(param$value) - theta_range, log(param$lower_bound))
