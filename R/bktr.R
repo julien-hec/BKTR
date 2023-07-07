@@ -547,7 +547,7 @@ BKTRRegressor <- R6::R6Class(
 
         #~ @description Collect all necessary iteration values
         collect_iter_values = function(iter) {
-            self$result_logger$collect_iter_samples(iter, as.numeric(self$tau))
+            self$result_logger$collect_iter_samples(iter, as.numeric(self$tau$cpu()))
         },
 
         #~ @description Log final iteration results in via the result logger

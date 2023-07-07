@@ -306,7 +306,7 @@ KernelMatern <- R6::R6Class(
         },
         core_kernel_fn = function() {
             temp_kernel <- (
-                self$distance_matrix * torch::torch_sqrt(self$smoothness_factor) / self$lengthscale$value
+                self$distance_matrix * sqrt(self$smoothness_factor) / self$lengthscale$value
             )
             return(self$get_smoothness_kernel_fn()(temp_kernel) * torch::torch_exp(-temp_kernel))
         }
