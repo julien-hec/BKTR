@@ -199,7 +199,7 @@ ResultLogger <- R6::R6Class(
             self$beta_estimates <- self$sum_beta_est / self$nb_sampling_iter
             self$y_estimates <- self$sum_y_est / self$nb_sampling_iter
             beta_covariates_summary <- private$create_distrib_values_summary(
-                self$beta_estimates$reshape(c(-1, length(self$feature_labels)))$cpu(), dim = 1
+                self$beta_estimates$reshape(c(-1, length(self$feature_labels))), dim = 1
             )
             self$beta_covariates_summary_df <- cbind(
                 data.table(self$feature_labels),
