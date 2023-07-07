@@ -170,11 +170,11 @@ simulate_spatiotemporal_data <- function(
 
     index_cols_df <- CJ(spa_pos_df[['location']], temp_pos_df[['time']])
     setnames(index_cols_df, c('location', 'time'))
-    data_df <- data.table(cbind(as.matrix(y_val), as.matrix(covs)))
+    data_df <- data.table(cbind(as.matrix(y_val$cpu()), as.matrix(covs$cpu())))
     setnames(data_df, c('y', s_covs, t_covs))
     data_df <- cbind(index_cols_df, data_df)
     setkeyv(data_df, c('location', 'time'))
-    beta_df <- data.table(as.matrix(beta_values$reshape(c(nb_locations * nb_time_points, nb_covs))))
+    beta_df <- data.table(as.matrix(beta_values$reshape(c(nb_locations * nb_time_points, nb_covs))$cpu()))
     setnames(beta_df, c('Intercept', s_covs, t_covs))
     beta_df <- cbind(index_cols_df, beta_df)
     setkeyv(beta_df, c('location', 'time'))
