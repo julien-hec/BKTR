@@ -24,7 +24,7 @@ KernelParamSampler <- R6::R6Class(
         },
 
         initialize_theta_bounds = function(param) {
-            theta_range <- param$slice_sampling_scale * as.numeric(TSR$rand(1))
+            theta_range <- param$slice_sampling_scale * as.numeric(TSR$rand(1)$cpu())
             theta_min <- max(log(param$value) - theta_range, log(param$lower_bound))
             theta_max <- min(theta_min + param$slice_sampling_scale, log(param$upper_bound))
             return(list(min = theta_min, max = theta_max))
@@ -35,7 +35,7 @@ KernelParamSampler <- R6::R6Class(
         },
 
         sample_rand_theta_value = function(theta_min, theta_max) {
-            return(theta_min + (theta_max - theta_min) * as.numeric(TSR$rand(1)))
+            return(theta_min + (theta_max - theta_min) * as.numeric(TSR$rand(1)$cpu()))
         },
 
         sample_param = function(param) {
@@ -45,7 +45,7 @@ KernelParamSampler <- R6::R6Class(
             initial_theta <- log(param$value)
             self$kernel$kernel_gen()
             initial_marginal_likelihood <- self$marginal_ll_eval_fn() + self$prior_fn(param)
-            density_threshold <- as.numeric(TSR$rand(1))
+            density_threshold <- as.numeric(TSR$rand(1)$cpu())
 
             while (TRUE) {
                 new_theta <- self$sample_rand_theta_value(theta_min, theta_max)
