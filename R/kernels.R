@@ -126,7 +126,7 @@ Kernel <- R6::R6Class(
         plot = function(show_figure = TRUE) {
             x_name <- colnames(self$positions_df)[1]
             y_name <- paste0(x_name, "'")
-            df <- data.table(as.matrix(self$covariance_matrix))
+            df <- data.table(as.matrix(self$covariance_matrix$cpu()))
             pos_labels <- sapply(self$positions_df[, 1], as.character)
             colnames(df) <- pos_labels
             df[[x_name]] <- pos_labels

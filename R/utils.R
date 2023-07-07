@@ -117,10 +117,10 @@ simulate_spatiotemporal_data <- function(
     s_covs <- get_dim_labels('s_cov', length(spatial_covariates_means))
     t_covs <- get_dim_labels('t_cov', length(temporal_covariates_means))
 
-    spa_pos_df <- cbind(data.table(s_locs), data.table(as.matrix(spa_pos)))
+    spa_pos_df <- cbind(data.table(s_locs), data.table(as.matrix(spa_pos$cpu())))
     setnames(spa_pos_df, c('location', s_dims))
     setkeyv(spa_pos_df, 'location')
-    temp_pos_df <- cbind(data.table(t_points), data.table(as.matrix(temp_pos)))
+    temp_pos_df <- cbind(data.table(t_points), data.table(as.matrix(temp_pos$cpu())))
     setnames(temp_pos_df, c('time', 'time_val'))
     setkeyv(temp_pos_df, 'time')
 

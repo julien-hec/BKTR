@@ -203,7 +203,7 @@ ResultLogger <- R6::R6Class(
             )
             self$beta_covariates_summary_df <- cbind(
                 data.table(self$feature_labels),
-                data.table(as.matrix(beta_covariates_summary$t()))
+                data.table(as.matrix(beta_covariates_summary$t()$cpu()))
             )
             setnames(self$beta_covariates_summary_df, c('feature', self$moment_metrics, self$quantile_metrics))
             y_beta_index <- CJ(location = self$spatial_labels, time = self$temporal_labels)

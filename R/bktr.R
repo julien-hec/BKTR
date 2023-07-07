@@ -257,9 +257,12 @@ BKTRRegressor <- R6::R6Class(
             )
             new_y_est <- torch::torch_einsum('ijk,ijk->ij', c(new_betas, covariates))
             new_index_df <- data_df[, c('location', 'time')]
-            new_beta_df <- cbind(new_index_df, data.table(as.matrix(new_betas$flatten(start_dim = 1, end_dim = 2))))
+            new_beta_df <- cbind(
+                new_index_df,
+                data.table(as.matrix(new_betas$flatten(start_dim = 1, end_dim = 2)$cpu()))
+            )
             setnames(new_beta_df, c('location', 'time', self$feature_labels))
-            new_y_df <- cbind(new_index_df, data.table(as.matrix(new_y_est$flatten(), byrow = TRUE)))
+            new_y_df <- cbind(new_index_df, data.table(as.matrix(new_y_est$flatten()$cpu(), byrow = TRUE)))
             setnames(new_y_df, c('location', 'time', 'y_est'))
             new_locs <- unique(new_spatial_positions_df$location)
             new_times <- unique(new_temporal_positions_df$time)
