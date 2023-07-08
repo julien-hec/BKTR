@@ -174,7 +174,7 @@ BKTRRegressor <- R6::R6Class(
                 private$collect_iter_values(i)
 
                 # Needed to force garbage collection in Cuda
-                gc()
+                # gc()
             }
             private$log_final_iter_results()
         },
