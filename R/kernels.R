@@ -100,7 +100,7 @@ Kernel <- R6::R6Class(
             if (!has_null_jitter && self$jitter_value == 0) {
                 return()
             }
-            jitter_val <- ifelse(has_null_jitter, TSR$default_jitter, self$jitter_value)
+            jitter_val <- ifelse(has_null_jitter, TSR$get_default_jitter(), self$jitter_value)
             self$covariance_matrix <- self$covariance_matrix + jitter_val * TSR$eye(nrow(self$covariance_matrix))
         },
 
@@ -352,7 +352,7 @@ KernelComposed <- R6::R6Class(
             new_jitter_val <- max(
                 left_kernel$jitter_value,
                 right_kernel$jitter_value,
-                TSR$default_jitter
+                TSR$get_default_jitter()
             )
             super$initialize(composed_variance, left_kernel$distance_type, new_jitter_val)
             self$left_kernel <- left_kernel

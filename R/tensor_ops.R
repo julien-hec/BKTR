@@ -17,11 +17,10 @@ TensorOperator <- R6::R6Class(
     ),
     public = list(
         initialize = function(
-            dtype = torch::torch_float64,
+            dtype = 'float64',
             device = 'cpu'
         ) {
-            private$dtype <- dtype
-            private$device <- device
+            self$set_params(dtype, device)
         },
 
         set_params = function(
@@ -30,7 +29,13 @@ TensorOperator <- R6::R6Class(
             seed = NULL
         ) {
             if (!is.null(dtype)) {
-                private$dtype <- dtype
+                if (dtype == 'float64') {
+                    private$dtype <- torch::torch_float64
+                } else if (dtype == 'float32') {
+                    private$dtype <- torch::torch_float32
+                } else {
+                    stop('dtype must be either "float64" or "float32"')
+                }
             }
             if (!is.null(device)) {
                 private$device <- device
@@ -40,6 +45,17 @@ TensorOperator <- R6::R6Class(
                 # This is for rWishart until it is implemented in R Torch
                 set.seed(seed)
             }
+        },
+
+        # I wanted this to be an active binding but it is compiled at build time
+        # See: https://github.com/r-lib/R6/issues/152
+        get_default_jitter = function() {
+            if (private$dtype() == torch::torch_float64()) {
+                return(1e-8)
+            } else if (private$dtype() == torch::torch_float32()) {
+                return(1e-4)
+            }
+            stop('The dtype used by TSR has no default mapped jitter value')
         },
 
         tensor = function(tensor_data) {
@@ -122,17 +138,6 @@ TensorOperator <- R6::R6Class(
             ))
         }
     ),
-
-    active = list(
-        default_jitter = function() {
-            if (private$dtype() == torch::torch_float64()) {
-                return(1e-8)
-            } else if (private$dtype() == torch::torch_float32()) {
-                return(1e-4)
-            }
-            stop('The dtype used by TSR has no default mapped jitter value')
-        }
-    )
 )
 
 #' @title Tensor Operator Singleton
