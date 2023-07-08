@@ -106,6 +106,11 @@ simulate_spatiotemporal_data <- function(
     temporal_kernel,
     noise_variance_scale
 ) {
+    # Saving last fp_type to restore it at the end of the function
+    # Using float64 to avoid numerical errors in simulation
+    ini_fp_type <- TSR$fp_type
+    TSR$set_params(fp_type = 'float64')
+
     spa_pos <- TSR$rand(c(nb_locations, nb_spatial_dimensions)) * spatial_scale
     temp_pos <- TSR$arange(0, nb_time_points - 1) * time_scale / (nb_time_points - 1)
     temp_pos <- temp_pos$reshape(c(nb_time_points, 1))
@@ -178,6 +183,8 @@ simulate_spatiotemporal_data <- function(
     setnames(beta_df, c('Intercept', s_covs, t_covs))
     beta_df <- cbind(index_cols_df, beta_df)
     setkeyv(beta_df, c('location', 'time'))
+
+    TSR$set_params(fp_type = ini_fp_type)
 
     return(list(
         data_df = data_df,

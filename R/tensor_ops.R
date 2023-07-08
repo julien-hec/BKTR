@@ -11,34 +11,41 @@
 TensorOperator <- R6::R6Class(
     'TensorOperator',
     inherit = R6P::Singleton,
+    # Private values used to store the config of the underlying tensor library
     private = list(
         dtype = NULL,
         device = NULL
     ),
     public = list(
+        # Public facing config values used streamlined for TensorOperator
+        fp_type = NULL,
+        fp_device = NULL,
+
         initialize = function(
-            dtype = 'float64',
-            device = 'cpu'
+            fp_type = 'float64',
+            fp_device = 'cpu'
         ) {
-            self$set_params(dtype, device)
+            self$set_params(fp_type, fp_device)
         },
 
         set_params = function(
-            dtype = NULL,
-            device = NULL,
+            fp_type = NULL,
+            fp_device = NULL,
             seed = NULL
         ) {
-            if (!is.null(dtype)) {
-                if (dtype == 'float64') {
+            if (!is.null(fp_type)) {
+                if (fp_type == 'float64') {
                     private$dtype <- torch::torch_float64
-                } else if (dtype == 'float32') {
+                } else if (fp_type == 'float32') {
                     private$dtype <- torch::torch_float32
                 } else {
-                    stop('dtype must be either "float64" or "float32"')
+                    stop('`fp_type` must be either "float64" or "float32"')
                 }
+                self$fp_type <- fp_type
             }
-            if (!is.null(device)) {
-                private$device <- device
+            if (!is.null(fp_device)) {
+                private$device <- fp_device
+                self$fp_device <- fp_device
             }
             if (!is.null(seed)) {
                 torch::torch_manual_seed(seed)
