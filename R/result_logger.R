@@ -365,7 +365,7 @@ ResultLogger <- R6::R6Class(
         #~   the estimated parameters distribution and the fixed parameters.
         kernel_summary = function(kernel, kernel_type, indent_count = 0) {
             params <- kernel$parameters
-            if (class(kernel)[1] == 'KernelComposed') {
+            if (class(kernel)[1] %in% c('KernelAddComposed', 'KernelMulComposed')) {
                 new_ind_nb <- indent_count + 1
                 op_str <- capitalize_str(kernel$composition_operation)
                 kernel_elems <- c(

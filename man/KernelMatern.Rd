@@ -37,7 +37,6 @@ R6 class for Matern Kernels
   smoothness_factor = 1,
   lengthscale = KernelParameter$new(log(2)),
   kernel_variance = 1,
-  distance_type = DIST_TYPE$HAVERSINE,
   jitter_value = NULL
 )}\if{html}{\out{</div>}}
 }

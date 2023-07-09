@@ -35,7 +35,6 @@ R6 class for Square Exponential Kernels
 \if{html}{\out{<div class="r">}}\preformatted{KernelSE$new(
   lengthscale = KernelParameter$new(log(2)),
   kernel_variance = 1,
-  distance_type = DIST_TYPE$EUCLIDEAN,
   jitter_value = NULL
 )}\if{html}{\out{</div>}}
 }

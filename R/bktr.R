@@ -69,9 +69,9 @@ BKTRRegressor <- R6::R6Class(
         #' between the response variable `Y` and the covariates. If Null, the first
         #' column of the data frame will be used as the response variable and all the
         #' other columns will be used as the covariates.  Defaults to Null.
-        #' @param rank_decomp Integer: Rank of the CP decomposition (Paper -- \eqn{R})
-        #' @param burn_in_iter Integer: Number of iteration before sampling (Paper -- :math:`K_1`)
-        #' @param sampling_iter Integer: Number of sampling iterations (Paper -- :math:`K_2`)
+        #' @param rank_decomp Integer: Rank of the CP decomposition (Paper -- \eqn{R}). Defaults to 10.
+        #' @param burn_in_iter Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 1000.
+        #' @param sampling_iter Integer: Number of sampling iterations (Paper -- :math:`K_2`). Defaults to 500.
         #' @param spatial_positions_df data.table: Spatial kernel input tensor used
         #' to calculate covariates' distance. Vector of length equal to the number of location points.
         #' @param temporal_positions_df data.table: Temporal kernel input tensor used to
@@ -85,23 +85,35 @@ BKTRRegressor <- R6::R6Class(
         #' generating tau defaults to 1E-6.
         #' @param b_0 Numeric: Initial value for the rate (\eqn{\beta}) in the gamma function
         #' generating tau defaults to 1E-6.
+        #' @param has_geo_coords Boolean: Whether the spatial positions df use geographic coordinates
+        #' (latitude, longitude). Defaults to TRUE.
+        #' @param geo_coords_scale Numeric: Scale factor to convert geographic coordinates to euclidean
+        #' 2D space via Mercator projection using x & y domains of [-scale/2, +scale/2]. Only used if
+        #' has_geo_coords is TRUE. Defaults to 10.
         #' @return A new \code{BKTRRegressor} object.
         initialize = function(
             data_df,
             spatial_positions_df,
             temporal_positions_df,
-            rank_decomp,
-            burn_in_iter,
-            sampling_iter,
+            rank_decomp = 10,
+            burn_in_iter = 1000,
+            sampling_iter = 500,
             formula = NULL,
             spatial_kernel = KernelMatern$new(smoothness_factor = 3),
             temporal_kernel = KernelSE$new(),
             sigma_r = 1E-2,
             a_0 = 1E-6,
-            b_0 = 1E-6
+            b_0 = 1E-6,
+            has_geo_coords = TRUE, # TODO see #27
+            geo_coords_scale = 10
         ) {
             self$has_completed_sampling <- FALSE
             private$verify_input_labels(data_df, spatial_positions_df, temporal_positions_df)
+
+            if (has_geo_coords) { # TODO see #27
+                stop('Geographic coordinates are not supported yet')
+            }
+
             # We don't need to sort since keys in data.table already do so
             self$data_df <- data_df
             self$spatial_positions_df <- spatial_positions_df
