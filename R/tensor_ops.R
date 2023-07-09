@@ -11,33 +11,58 @@
 TensorOperator <- R6::R6Class(
     'TensorOperator',
     inherit = R6P::Singleton,
+    # Private values used to store the config of the underlying tensor library
     private = list(
         dtype = NULL,
         device = NULL
     ),
     public = list(
+        # Public facing config values used streamlined for TensorOperator
+        fp_type = NULL,
+        fp_device = NULL,
+
         initialize = function(
-            dtype = torch::torch_float64,
-            device = 'cpu'
+            fp_type = 'float64',
+            fp_device = 'cpu'
         ) {
-            private$dtype <- dtype
-            private$device <- device
+            self$set_params(fp_type, fp_device)
         },
 
         set_params = function(
-            dtype = NULL,
-            device = NULL,
+            fp_type = NULL,
+            fp_device = NULL,
             seed = NULL
         ) {
-            if (!is.null(dtype)) {
-                private$dtype <- dtype
+            if (!is.null(fp_type)) {
+                if (fp_type == 'float64') {
+                    private$dtype <- torch::torch_float64
+                } else if (fp_type == 'float32') {
+                    private$dtype <- torch::torch_float32
+                } else {
+                    stop('`fp_type` must be either "float64" or "float32"')
+                }
+                self$fp_type <- fp_type
             }
-            if (!is.null(device)) {
-                private$device <- device
+            if (!is.null(fp_device)) {
+                private$device <- fp_device
+                self$fp_device <- fp_device
             }
             if (!is.null(seed)) {
                 torch::torch_manual_seed(seed)
+                # This is for rWishart until it is implemented in R Torch
+                set.seed(seed)
             }
+        },
+
+        # I wanted this to be an active binding but it is compiled at build time
+        # See: https://github.com/r-lib/R6/issues/152
+        get_default_jitter = function() {
+            if (private$dtype() == torch::torch_float64()) {
+                return(1e-8)
+            } else if (private$dtype() == torch::torch_float32()) {
+                return(1e-4)
+            }
+            stop('The dtype used by TSR has no default mapped jitter value')
         },
 
         tensor = function(tensor_data) {
@@ -120,17 +145,6 @@ TensorOperator <- R6::R6Class(
             ))
         }
     ),
-
-    active = list(
-        default_jitter = function() {
-            if (private$dtype() == torch::torch_float64()) {
-                return(1e-8)
-            } else if (private$dtype() == torch::torch_float32()) {
-                return(1e-4)
-            }
-            stop('The dtype used by TSR has no default mapped jitter value')
-        }
-    )
 )
 
 #' @title Tensor Operator Singleton

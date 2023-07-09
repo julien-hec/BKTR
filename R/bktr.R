@@ -6,7 +6,7 @@
 #' @include samplers.R
 #' @importFrom R6 R6Class
 
-#' @title R6 class encapsulating the BKTR regression steps
+#' @title R6 class encapsulating the BKTR regression elements
 #'
 #' @description A BKTRRegressor holds all the key elements to accomplish the MCMC sampling
 #' algorithm (\strong{Algorithm 1} of the paper).
@@ -114,11 +114,11 @@ BKTRRegressor <- R6::R6Class(
 
             # Set labels
             self$spatial_labels <- self$spatial_positions_df$location
-            self$temporal_labels <-self$temporal_positions_df$time
+            self$temporal_labels <- self$temporal_positions_df$time
             self$feature_labels <- colnames(x_df)
 
             # Tensor Assignation
-            y_matrix <- matrix(y_df[[1]], ncol=length(self$temporal_labels))
+            y_matrix <- matrix(y_df[[1]], ncol = length(self$temporal_labels), byrow = TRUE)
             # Omega is 1 if y is not NA, 0 otherwise
             self$omega <- TSR$tensor(ifelse(is.na(y_matrix), 0.0, 1.0))
             # Y should replace all NA values by 0
@@ -172,15 +172,100 @@ BKTRRegressor <- R6::R6Class(
                 private$sample_temporal_decomp()
                 private$set_errors_and_sample_precision_tau(i)
                 private$collect_iter_values(i)
-
-                # Needed to force garbage collection in Cuda
-                gc()
             }
             private$log_final_iter_results()
         },
 
-        predict = function() {
-            stop("Not implemented yet")
+        #' @description Use interpolation to predict betas and response values for new data.
+        #' @param new_data_df data.table: New covariates. Must have the same columns as
+        #'   the covariates used to fit the model. The index should contain the combination
+        #'   of all old spatial coordinates with all new temporal coordinates, the combination
+        #'   of all new spatial coordinates with all old temporal coordinates, and the
+        #'   combination of all new spatial coordinates with all new temporal coordinates.
+        #' @param new_spatial_positions_df data.table or NULL: A data frame containing the new
+        #'   spatial positions. Defaults to NULL.
+        #' @param new_temporal_positions_df data.table or NULL: A data frame containing the new
+        #'   temporal positions. Defaults to NULL.
+        #' @param jitter Numeric or NULL: A small value to add to the diagonal of the precision matrix.
+        #'   Defaults to NULL.
+        #' @return List: A list of two dataframes. The first represents the beta
+        #'   forecasted for all new spatial locations or temporal points.
+        #'   The second represents the forecasted response for all new spatial
+        #'   locations or temporal points.
+        predict = function(
+            new_data_df,
+            new_spatial_positions_df = NULL,
+            new_temporal_positions_df = NULL,
+            jitter = 1e-6
+        ) {
+            # private$pred_valid_and_sort_data(
+            #     new_data_df, new_spatial_positions_df, new_temporal_positions_df
+            # )
+
+            spatial_positions_df <- (
+                if (!is.null(new_spatial_positions_df)) rbind(self$spatial_positions_df, new_spatial_positions_df)
+                else self$spatial_positions_df
+            )
+            temporal_positions_df <- (
+                if (!is.null(new_temporal_positions_df)) rbind(self$temporal_positions_df, new_temporal_positions_df)
+                else self$temporal_positions_df
+            )
+            data_df <- rbind(self$data_df, new_data_df)
+            spa_order_df <- data.table(
+                location = spatial_positions_df$location, spa_order = seq_len(nrow(spatial_positions_df))
+            )
+            temp_order_df <- data.table(
+                time = temporal_positions_df$time, temp_order = seq_len(nrow(temporal_positions_df))
+            )
+            data_df <- data_df[spa_order_df, on = 'location'][temp_order_df, on = 'time']
+            setorder(data_df, spa_order, temp_order)
+            data_df[, c('spa_order', 'temp_order') := list(NULL, NULL)]
+
+            # private$verify_input_labels(
+            #     data_df,
+            #     spatial_positions_df,
+            #     temporal_positions_df
+            # )
+            all_betas <- TSR$zeros(
+                c(
+                    nrow(spatial_positions_df),
+                    nrow(temporal_positions_df),
+                    length(self$feature_labels),
+                    self$sampling_iter
+                )
+            )
+            for (i in seq_len(self$sampling_iter)) {
+                new_spa_decomp <- private$pred_simu_new_decomp(
+                    'spatial', i, spatial_positions_df, new_spatial_positions_df, jitter
+                )
+                new_temp_decomp <- private$pred_simu_new_decomp(
+                    'temporal', i, temporal_positions_df, new_temporal_positions_df, jitter
+                )
+                covs_decomp <- self$result_logger$covs_decomp_per_iter[, , i]
+                all_betas[, , , i] <- torch::torch_einsum(
+                    'il,jl,kl->ijk', c(new_spa_decomp, new_temp_decomp, covs_decomp)
+                )
+            }
+
+            new_betas <- all_betas$mean(dim = -1)
+            x_df <- private$get_x_and_y_dfs_from_formula(data_df[, -c('location', 'time')], bktr_reg$formula)$x_df
+            covariates <- TSR$tensor(as.matrix(x_df))$reshape(
+                c(nrow(spatial_positions_df), nrow(temporal_positions_df), -1)
+            )
+            new_y_est <- torch::torch_einsum('ijk,ijk->ij', c(new_betas, covariates))
+            new_index_df <- data_df[, c('location', 'time')]
+            new_beta_df <- cbind(
+                new_index_df,
+                data.table(as.matrix(new_betas$flatten(start_dim = 1, end_dim = 2)$cpu()))
+            )
+            setnames(new_beta_df, c('location', 'time', self$feature_labels))
+            new_y_df <- cbind(new_index_df, data.table(as.matrix(new_y_est$flatten()$cpu(), byrow = TRUE)))
+            setnames(new_y_df, c('location', 'time', 'y_est'))
+            new_locs <- unique(new_spatial_positions_df$location)
+            new_times <- unique(new_temporal_positions_df$time)
+            new_beta_df <- new_beta_df[, new_beta_df[new_beta_df[, .I[location %in% new_locs | time %in% new_times]], ]]
+            new_y_df <- new_y_df[, new_y_df[new_y_df[, .I[location %in% new_locs | time %in% new_times]], ]]
+            return(list(new_y_df = new_y_df, new_beta_df = new_beta_df))
         },
 
         #~ @description Return all sampled betas through sampling iterations for a given
@@ -284,6 +369,10 @@ BKTRRegressor <- R6::R6Class(
             mf <- model.frame(self$formula, data = data_df, na.action=na.pass)
             x_df <- data.table(model.matrix(self$formula, mf))
             y_df <- data.table(model.response(mf))
+            x_colnames <- colnames(x_df)
+            if ('(Intercept)' %in% x_colnames) {
+                colnames(x_df)[x_colnames == '(Intercept)'] <- 'Intercept'
+            }
             setnames(y_df, formula_y_name)
             return(list(y_df=y_df, x_df=x_df))
         },
@@ -455,7 +544,7 @@ BKTRRegressor <- R6::R6Class(
 
         #~ @description Collect all necessary iteration values
         collect_iter_values = function(iter) {
-            self$result_logger$collect_iter_samples(iter, as.numeric(self$tau))
+            self$result_logger$collect_iter_samples(iter, as.numeric(self$tau$cpu()))
         },
 
         #~ @description Log final iteration results in via the result logger
@@ -474,6 +563,52 @@ BKTRRegressor <- R6::R6Class(
             # Calculate first likelihoods
             private$calc_spatial_marginal_ll()
             private$calc_temporal_marginal_ll()
+        },
+
+        pred_simu_new_decomp = function(
+            pred_type,
+            iter_no,
+            position_df,
+            new_position_df,
+            jitter
+        ) {
+            old_decomp <- (
+                if (pred_type == 'spatial') self$result_logger$spatial_decomp_per_iter[, , iter_no]
+                else self$result_logger$temporal_decomp_per_iter[, , iter_no]
+            )
+            if (is.null(new_position_df)) {
+                return(old_decomp)
+            }
+            nb_pos <- nrow(position_df)
+            nb_new_pos <- nrow(new_position_df)
+            nb_old_pos <- nb_pos - nb_new_pos
+
+            old_kernel <- if (pred_type == 'spatial') self$spatial_kernel else self$temporal_kernel
+            new_kernel <- old_kernel
+            for (param in new_kernel$parameters){
+                if (!param$is_fixed) {
+                    param_full_repr <- paste(capitalize_str(pred_type), param$full_name, sep = ' - ')
+                    param$value <- as.numeric(
+                        self$result_logger$hyperparameters_per_iter_df[iter_no, ..param_full_repr]
+                    )
+                }
+            }
+            new_kernel$set_positions(position_df)
+            cov_mat <- new_kernel$kernel_gen()
+            old_cov <- cov_mat[1:nb_old_pos, 1:nb_old_pos]
+            new_old_cov <- cov_mat[-nb_new_pos:nb_pos, 1:nb_old_pos]
+            old_new_cov <- cov_mat[1:nb_old_pos, -nb_new_pos:nb_pos]
+            new_cov <- cov_mat[-nb_new_pos:nb_pos, -nb_new_pos:nb_pos]
+            new_decomp_mus <- new_old_cov$matmul(old_cov$inverse())$matmul(old_decomp)
+            new_decomp_cov <- new_cov - new_old_cov$matmul(old_cov$inverse())$matmul(old_new_cov)
+            new_decomp_cov <- (new_decomp_cov + new_decomp_cov$t()) / 2
+            if (!is.null(jitter)) {
+                new_decomp_cov <- new_decomp_cov + jitter * TSR$eye(new_decomp_cov$shape[1])
+            }
+            new_decomp <- (
+                torch::distr_multivariate_normal(new_decomp_mus$t(), new_decomp_cov)$sample()$t()
+            )
+            return(torch::torch_cat(c(old_decomp, new_decomp), dim = 1))
         }
     ),
 
