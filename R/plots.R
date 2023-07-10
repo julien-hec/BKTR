@@ -358,7 +358,7 @@ plot_hyperparams_traceplot <- function(
         + ylab('Hyperparameter Value')
         + xlab('Sampling Iter')
         + labs(fill = 'Hyperparameter', color = 'Hyperparameter')
-
+        + theme(legend.position='bottom')
     )
     if (!show_figure) {
         return(fig)

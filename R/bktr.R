@@ -70,7 +70,7 @@ BKTRRegressor <- R6::R6Class(
         #' column of the data frame will be used as the response variable and all the
         #' other columns will be used as the covariates.  Defaults to Null.
         #' @param rank_decomp Integer: Rank of the CP decomposition (Paper -- \eqn{R}). Defaults to 10.
-        #' @param burn_in_iter Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 1000.
+        #' @param burn_in_iter Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 500.
         #' @param sampling_iter Integer: Number of sampling iterations (Paper -- :math:`K_2`). Defaults to 500.
         #' @param spatial_positions_df data.table: Spatial kernel input tensor used
         #' to calculate covariates' distance. Vector of length equal to the number of location points.
@@ -96,7 +96,7 @@ BKTRRegressor <- R6::R6Class(
             spatial_positions_df,
             temporal_positions_df,
             rank_decomp = 10,
-            burn_in_iter = 1000,
+            burn_in_iter = 500,
             sampling_iter = 500,
             formula = NULL,
             spatial_kernel = KernelMatern$new(smoothness_factor = 3),
