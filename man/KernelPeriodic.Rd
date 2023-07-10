@@ -36,7 +36,6 @@ R6 class for Periodic Kernels
   lengthscale = KernelParameter$new(log(2)),
   period_length = KernelParameter$new(log(2)),
   kernel_variance = 1,
-  distance_type = DIST_TYPE$EUCLIDEAN,
   jitter_value = NULL
 )}\if{html}{\out{</div>}}
 }

@@ -1,5 +1,6 @@
 #' @import ggplot2
 #' @include tensor_ops.R
+#' @include distances.R
 
 
 DEFAULT_LBOUND <- 1e-3
@@ -77,17 +78,15 @@ Kernel <- R6::R6Class(
         parameters = c(),
         covariance_matrix = NULL,
         positions_df = NULL,
-        distance_type = NULL,
+        has_dist_matrix = NULL,
 
         #' @description Kernel abstract base constructor
         #' @param kernel_variance Numeric: The variance of the kernel
-        #' @param distance_type String: The distance type to use for calculating the kernel distance matrix
         #' @param jitter_value Numeric: The jitter value to add to the kernel matrix
         #' @return A new \code{Kernel} object.
-        initialize = function(kernel_variance, distance_type, jitter_value) {
+        initialize = function(kernel_variance, jitter_value) {
             self$parameters <- c()
             self$kernel_variance <- kernel_variance
-            self$distance_type <- distance_type
             self$jitter_value <- jitter_value
         },
 
@@ -119,8 +118,9 @@ Kernel <- R6::R6Class(
             }
             self$positions_df <- positions_df
             positions_tensor <- TSR$tensor(as.matrix(positions_df[, -1]))
-            # TODO: check to transform that into a function `get_distance_matrix` #13
-            self$distance_matrix <- DistanceCalculator$new()$get_matrix(positions_tensor, self$distance_type)
+            if (self$has_dist_matrix) {
+                self$distance_matrix <- get_euclidean_dist_tsr(positions_tensor)
+            }
         },
 
         plot = function(show_figure = TRUE) {
@@ -154,12 +154,13 @@ KernelWhiteNoise <- R6::R6Class(
     public = list(
         variance = NULL,
         distance_matrix = NULL,
+        has_dist_matrix = FALSE,
         name = 'White Noise Kernel',
         initialize = function(
             kernel_variance = 1,
             jitter_value = NULL
         ) {
-            super$initialize(kernel_variance, DIST_TYPE$NONE, jitter_value)
+            super$initialize(kernel_variance, jitter_value)
         },
         core_kernel_fn = function() {
             return(TSR$eye(nrow(self$positions_df)))
@@ -179,14 +180,14 @@ KernelSE <- R6::R6Class(
     public = list(
         lengthscale = NULL,
         distance_matrix = NULL,
+        has_dist_matrix = TRUE,
         name = 'SE Kernel',
         initialize = function(
             lengthscale = KernelParameter$new(2),
             kernel_variance = 1,
-            distance_type = DIST_TYPE$EUCLIDEAN,
             jitter_value = NULL
         ) {
-            super$initialize(kernel_variance, distance_type, jitter_value)
+            super$initialize(kernel_variance, jitter_value)
             self$lengthscale <- lengthscale
             self$lengthscale$set_kernel(self, 'lengthscale')
         },
@@ -208,15 +209,15 @@ KernelRQ <- R6::R6Class(
         lengthscale = NULL,
         alpha = NULL,
         distance_matrix = NULL,
+        has_dist_matrix = TRUE,
         name = 'RQ Kernel',
         initialize = function(
             lengthscale = KernelParameter$new(2),
             alpha = KernelParameter$new(2),
             kernel_variance = 1,
-            distance_type = DIST_TYPE$EUCLIDEAN,
             jitter_value = NULL
         ) {
-            super$initialize(kernel_variance, distance_type, jitter_value)
+            super$initialize(kernel_variance, jitter_value)
             self$lengthscale <- lengthscale
             self$lengthscale$set_kernel(self, 'lengthscale')
             self$alpha <- alpha
@@ -241,16 +242,16 @@ KernelPeriodic <- R6::R6Class(
     public = list(
         lengthscale = NULL,
         period_length = NULL,
-        distance_matrix = NULL,
+        distance_matrix = NULL, #TODO check if we can remove?
+        has_dist_matrix = TRUE,
         name = 'Periodic Kernel',
         initialize = function(
             lengthscale = KernelParameter$new(2),
             period_length = KernelParameter$new(2),
             kernel_variance = 1,
-            distance_type = DIST_TYPE$EUCLIDEAN,
             jitter_value = NULL
         ) {
-            super$initialize(kernel_variance, distance_type, jitter_value)
+            super$initialize(kernel_variance, jitter_value)
             self$lengthscale <- lengthscale
             self$lengthscale$set_kernel(self, 'lengthscale')
             self$period_length <- period_length
@@ -276,18 +277,18 @@ KernelMatern <- R6::R6Class(
     public = list(
         lengthscale = NULL,
         smoothness_factor = NULL,
+        has_dist_matrix = TRUE,
         distance_matrix = NULL,
         initialize = function(
-            smoothness_factor = 1,
+            smoothness_factor = 5,
             lengthscale = KernelParameter$new(2),
             kernel_variance = 1,
-            distance_type = DIST_TYPE$HAVERSINE,
             jitter_value = NULL
         ) {
             if (smoothness_factor %in% c(1, 3, 5) == FALSE) {
                 stop('Smoothness factor should be one of the following values 1, 3 or 5')
             }
-            super$initialize(kernel_variance, distance_type, jitter_value)
+            super$initialize(kernel_variance, jitter_value)
             self$name <- paste0('Matern ', smoothness_factor, '/2 Kernel')
             self$smoothness_factor <- smoothness_factor
             self$lengthscale <- lengthscale
@@ -339,6 +340,7 @@ KernelComposed <- R6::R6Class(
         left_kernel = NULL,
         right_kernel = NULL,
         composition_operation = NULL,
+        has_dist_matrix = TRUE,
         initialize = function(
             left_kernel,
             right_kernel,
@@ -346,15 +348,12 @@ KernelComposed <- R6::R6Class(
             composition_operation
         ) {
             composed_variance <- 1
-            if (left_kernel$distance_type != right_kernel$distance_type) {
-                stop('Composed kernel must have the same distance type')
-            }
             new_jitter_val <- max(
                 left_kernel$jitter_value,
                 right_kernel$jitter_value,
                 TSR$get_default_jitter()
             )
-            super$initialize(composed_variance, left_kernel$distance_type, new_jitter_val)
+            super$initialize(composed_variance, new_jitter_val)
             self$left_kernel <- left_kernel
             self$right_kernel <- right_kernel
             self$name <- new_name
@@ -381,24 +380,46 @@ KernelComposed <- R6::R6Class(
     )
 )
 
+#' @title R6 class for Kernels Composed via Addition
+#'
+#' @description R6 class automatically generated when
+#' adding two kernels together.
+#'
 #' @export
-`+.Kernel` = function(k1, k2) {
-    composed_kernel <- KernelComposed$new(
-        k1,
-        k2,
-        paste0(k1$name, ' + ', k2$name),
-        CompositionOps$ADD
+KernelAddComposed <- R6::R6Class(
+    'KernelAddComposed',
+    inherit = KernelComposed,
+    public = list(
+        initialize = function(left_kernel, right_kernel, new_name) {
+            super$initialize(left_kernel, right_kernel, new_name, CompositionOps$ADD)
+        }
     )
+)
+
+#' @title R6 class for Kernels Composed via Multiplication
+#'
+#' @description R6 class automatically generated when
+#' multiplying two kernels together.
+#'
+#' @export
+KernelMulComposed <- R6::R6Class(
+    'KernelMulComposed',
+    inherit = KernelComposed,
+    public = list(
+        initialize = function(left_kernel, right_kernel, new_name) {
+            super$initialize(left_kernel, right_kernel, new_name, CompositionOps$MUL)
+        }
+    )
+)
+
+#' @export
+`+.Kernel` <- function(k1, k2) {
+    composed_kernel <- KernelAddComposed$new(k1, k2, paste0(k1$name, ' + ', k2$name))
     return(composed_kernel)
 }
 
 #' @export
-`*.Kernel` = function(e1, e2) {
-    composed_kernel <- KernelComposed$new(
-        e1,
-        e2,
-        paste0(e1$name, ' * ', e2$name),
-        CompositionOps$MUL
-    )
+`*.Kernel` <- function(k1, k2) {
+    composed_kernel <- KernelMulComposed$new(k1, k2, paste0(k1$name, ' * ', k2$name))
     return(composed_kernel)
 }

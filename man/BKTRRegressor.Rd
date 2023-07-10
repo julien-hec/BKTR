@@ -28,15 +28,16 @@ Create a new \code{BKTRRegressor} object.
   data_df,
   spatial_positions_df,
   temporal_positions_df,
-  rank_decomp,
-  burn_in_iter,
-  sampling_iter,
+  rank_decomp = 10,
+  burn_in_iter = 1000,
+  sampling_iter = 500,
   formula = NULL,
   spatial_kernel = KernelMatern$new(smoothness_factor = 3),
   temporal_kernel = KernelSE$new(),
   sigma_r = 0.01,
   a_0 = 1e-06,
-  b_0 = 1e-06
+  b_0 = 1e-06,
+  use_geo_coords = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -59,11 +60,11 @@ to calculate covariates' distance. Vector of length equal to the number of locat
 \item{\code{temporal_positions_df}}{data.table: Temporal kernel input tensor used to
 calculate covariate distance. Vector of length equal to the number of time points.}
 
-\item{\code{rank_decomp}}{Integer: Rank of the CP decomposition (Paper -- \eqn{R})}
+\item{\code{rank_decomp}}{Integer: Rank of the CP decomposition (Paper -- \eqn{R}). Defaults to 10.}
 
-\item{\code{burn_in_iter}}{Integer: Number of iteration before sampling (Paper -- :math:`K_1`)}
+\item{\code{burn_in_iter}}{Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 1000.}
 
-\item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- :math:`K_2`)}
+\item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- :math:`K_2`). Defaults to 500.}
 
 \item{\code{formula}}{A Wilkinson R formula to specify the relation
 between the response variable `Y` and the covariates. If Null, the first
@@ -83,6 +84,9 @@ generating tau defaults to 1E-6.}
 
 \item{\code{b_0}}{Numeric: Initial value for the rate (\eqn{\beta}) in the gamma function
 generating tau defaults to 1E-6.}
+
+\item{\code{use_geo_coords}}{Boolean: Whether the spatial positions df use geographic coordinates
+(latitude, longitude). Defaults to TRUE.}
 }
 \if{html}{\out{</div>}}
 }
