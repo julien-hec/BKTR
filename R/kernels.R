@@ -99,7 +99,7 @@ Kernel <- R6::R6Class(
             if (!has_null_jitter && self$jitter_value == 0) {
                 return()
             }
-            jitter_val <- ifelse(has_null_jitter, TSR$default_jitter, self$jitter_value)
+            jitter_val <- ifelse(has_null_jitter, TSR$get_default_jitter(), self$jitter_value)
             self$covariance_matrix <- self$covariance_matrix + jitter_val * TSR$eye(nrow(self$covariance_matrix))
         },
 
@@ -113,28 +113,27 @@ Kernel <- R6::R6Class(
         },
 
         set_positions = function(positions_df) {
-            pos_df_indx <- key(positions_df)
-            if (is.null(pos_df_indx) || length(pos_df_indx) != 1) {
-                stop('`positions_df` must have one and only key set via setkey.')
+            if (ncol(positions_df) < 2) {
+                stop('`positions_df` must have at least two columns.')
             }
             self$positions_df <- positions_df
-            positions_tensor <- TSR$tensor(as.matrix(positions_df[, !..pos_df_indx]))
+            positions_tensor <- TSR$tensor(as.matrix(positions_df[, -1]))
             if (self$has_dist_matrix) {
                 self$distance_matrix <- get_euclidean_dist_tsr(positions_tensor)
             }
         },
 
-        plot = function(self, show_figure = TRUE) {
-            x_name <- key(self$positions_df)[1]
+        plot = function(show_figure = TRUE) {
+            x_name <- colnames(self$positions_df)[1]
             y_name <- paste0(x_name, "'")
-            df <- data.table(self$covariance_matrix)
-            pos_labels <- as.character(self$positions_df[[x_name]])
+            df <- data.table(as.matrix(self$covariance_matrix$cpu()))
+            pos_labels <- sapply(self$positions_df[, 1], as.character)
             colnames(df) <- pos_labels
             df[[x_name]] <- pos_labels
             df <- melt(df, id.vars = c(x_name), variable.name = y_name, value.name = 'covariance')
             fig <- ggplot(df, aes(.data[[x_name]], .data[[y_name]], fill = covariance)) +
                 geom_tile() + theme_minimal() + scale_x_discrete(limits = pos_labels) +
-                scale_y_discrete(limits = rev(pos_labels))
+                scale_y_discrete(limits = rev(pos_labels)) + ggtitle(self$name)
             if (show_figure) {
                 print(fig)
                 return(NULL)
@@ -184,7 +183,7 @@ KernelSE <- R6::R6Class(
         has_dist_matrix = TRUE,
         name = 'SE Kernel',
         initialize = function(
-            lengthscale = KernelParameter$new(log(2)),
+            lengthscale = KernelParameter$new(2),
             kernel_variance = 1,
             jitter_value = NULL
         ) {
@@ -213,8 +212,8 @@ KernelRQ <- R6::R6Class(
         has_dist_matrix = TRUE,
         name = 'RQ Kernel',
         initialize = function(
-            lengthscale = KernelParameter$new(log(2)),
-            alpha = KernelParameter$new(log(2)),
+            lengthscale = KernelParameter$new(2),
+            alpha = KernelParameter$new(2),
             kernel_variance = 1,
             jitter_value = NULL
         ) {
@@ -247,8 +246,8 @@ KernelPeriodic <- R6::R6Class(
         has_dist_matrix = TRUE,
         name = 'Periodic Kernel',
         initialize = function(
-            lengthscale = KernelParameter$new(log(2)),
-            period_length = KernelParameter$new(log(2)),
+            lengthscale = KernelParameter$new(2),
+            period_length = KernelParameter$new(2),
             kernel_variance = 1,
             jitter_value = NULL
         ) {
@@ -281,8 +280,8 @@ KernelMatern <- R6::R6Class(
         has_dist_matrix = TRUE,
         distance_matrix = NULL,
         initialize = function(
-            smoothness_factor = 1,
-            lengthscale = KernelParameter$new(log(2)),
+            smoothness_factor = 5,
+            lengthscale = KernelParameter$new(2),
             kernel_variance = 1,
             jitter_value = NULL
         ) {
@@ -308,7 +307,7 @@ KernelMatern <- R6::R6Class(
         },
         core_kernel_fn = function() {
             temp_kernel <- (
-                self$distance_matrix * torch::torch_sqrt(self$smoothness_factor) / self$lengthscale$value
+                self$distance_matrix * sqrt(self$smoothness_factor) / self$lengthscale$value
             )
             return(self$get_smoothness_kernel_fn()(temp_kernel) * torch::torch_exp(-temp_kernel))
         }
@@ -352,7 +351,7 @@ KernelComposed <- R6::R6Class(
             new_jitter_val <- max(
                 left_kernel$jitter_value,
                 right_kernel$jitter_value,
-                TSR$default_jitter
+                TSR$get_default_jitter()
             )
             super$initialize(composed_variance, new_jitter_val)
             self$left_kernel <- left_kernel

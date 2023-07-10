@@ -199,11 +199,11 @@ ResultLogger <- R6::R6Class(
             self$beta_estimates <- self$sum_beta_est / self$nb_sampling_iter
             self$y_estimates <- self$sum_y_est / self$nb_sampling_iter
             beta_covariates_summary <- private$create_distrib_values_summary(
-                self$beta_estimates$reshape(c(-1, length(self$feature_labels)))$cpu(), dim = 1
+                self$beta_estimates$reshape(c(-1, length(self$feature_labels))), dim = 1
             )
             self$beta_covariates_summary_df <- cbind(
                 data.table(self$feature_labels),
-                data.table(as.matrix(beta_covariates_summary$t()))
+                data.table(as.matrix(beta_covariates_summary$t()$cpu()))
             )
             setnames(self$beta_covariates_summary_df, c('feature', self$moment_metrics, self$quantile_metrics))
             y_beta_index <- CJ(location = self$spatial_labels, time = self$temporal_labels)
@@ -441,36 +441,3 @@ ResultLogger <- R6::R6Class(
         }
     )
 )
-
-#' @description return the indexes of a given set of labels that can
-#'     be found in a list of available labels.
-#' @param labels vector: The labels for which we want to get the indexes
-#' @param available_labels vector: A vector of available labels
-#' @param label_type (spatial, temporal, feature): Type of label for
-#'     which we want to get indexes
-#' @return The indexes of the labels in the vector of available labels
-get_label_indexes <- function(labels, available_labels, label_type) {
-    if (length(labels) == 0) {
-        stop(sprintf('No %s labels provided.', label_type))
-    }
-    return(sapply(labels, function(x) get_label_index_or_raise(x, available_labels, label_type)))
-}
-
-capitalize_str <- function(str_val) {
-    return(
-        paste0(
-            toupper(substr(str_val, 1, 1)),
-            tolower(substr(str_val, 2, nchar(str_val)))
-        )
-    )
-}
-
-trunc_str <- function(str_val, trunc_len) {
-    if (trunc_len < 3) {
-        stop('trunc_len must be at least 3')
-    }
-    if (nchar(str_val) <= trunc_len) {
-        return(str_val)
-    }
-    return(paste0(substring(str_val, 1, trunc_len - 3), "..."))
-}
