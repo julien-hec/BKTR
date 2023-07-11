@@ -208,11 +208,14 @@ BKTRRegressor <- R6::R6Class(
             new_data_df,
             new_spatial_positions_df = NULL,
             new_temporal_positions_df = NULL,
-            jitter = 1e-6
+            jitter = 1e-5
         ) {
             # private$pred_valid_and_sort_data(
             #     new_data_df, new_spatial_positions_df, new_temporal_positions_df
             # )
+            ini_fp_type <- TSR$fp_type
+            TSR$set_params(fp_type = 'float64')
+          
 
             spatial_positions_df <- (
                 if (!is.null(new_spatial_positions_df)) rbind(self$spatial_positions_df, new_spatial_positions_df)
@@ -253,14 +256,14 @@ BKTRRegressor <- R6::R6Class(
                 new_temp_decomp <- private$pred_simu_new_decomp(
                     'temporal', i, temporal_positions_df, new_temporal_positions_df, jitter
                 )
-                covs_decomp <- self$result_logger$covs_decomp_per_iter[, , i]
+                covs_decomp <- TSR$tensor(self$result_logger$covs_decomp_per_iter[, , i])
                 all_betas[, , , i] <- torch::torch_einsum(
                     'il,jl,kl->ijk', c(new_spa_decomp, new_temp_decomp, covs_decomp)
                 )
             }
 
             new_betas <- all_betas$mean(dim = -1)
-            x_df <- private$get_x_and_y_dfs_from_formula(data_df[, -c('location', 'time')], bktr_reg$formula)$x_df
+            x_df <- private$get_x_and_y_dfs_from_formula(data_df[, -c('location', 'time')], self$formula)$x_df
             covariates <- TSR$tensor(as.matrix(x_df))$reshape(
                 c(nrow(spatial_positions_df), nrow(temporal_positions_df), -1)
             )
@@ -277,6 +280,7 @@ BKTRRegressor <- R6::R6Class(
             new_times <- unique(new_temporal_positions_df$time)
             new_beta_df <- new_beta_df[, new_beta_df[new_beta_df[, .I[location %in% new_locs | time %in% new_times]], ]]
             new_y_df <- new_y_df[, new_y_df[new_y_df[, .I[location %in% new_locs | time %in% new_times]], ]]
+            TSR$set_params(fp_type = ini_fp_type)
             return(list(new_y_df = new_y_df, new_beta_df = new_beta_df))
         },
 
@@ -588,6 +592,7 @@ BKTRRegressor <- R6::R6Class(
                 if (pred_type == 'spatial') self$result_logger$spatial_decomp_per_iter[, , iter_no]
                 else self$result_logger$temporal_decomp_per_iter[, , iter_no]
             )
+            old_decomp <- TSR$tensor(old_decomp)
             if (is.null(new_position_df)) {
                 return(old_decomp)
             }
