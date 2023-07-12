@@ -66,8 +66,6 @@ plot_temporal_betas <- function(
 #' @param plot_feature_labels Array: Array of feature labels to plot.
 #' @param temporal_point_label String: Temporal point label to plot.
 #' @param nb_cols Integer: The number of columns to use in the facet grid.
-#' @param is_map Boolean: Whether to plot the beta values on a geographic map or not.
-#'  Defaults to True.
 #' @param use_dark_mode Boolean: Whether to use a dark mode for the geographic map or not.
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Numeric: Figure width when figure is shown. Defaults to 8.5.
@@ -80,7 +78,6 @@ plot_spatial_betas <- function(
     plot_feature_labels,
     temporal_point_label,
     nb_cols = 1,
-    is_map = TRUE,
     use_dark_mode = TRUE,
     show_figure = TRUE,
     fig_width = 8.5,
@@ -100,7 +97,9 @@ plot_spatial_betas <- function(
     out_col_names <- c('location', plot_feature_labels)
     beta_df <- beta_df[beta_df$time == temporal_point_label, ..out_col_names]
 
-    coord_df <- bktr_reg$spatial_positions_df
+    coords_projector <- bktr_reg$geo_coords_projector
+    is_map <- !is.null(coords_projector)
+    coord_df <- if (is_map) coords_projector$ini_df else bktr_reg$spatial_positions_df
     if (ncol(coord_df[, -1]) != 2) {
         stop('Spatial coordinates must be 2 dimensions to be plotted.')
     }

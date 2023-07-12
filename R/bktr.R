@@ -54,6 +54,8 @@ BKTRRegressor <- R6::R6Class(
         spatial_labels = NULL,
         temporal_labels = NULL,
         feature_labels = NULL,
+        # Geographical coordinates projector
+        geo_coords_projector = NULL,
 
         #' @description Create a new \code{BKTRRegressor} object.
         #' @param data_df data.table: A dataframe containing all the covariates
@@ -104,20 +106,22 @@ BKTRRegressor <- R6::R6Class(
             sigma_r = 1E-2,
             a_0 = 1E-6,
             b_0 = 1E-6,
-            has_geo_coords = TRUE, # TODO see #27
+            has_geo_coords = TRUE,
             geo_coords_scale = 10
         ) {
             self$has_completed_sampling <- FALSE
             private$verify_input_labels(data_df, spatial_positions_df, temporal_positions_df)
 
-            if (has_geo_coords) { # TODO see #27
-                stop('Geographic coordinates are not supported yet')
-            }
-
             # We don't need to sort since keys in data.table already do so
             self$data_df <- data_df
-            self$spatial_positions_df <- spatial_positions_df
             self$temporal_positions_df <- temporal_positions_df
+            if (has_geo_coords) {
+                self$geo_coords_projector <- GeoMercatorProjector$new(spatial_positions_df, geo_coords_scale)
+                self$spatial_positions_df <- self$geo_coords_projector$scaled_ini_df
+            } else {
+                self$spatial_positions_df <- spatial_positions_df
+            }
+
 
             # Set formula and get model's matrix
             xy_df_list <- private$get_x_and_y_dfs_from_formula(self$data_df[, -c('location', 'time')], formula)
@@ -153,8 +157,8 @@ BKTRRegressor <- R6::R6Class(
             #Kernel Assignation
             self$spatial_kernel <- spatial_kernel
             self$temporal_kernel <- temporal_kernel
-            self$spatial_kernel$set_positions(spatial_positions_df)
-            self$temporal_kernel$set_positions(temporal_positions_df)
+            self$spatial_kernel$set_positions(self$spatial_positions_df)
+            self$temporal_kernel$set_positions(self$temporal_positions_df)
             # Create First Kernels
             self$spatial_kernel$kernel_gen()
             self$temporal_kernel$kernel_gen()
@@ -215,7 +219,10 @@ BKTRRegressor <- R6::R6Class(
             # )
             ini_fp_type <- TSR$fp_type
             TSR$set_params(fp_type = 'float64')
-          
+
+            if (!is.null(new_spatial_positions_df) && !is.null(self$geo_coords_projector)) {
+                new_spatial_positions_df <- self$geo_coords_projector$project_new_coords(new_spatial_positions_df)
+            }
 
             spatial_positions_df <- (
                 if (!is.null(new_spatial_positions_df)) rbind(self$spatial_positions_df, new_spatial_positions_df)
