@@ -87,8 +87,8 @@ GeoMercatorProjector <- R6::R6Class(
                 torch_tan(pi / 4 + torch_deg2rad(lats) / 2)
             )
             y <- (self$EARTH_RADIUM_KM / (2 * pi)) * merc_n_y
-            new_df$lon_x <- as.numeric(x)
-            new_df$lat_y <- as.numeric(y)
+            new_df$lon_x <- as.numeric(x$cpu())
+            new_df$lat_y <- as.numeric(y$cpu())
             new_df <- new_df[, -c('latitude', 'longitude')]
             return(new_df)
         }
