@@ -163,8 +163,9 @@ simulate_spatiotemporal_data <- function(
     chol_temp_covs <- torch::linalg_cholesky(
         TSR$kronecker_prod(temporal_covariance, covs_covariance)
     )
+    temp_vals <- TSR$randn(c(nb_locations, nb_time_points * nb_covs))
     beta_values <- (
-        chol_spa$matmul(TSR$randn(c(nb_locations, nb_time_points * nb_covs)))$matmul(chol_temp_covs$t())
+        chol_spa$matmul(temp_vals)$matmul(chol_temp_covs$t())
     )$reshape(c(nb_locations, nb_time_points, nb_covs))
     y_val <- torch:::torch_einsum('ijk,ijk->ij', c(covs, beta_values))
     err <- TSR$randn(c(nb_locations, nb_time_points)) * (noise_variance_scale ** 0.5)

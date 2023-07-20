@@ -126,6 +126,12 @@ TensorOperator <- R6::R6Class(
             return(self$tensor(torch::torch_arange(start, end)))
         },
 
+        rand_choice = function(choices_tsr, nb_sample, use_replace = FALSE) {
+            return(
+                torch::torch_multinomial(choices_tsr, nb_sample, use_replace)
+            )
+        },
+
         kronecker_prod = function(a, b) {
             return(torch::torch_kron(a, b))
         },
