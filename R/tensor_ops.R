@@ -127,9 +127,8 @@ TensorOperator <- R6::R6Class(
         },
 
         rand_choice = function(choices_tsr, nb_sample, use_replace = FALSE) {
-            return(
-                torch::torch_multinomial(choices_tsr, nb_sample, use_replace)
-            )
+            choices_indx = torch::torch_multinomial(choices_tsr, nb_sample, use_replace)
+            return(choices_tsr[choices_indx])
         },
 
         kronecker_prod = function(a, b) {
