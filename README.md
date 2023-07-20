@@ -1,16 +1,16 @@
 # BKTR
 
 ## Intro
-This project is a R implementation of the BKTR algorithm presented by Mengying Lei, Aurélie Labbe & Lijun Sun (2023).
+This project is a *R* implementation of the BKTR algorithm presented by Mengying Lei, Aurélie Labbe & Lijun Sun (2023).
 The article presenting the algorithm can be found [here](https://arxiv.org/abs/2109.00046).
 
 BKTR stands for Scalable Spatiotemporally Varying Coefficient Modelling with Bayesian Kernelized Tensor Regression.
 It allows to model spatiotemporally varying coefficients using a Bayesian framework.
-We implemented the algorithm and more in a R package that uses [torch](https://torch.mlverse.org/) as a tensor operation backend.
+We implemented the algorithm and more in a *R* package that uses [torch](https://torch.mlverse.org/) as a tensor operation backend.
 
-For information, an alternative Python implementation of the algorithm can be found [here](https://github.com/julien-hec/pyBKTR). The Python implementation is synchronized with this repository and development is done in parallel.
+For information, an alternative *Python* implementation of the algorithm can be found [here](https://github.com/julien-hec/pyBKTR). The *Python* implementation is synchronized with this repository and development is done in parallel. The synchronization of features will be done at a subrevision level (x.y.0).
 
-An article presenting the R package in details is currently in preparation and should be available soon.
+An article presenting the *R* package in details is currently in preparation and should be available soon.
 
 ## Installation
 The package is not yet on CRAN, but can be installed from GitHub.
@@ -36,7 +36,9 @@ bixi_data <- BixiData$new()
 bktr_regressor <- BKTRRegressor$new(
     data_df=bixi_data$data_df,
     spatial_positions_df=bixi_data$spatial_positions_df,
-    temporal_positions_df=bixi_data$temporal_positions_df
+    temporal_positions_df=bixi_data$temporal_positions_df,
+    burn_in_iter=5,
+    sampling_iter=10
 )
 bktr_regressor$mcmc_sampling()
 summary(bktr_regressor)
