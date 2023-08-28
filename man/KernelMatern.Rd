@@ -34,8 +34,8 @@ R6 class for Matern Kernels
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$new(
-  smoothness_factor = 1,
-  lengthscale = KernelParameter$new(log(2)),
+  smoothness_factor = 5,
+  lengthscale = KernelParameter$new(2),
   kernel_variance = 1,
   jitter_value = NULL
 )}\if{html}{\out{</div>}}

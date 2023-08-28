@@ -33,7 +33,7 @@ R6 class for Square Exponential Kernels
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelSE$new(
-  lengthscale = KernelParameter$new(log(2)),
+  lengthscale = KernelParameter$new(2),
   kernel_variance = 1,
   jitter_value = NULL
 )}\if{html}{\out{</div>}}

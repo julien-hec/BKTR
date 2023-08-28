@@ -5,7 +5,7 @@
 \alias{TSR}
 \title{Tensor Operator Singleton}
 \format{
-An object of class \code{TensorOperator} (inherits from \code{Singleton}, \code{R6}) of length 16.
+An object of class \code{TensorOperator} (inherits from \code{Singleton}, \code{R6}) of length 19.
 }
 \usage{
 TSR

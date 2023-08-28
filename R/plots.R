@@ -364,3 +364,48 @@ plot_hyperparams_traceplot <- function(
     }
     print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
 }
+
+
+#' @description Plot y estimates vs observed y values.
+#' @param bktr_reg BKTRRegressor: BKTRRegressor object.
+#' @param show_figure Boolean: Whether to show the figure. Defaults to True.
+#' @param fig_width Numeric: Figure width when figure is shown. Defaults to 5.
+#' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.
+#' @param fig_title String or NULL: Figure title if provided. Defaults to 'y estimates vs observed y values'
+#' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
+#'
+#' @export
+plot_y_estimates <- function(
+    bktr_reg,
+    show_figure = TRUE,
+    fig_width = 5,
+    fig_height = 5,
+    fig_title = 'y estimates vs observed y values'
+) {
+    if (!bktr_reg$has_completed_sampling) {
+        stop('Plots can only be accessed after MCMC sampling.')
+    }
+    # Verify all labels are valid
+    omega_list <- as.numeric(bktr_reg$omega$flatten()$cpu()) != 0
+    y_est_list <- bktr_reg$y_estimates[omega_list]$y_est
+    y_list <- as.numeric(bktr_reg$y$flatten()$cpu()[omega_list])
+    min_y <- min(y_list)
+    max_y <- max(y_list)
+    df <- data.table(y = y_list, y_est = y_est_list)
+    fig <- (
+        ggplot(df, aes(x = y, y = y_est))
+        + geom_point(color = '#39a7d0', alpha = 0.6, shape = 21, fill = '#20a0d0')
+        + geom_segment(aes(x = min_y, y = min_y, xend = max_y, yend = max_y), color = 'black',
+                       linetype = 'twodash', linewidth = 1)
+        + theme_bw()
+        + ylab('Estimated y')
+        + xlab('Observed y')
+    )
+    if (!is.null(fig_title)) {
+        fig <- fig + ggtitle(fig_title)
+    }
+    if (!show_figure) {
+        return(fig)
+    }
+    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+}

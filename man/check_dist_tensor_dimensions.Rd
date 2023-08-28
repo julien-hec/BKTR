@@ -2,7 +2,7 @@
 % Please edit documentation in R/distances.R
 \name{check_dist_tensor_dimensions}
 \alias{check_dist_tensor_dimensions}
-\title{Distance Types}
+\title{Distance tensor checks}
 \usage{
 check_dist_tensor_dimensions(
   x1,
@@ -12,6 +12,5 @@ check_dist_tensor_dimensions(
 )
 }
 \description{
-Distance Type Enum. Possibilities of distance functions between
-two spatial or temporal vectors.
+Check that two tensors are valid for distance computation
 }
