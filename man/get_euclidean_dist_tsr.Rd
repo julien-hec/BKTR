@@ -2,11 +2,10 @@
 % Please edit documentation in R/distances.R
 \name{get_euclidean_dist_tsr}
 \alias{get_euclidean_dist_tsr}
-\title{Function to compute the euclidean distance between two tensors}
+\title{Function to compute a tensor's euclidean distance}
 \usage{
-get_euclidean_dist_tsr(x1, x2)
+get_euclidean_dist_tsr(x)
 }
 \description{
-Distance Type Enum. Possibilities of distance functions between
-two spatial or temporal vectors.
+Function to compute the euclidean distance between a tensor and its transpose.
 }

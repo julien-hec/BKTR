@@ -33,8 +33,8 @@ R6 class for Periodic Kernels
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelPeriodic$new(
-  lengthscale = KernelParameter$new(log(2)),
-  period_length = KernelParameter$new(log(2)),
+  lengthscale = KernelParameter$new(2),
+  period_length = KernelParameter$new(2),
   kernel_variance = 1,
   jitter_value = NULL
 )}\if{html}{\out{</div>}}

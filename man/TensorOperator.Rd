@@ -15,6 +15,7 @@ in BKTR
 \itemize{
 \item \href{#method-TensorOperator-new}{\code{TensorOperator$new()}}
 \item \href{#method-TensorOperator-set_params}{\code{TensorOperator$set_params()}}
+\item \href{#method-TensorOperator-get_default_jitter}{\code{TensorOperator$get_default_jitter()}}
 \item \href{#method-TensorOperator-tensor}{\code{TensorOperator$tensor()}}
 \item \href{#method-TensorOperator-is_tensor}{\code{TensorOperator$is_tensor()}}
 \item \href{#method-TensorOperator-eye}{\code{TensorOperator$eye()}}
@@ -24,6 +25,7 @@ in BKTR
 \item \href{#method-TensorOperator-randn}{\code{TensorOperator$randn()}}
 \item \href{#method-TensorOperator-randn_like}{\code{TensorOperator$randn_like()}}
 \item \href{#method-TensorOperator-arange}{\code{TensorOperator$arange()}}
+\item \href{#method-TensorOperator-rand_choice}{\code{TensorOperator$rand_choice()}}
 \item \href{#method-TensorOperator-kronecker_prod}{\code{TensorOperator$kronecker_prod()}}
 \item \href{#method-TensorOperator-khatri_rao_prod}{\code{TensorOperator$khatri_rao_prod()}}
 \item \href{#method-TensorOperator-clone}{\code{TensorOperator$clone()}}
@@ -34,7 +36,7 @@ in BKTR
 \if{latex}{\out{\hypertarget{method-TensorOperator-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new(dtype = torch::torch_float64, device = "cpu")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new(fp_type = "float64", fp_device = "cpu")}\if{html}{\out{</div>}}
 }
 
 }
@@ -43,7 +45,16 @@ in BKTR
 \if{latex}{\out{\hypertarget{method-TensorOperator-set_params}{}}}
 \subsection{Method \code{set_params()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$set_params(dtype = NULL, device = NULL, seed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$set_params(fp_type = NULL, fp_device = NULL, seed = NULL)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-TensorOperator-get_default_jitter"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorOperator-get_default_jitter}{}}}
+\subsection{Method \code{get_default_jitter()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$get_default_jitter()}\if{html}{\out{</div>}}
 }
 
 }
@@ -125,6 +136,15 @@ in BKTR
 \subsection{Method \code{arange()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$arange(start, end)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-TensorOperator-rand_choice"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorOperator-rand_choice}{}}}
+\subsection{Method \code{rand_choice()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$rand_choice(choices_tsr, nb_sample, use_replace = FALSE)}\if{html}{\out{</div>}}
 }
 
 }

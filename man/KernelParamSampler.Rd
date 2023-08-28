@@ -12,7 +12,6 @@ the sampling of the kernel hyperparameters
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-KernelParamSampler-new}{\code{KernelParamSampler$new()}}
-\item \href{#method-KernelParamSampler-set_theta_value}{\code{KernelParamSampler$set_theta_value()}}
 \item \href{#method-KernelParamSampler-initialize_theta_bounds}{\code{KernelParamSampler$initialize_theta_bounds()}}
 \item \href{#method-KernelParamSampler-prior_fn}{\code{KernelParamSampler$prior_fn()}}
 \item \href{#method-KernelParamSampler-sample_rand_theta_value}{\code{KernelParamSampler$sample_rand_theta_value()}}
@@ -27,15 +26,6 @@ the sampling of the kernel hyperparameters
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelParamSampler$new(kernel, marginal_ll_eval_fn)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-KernelParamSampler-set_theta_value"></a>}}
-\if{latex}{\out{\hypertarget{method-KernelParamSampler-set_theta_value}{}}}
-\subsection{Method \code{set_theta_value()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{KernelParamSampler$set_theta_value(theta)}\if{html}{\out{</div>}}
 }
 
 }

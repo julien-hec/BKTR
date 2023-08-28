@@ -2,7 +2,7 @@
 % Please edit documentation in R/bktr.R
 \name{BKTRRegressor}
 \alias{BKTRRegressor}
-\title{R6 class encapsulating the BKTR regression steps}
+\title{R6 class encapsulating the BKTR regression elements}
 \description{
 A BKTRRegressor holds all the key elements to accomplish the MCMC sampling
 algorithm (\strong{Algorithm 1} of the paper).
@@ -29,7 +29,7 @@ Create a new \code{BKTRRegressor} object.
   spatial_positions_df,
   temporal_positions_df,
   rank_decomp = 10,
-  burn_in_iter = 1000,
+  burn_in_iter = 500,
   sampling_iter = 500,
   formula = NULL,
   spatial_kernel = KernelMatern$new(smoothness_factor = 3),
@@ -37,7 +37,8 @@ Create a new \code{BKTRRegressor} object.
   sigma_r = 0.01,
   a_0 = 1e-06,
   b_0 = 1e-06,
-  use_geo_coords = TRUE
+  has_geo_coords = TRUE,
+  geo_coords_scale = 10
 )}\if{html}{\out{</div>}}
 }
 
@@ -62,7 +63,7 @@ calculate covariate distance. Vector of length equal to the number of time point
 
 \item{\code{rank_decomp}}{Integer: Rank of the CP decomposition (Paper -- \eqn{R}). Defaults to 10.}
 
-\item{\code{burn_in_iter}}{Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 1000.}
+\item{\code{burn_in_iter}}{Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 500.}
 
 \item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- :math:`K_2`). Defaults to 500.}
 
@@ -85,8 +86,12 @@ generating tau defaults to 1E-6.}
 \item{\code{b_0}}{Numeric: Initial value for the rate (\eqn{\beta}) in the gamma function
 generating tau defaults to 1E-6.}
 
-\item{\code{use_geo_coords}}{Boolean: Whether the spatial positions df use geographic coordinates
+\item{\code{has_geo_coords}}{Boolean: Whether the spatial positions df use geographic coordinates
 (latitude, longitude). Defaults to TRUE.}
+
+\item{\code{geo_coords_scale}}{Numeric: Scale factor to convert geographic coordinates to euclidean
+2D space via Mercator projection using x & y domains of [-scale/2, +scale/2]. Only used if
+has_geo_coords is TRUE. Defaults to 10.}
 }
 \if{html}{\out{</div>}}
 }
@@ -123,10 +128,42 @@ A list containing the results of the MCMC sampling.
 \if{html}{\out{<a id="method-BKTRRegressor-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-BKTRRegressor-predict}{}}}
 \subsection{Method \code{predict()}}{
+Use interpolation to predict betas and response values for new data.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$predict()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$predict(
+  new_data_df,
+  new_spatial_positions_df = NULL,
+  new_temporal_positions_df = NULL,
+  jitter = 1e-05
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{new_data_df}}{data.table: New covariates. Must have the same columns as
+the covariates used to fit the model. The index should contain the combination
+of all old spatial coordinates with all new temporal coordinates, the combination
+of all new spatial coordinates with all old temporal coordinates, and the
+combination of all new spatial coordinates with all new temporal coordinates.}
+
+\item{\code{new_spatial_positions_df}}{data.table or NULL: A data frame containing the new
+spatial positions. Defaults to NULL.}
+
+\item{\code{new_temporal_positions_df}}{data.table or NULL: A data frame containing the new
+temporal positions. Defaults to NULL.}
+
+\item{\code{jitter}}{Numeric or NULL: A small value to add to the diagonal of the precision matrix.
+Defaults to NULL.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+List: A list of two dataframes. The first represents the beta
+  forecasted for all new spatial locations or temporal points.
+  The second represents the forecasted response for all new spatial
+  locations or temporal points.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BKTRRegressor-get_iterations_betas"></a>}}
