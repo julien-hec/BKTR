@@ -154,9 +154,9 @@ calculate covariate distance. Vector of length equal to the number of time point
 
 \item{\code{rank_decomp}}{Integer: Rank of the CP decomposition (Paper -- \eqn{R}). Defaults to 10.}
 
-\item{\code{burn_in_iter}}{Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 500.}
+\item{\code{burn_in_iter}}{Integer: Number of iteration before sampling (Paper -- \eqn{K_1}). Defaults to 500.}
 
-\item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- :math:`K_2`). Defaults to 500.}
+\item{\code{sampling_iter}}{Integer: Number of sampling iterations (Paper -- \eqn{K_2}). Defaults to 500.}
 
 \item{\code{formula}}{A Wilkinson R formula to specify the relation
 between the response variable `Y` and the covariates. If Null, the first
