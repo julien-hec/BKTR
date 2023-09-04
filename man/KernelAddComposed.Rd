@@ -8,7 +8,7 @@ R6 class automatically generated when
 adding two kernels together.
 }
 \section{Super classes}{
-\code{BKTR::Kernel} -> \code{\link[BKTR:KernelComposed]{BKTR::KernelComposed}} -> \code{KernelAddComposed}
+\code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{\link[BKTR:KernelComposed]{BKTR::KernelComposed}} -> \code{KernelAddComposed}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -32,10 +32,25 @@ adding two kernels together.
 \if{html}{\out{<a id="method-KernelAddComposed-new"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelAddComposed-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new \code{KernelAddComposed} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelAddComposed$new(left_kernel, right_kernel, new_name)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{left_kernel}}{Kernel: The left kernel to use for composition}
+
+\item{\code{right_kernel}}{Kernel: The right kernel to use for composition}
+
+\item{\code{new_name}}{String: The name of the composed kernel}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new \code{KernelAddComposed} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelAddComposed-clone"></a>}}

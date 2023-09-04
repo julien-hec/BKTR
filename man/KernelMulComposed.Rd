@@ -8,7 +8,7 @@ R6 class automatically generated when
 multiplying two kernels together.
 }
 \section{Super classes}{
-\code{BKTR::Kernel} -> \code{\link[BKTR:KernelComposed]{BKTR::KernelComposed}} -> \code{KernelMulComposed}
+\code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{\link[BKTR:KernelComposed]{BKTR::KernelComposed}} -> \code{KernelMulComposed}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -32,10 +32,25 @@ multiplying two kernels together.
 \if{html}{\out{<a id="method-KernelMulComposed-new"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelMulComposed-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new \code{KernelMulComposed} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMulComposed$new(left_kernel, right_kernel, new_name)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{left_kernel}}{Kernel: The left kernel to use for composition}
+
+\item{\code{right_kernel}}{Kernel: The right kernel to use for composition}
+
+\item{\code{new_name}}{String: The name of the composed kernel}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new \code{KernelMulComposed} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelMulComposed-clone"></a>}}

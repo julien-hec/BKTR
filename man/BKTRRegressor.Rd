@@ -7,6 +7,97 @@
 A BKTRRegressor holds all the key elements to accomplish the MCMC sampling
 algorithm (\strong{Algorithm 1} of the paper).
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{data_df}}{The dataframe containing all the covariates through time and space (including
+the response variable)}
+
+\item{\code{y}}{The response variable tensor}
+
+\item{\code{omega}}{The tensor indicating which response values are not missing}
+
+\item{\code{covariates}}{The tensor containing all the covariates}
+
+\item{\code{covariates_dim}}{The dimensions of the covariates tensor}
+
+\item{\code{logged_params_tensor}}{The tensor containing all the sampled hyperparameters}
+
+\item{\code{tau}}{The precision hyperparameter}
+
+\item{\code{spatial_decomp}}{The spatial covariate decomposition}
+
+\item{\code{temporal_decomp}}{The temporal covariate decomposition}
+
+\item{\code{covs_decomp}}{The feature covariate decomposition}
+
+\item{\code{result_logger}}{The result logger instance used to store the results of the MCMC sampling}
+
+\item{\code{has_completed_sampling}}{Boolean showing wheter the MCMC sampling has been completed}
+
+\item{\code{spatial_kernel}}{The spatial kernel used}
+
+\item{\code{temporal_kernel}}{The temporal kernel used}
+
+\item{\code{spatial_positions_df}}{The dataframe containing the spatial positions}
+
+\item{\code{temporal_positions_df}}{The dataframe containing the temporal positions}
+
+\item{\code{spatial_params_sampler}}{The spatial kernel hyperparameter sampler}
+
+\item{\code{temporal_params_sampler}}{The temporal kernel hyperparameter sampler}
+
+\item{\code{tau_sampler}}{The tau hyperparameter sampler}
+
+\item{\code{precision_matrix_sampler}}{The precision matrix sampler}
+
+\item{\code{spatial_ll_evaluator}}{The spatial likelihood evaluator}
+
+\item{\code{temporal_ll_evaluator}}{The temporal likelihood evaluator}
+
+\item{\code{rank_decomp}}{The rank of the CP decomposition}
+
+\item{\code{burn_in_iter}}{The number of burn in iterations}
+
+\item{\code{sampling_iter}}{The number of sampling iterations}
+
+\item{\code{max_iter}}{The total number of iterations}
+
+\item{\code{a_0}}{The initial value for the shape in the gamma function generating tau}
+
+\item{\code{b_0}}{The initial value for the rate in the gamma function generating tau}
+
+\item{\code{formula}}{The formula used to specify the relation between the response variable and the covariates}
+
+\item{\code{spatial_labels}}{The spatial labels}
+
+\item{\code{temporal_labels}}{The temporal labels}
+
+\item{\code{feature_labels}}{The feature labels}
+
+\item{\code{geo_coords_projector}}{The geographic coordinates projector}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{summary}}{A summary of the BKTRRegressor instance}
+
+\item{\code{beta_covariates_summary}}{A dataframe containing the summary of the beta covariates}
+
+\item{\code{y_estimates}}{A dataframe containing the y estimates}
+
+\item{\code{imputed_y_estimates}}{A dataframe containing the imputed y estimates}
+
+\item{\code{beta_estimates}}{A dataframe containing the beta estimates}
+
+\item{\code{hyperparameters_per_iter_df}}{A dataframe containing the beta estimates per iteration}
+
+\item{\code{decomposition_tensors}}{List of all used decomposition tensors}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -169,6 +260,9 @@ List: A list of two dataframes. The first represents the beta
 \if{html}{\out{<a id="method-BKTRRegressor-get_iterations_betas"></a>}}
 \if{latex}{\out{\hypertarget{method-BKTRRegressor-get_iterations_betas}{}}}
 \subsection{Method \code{get_iterations_betas()}}{
+Return all sampled betas through sampling iterations for a given
+set of spatial, temporal and feature labels. Useful for plotting the
+distribution of sampled beta values.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_iterations_betas(
   spatial_label,
@@ -177,6 +271,20 @@ List: A list of two dataframes. The first represents the beta
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{spatial_label}}{String: The spatial label for which we want to get the betas}
+
+\item{\code{temporal_label}}{String: The temporal label for which we want to get the betas}
+
+\item{\code{feature_label}}{String: The feature label for which we want to get the betas}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list containing the sampled betas through iteration for the given labels
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BKTRRegressor-get_beta_summary_df"></a>}}

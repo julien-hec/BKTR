@@ -11,16 +11,25 @@
 TensorOperator <- R6::R6Class(
     'TensorOperator',
     inherit = R6P::Singleton,
-    # Private values used to store the config of the underlying tensor library
     private = list(
+        # Private values used to store the config of the underlying tensor library
         dtype = NULL,
         device = NULL
     ),
     public = list(
         # Public facing config values used streamlined for TensorOperator
+        #' @field fp_type The floating point type to use for the tensor operations
         fp_type = NULL,
+        #' @field fp_device The device to use for the tensor operations
         fp_device = NULL,
 
+        #' @description Initialize the tensor operator with the given floating point type
+        #' and device
+        #' @param fp_type The floating point type to use for the tensor operations (either
+        #' "float64" or "float32")
+        #' @param fp_device The device to use for the tensor operations (either "cpu" or
+        #' "cuda")
+        #' @return A new tensor operator instance
         initialize = function(
             fp_type = 'float64',
             fp_device = 'cpu'
@@ -28,6 +37,12 @@ TensorOperator <- R6::R6Class(
             self$set_params(fp_type, fp_device)
         },
 
+        #' @description Set the tensor operator parameters
+        #' @param fp_type The floating point type to use for the tensor operations (either
+        #' "float64" or "float32")
+        #' @param fp_device The device to use for the tensor operations (either "cpu" or
+        #' "cuda")
+        #' @param seed The seed to use for the random number generator
         set_params = function(
             fp_type = NULL,
             fp_device = NULL,
@@ -54,9 +69,11 @@ TensorOperator <- R6::R6Class(
             }
         },
 
-        # I wanted this to be an active binding but it is compiled at build time
-        # See: https://github.com/r-lib/R6/issues/152
+        #' @description Get the default jitter value for the floating point type used by the tensor operator
+        #' @return The default jitter value for the floating point type used by the tensor operator
         get_default_jitter = function() {
+            # I wanted this to be an active binding but it is compiled at build time
+            # See: https://github.com/r-lib/R6/issues/152
             if (private$dtype() == torch::torch_float64()) {
                 return(1e-8)
             } else if (private$dtype() == torch::torch_float32()) {
@@ -65,6 +82,9 @@ TensorOperator <- R6::R6Class(
             stop('The dtype used by TSR has no default mapped jitter value')
         },
 
+        #' @description Create a tensor from a vector or matrix of data with the tensor operator dtype and device
+        #' @param tensor_data The vector or matrix of data to create the tensor from
+        #' @return A new tensor with the tensor operator dtype and device
         tensor = function(tensor_data) {
             return(
                 torch::torch_tensor(
@@ -75,10 +95,17 @@ TensorOperator <- R6::R6Class(
             )
         },
 
+        #' @description Check if a provided object is a tensor
+        #' @param tensor The object to check
+        #' @return A boolean indicating if the object is a tensor
         is_tensor = function(tensor) {
             return(is(tensor, 'torch_tensor'))
         },
 
+        #' @description Create a tensor with a diagonal of ones and zeros with the tensor operator dtype and device
+        #' for a given dimension
+        #' @param eye_dim The dimension of the tensor to create
+        #' @return A new tensor with a diagonal of ones and zeros with the tensor operator dtype and device
         eye = function(eye_dim) {
             return(
                 torch::torch_eye(
@@ -89,6 +116,9 @@ TensorOperator <- R6::R6Class(
             )
         },
 
+        #' @description Create a tensor of ones with the tensor operator dtype and device for a given dimension
+        #' @param tsr_dim The dimension of the tensor to create
+        #' @return A new tensor of ones with the tensor operator dtype and device
         ones = function(tsr_dim) {
             return(
                 torch::torch_ones(
@@ -99,7 +129,9 @@ TensorOperator <- R6::R6Class(
             )
         },
 
-
+        #' @description Create a tensor of zeros with the tensor operator dtype and device for a given dimension
+        #' @param tsr_dim The dimension of the tensor to create
+        #' @return A new tensor of zeros with the tensor operator dtype and device
         zeros = function(tsr_dim) {
             return(
                 torch::torch_zeros(
@@ -110,31 +142,62 @@ TensorOperator <- R6::R6Class(
             )
         },
 
+        #' @description Create a tensor of random uniform values with the tensor operator dtype and
+        #' device for a given dimension
+        #' @param tsr_dim The dimension of the tensor to create
+        #' @return A new tensor of random values with the tensor operator dtype and device
         rand = function(tsr_dim) {
             return(torch::torch_rand(tsr_dim, dtype = private$dtype(), device = private$device))
         },
 
+        #' @description Create a tensor of random normal values with the tensor operator dtype and device
+        #' for a given dimension
+        #' @param tsr_dim The dimension of the tensor to create
+        #' @return A new tensor of random normal values with the tensor operator dtype and device
         randn = function(tsr_dim) {
             return(torch::torch_randn(tsr_dim, dtype = private$dtype(), device = private$device))
         },
 
+        #' @description Create a tensor of random uniform values with the same shape as a given tensor
+        #' with the tensor operator dtype and device
+        #' @param input_tensor The tensor to use as a shape reference
+        #' @return A new tensor of random uniform values with the same shape as a given tensor
         randn_like = function(input_tensor) {
             return(torch::torch_randn_like(input_tensor, dtype = private$dtype(), device = private$device))
         },
 
+        #' @description Create a tensor of a range of values with the tensor operator dtype and device
+        #' for a given start and end
+        #' @param start The start of the range
+        #' @param end The end of the range
+        #' @return A new tensor of a range of values with the tensor operator dtype and device
         arange = function(start, end) {
             return(self$tensor(torch::torch_arange(start, end)))
         },
 
+        #' @description Choose random values from a tensor for a given number of samples
+        #' @param choices_tsr The tensor to choose values from
+        #' @param nb_sample The number of samples to choose
+        #' @param use_replace A boolean indicating if the sampling should be done with replacement
+        #' @return A new tensor of randomly chosen values from a tensor
         rand_choice = function(choices_tsr, nb_sample, use_replace = FALSE) {
-            choices_indx = torch::torch_multinomial(choices_tsr, nb_sample, use_replace)
+            choices_indx <- torch::torch_multinomial(choices_tsr, nb_sample, use_replace)
             return(choices_tsr[choices_indx])
         },
 
+        #' @description Efficiently compute the kronecker product of two matrices in tensor format
+        #' @param a The first tensor
+        #' @param b The second tensor
+        #' @return The kronecker product of the two matrices
         kronecker_prod = function(a, b) {
             return(torch::torch_kron(a, b))
         },
 
+        #' @description Efficiently compute the khatri rao product of two matrices in tensor format
+        #' having the same number of columns
+        #' @param a The first tensor
+        #' @param b The second tensor
+        #' @return The khatri rao product of the two matrices
         khatri_rao_prod = function(a, b) {
             if (a$shape[2] != b$shape[2]) {
                 stop(

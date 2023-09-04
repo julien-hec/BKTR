@@ -4,7 +4,12 @@
 \alias{print.BKTRRegressor}
 \title{Print the summary of a BKTRRegressor instance}
 \usage{
-\method{print}{BKTRRegressor}(bktr_reg)
+\method{print}{BKTRRegressor}(x, ...)
+}
+\arguments{
+\item{x}{A BKTRRegressor instance}
+
+\item{...}{Additional arguments to comply with generic function}
 }
 \description{
 Print the summary of a BKTRRegressor instance

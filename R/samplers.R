@@ -7,8 +7,7 @@
 #' @description The KernelParamSampler encapsulate all the behavior related to
 #' the sampling of the kernel hyperparameters
 #'
-#' @export
-#' @keywords internal
+#' @noRd
 KernelParamSampler <- R6::R6Class(
     'KernelParamSampler',
     public = list(
@@ -79,8 +78,7 @@ KernelParamSampler <- R6::R6Class(
 #'
 #' @description The sampling use a tensor of mean and the upper triangular portion of the precision matrix
 #'
-#' @export
-#' @keywords internal
+#' @noRd
 sample_norm_multivariate <- function(mean_vec, precision_upper_tri) {
     # TODO Open PR & Issue for https://github.com/mlverse/torch/blob/main/R/distributions-multivariate_normal.R L:86
     # Not Able to use the precision matrix because of priority of ops (!is.null(NULL) + !is.null(1) + !is.null(1)) == F
@@ -94,8 +92,7 @@ sample_norm_multivariate <- function(mean_vec, precision_upper_tri) {
     )
 }
 
-#' @export
-#' @keywords internal
+#' @noRd
 get_cov_decomp_chol <- function(
     spatial_decomp, time_decomp, covs, rank_cp, omega, tau, y, wish_precision_tensor
 ) {
@@ -121,8 +118,7 @@ get_cov_decomp_chol <- function(
 #'
 #' @description Encapsulate all the behavior that allows to generate new tau values
 #'
-#' @export
-#' @keywords internal
+#' @noRd
 TauSampler <- R6::R6Class(
     'TauSampler',
     public = list(
@@ -148,8 +144,7 @@ TauSampler <- R6::R6Class(
 #' @description Encapsulate all the behavior that allows to sample new precision matrices from
 #' a Wishart distribution
 #'
-#' @export
-#' @keywords internal
+#' @noRd
 # TODO create a PR to add rand wishart in R Torch
 PrecisionMatrixSampler <- R6::R6Class(
     'PrecisionMatrixSampler',

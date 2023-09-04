@@ -7,7 +7,16 @@
 R6 class for White Noise Kernels
 }
 \section{Super class}{
-\code{BKTR::Kernel} -> \code{KernelWhiteNoise}
+\code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelWhiteNoise}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{has_dist_matrix}}{Identify if the kernel has a distance matrix or not}
+
+\item{\code{name}}{The kernel's name}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -35,15 +44,31 @@ R6 class for White Noise Kernels
 \if{html}{\out{<div class="r">}}\preformatted{KernelWhiteNoise$new(kernel_variance = 1, jitter_value = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{kernel_variance}}{Numeric: The variance of the kernel}
+
+\item{\code{jitter_value}}{Numeric: The jitter value to add to the kernel matrix}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new \code{KernelWhiteNoise} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelWhiteNoise-core_kernel_fn"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelWhiteNoise-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
+Method to compute the core kernel's covariance matrix
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelWhiteNoise$core_kernel_fn()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The core kernel's covariance matrix
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelWhiteNoise-clone"></a>}}

@@ -2,14 +2,25 @@ Package: BKTR
 Version: 0.1
 Title: Bayesian Kernelized Tensor Regression
 Authors@R: c(
-        person("Mengying", "Lei", role = "aut"),
-        person("Aurelie", "Labbe", role = "aut"),
-        person("Lijun", "Sun", role = "aut"),
-        person("Julien", "Lanthier", email = "julien.lanthier@hec.ca", role = c("aut", "cre"))
+        person("Julien", "Lanthier", email = "julien.lanthier@hec.ca", role = c("aut", "cre", "cph"), comment = c(ORCID = "0009-0008-8728-4996")),
+        person("Mengying", "Lei", role = "aut", comment = c(ORCID = "0000-0001-7343-3323")),
+        person("Aurélie", "Labbe", role = "aut", comment = c(ORCID = "0000-0002-4207-8143")),
+        person("Lijun", "Sun", role = "aut", comment = c(ORCID = "0000-0001-9488-0712"))
     )
-Description: Scalable Spatiotemporally Varying Coefficient Modelling with Bayesian Kernelized Tensor Regression.
+Description: Facilitates scalable spatiotemporally varying coefficient
+    modelling with Bayesian kernelized tensor regression.
+    The important features of this package are:
+    (a) Enabling local temporal and spatial modeling of the relationship between
+    the response variable and covariates.
+    (b) Implementing the model described by Lei et al. (2023) <doi:10.48550/arXiv.2109.00046>.
+    (c) Using a Bayesian Markov Chain Monte Carlo (MCMC) algorithm to sample from the posterior
+    distribution of the model parameters.
+    (d) Employing a tensor decomposition to reduce the number of estimated parameters.
+    (e) Accelerating tensor operations and enabling graphics processing unit (GPU) acceleration
+    with the 'torch' package.
 Depends:
     R (>= 4.0.0)
+Encoding: UTF-8
 Imports:
     torch,
     R6,
@@ -17,7 +28,7 @@ Imports:
     ggplot2,
     ggmap,
     data.table
-License: MIT
+License: MIT + file LICENSE
 RoxygenNote: 7.2.3
 Collate:
     'samplers.R'
@@ -30,5 +41,10 @@ Collate:
     'examples.R'
     'plots.R'
     'utils.R'
+Suggests:
+    knitr,
+    rmarkdown,
+    R.rsp
 LazyData: true
-VignetteBuilder: knitr, rmarkdown
+VignetteBuilder: knitr, rmarkdown, R.rsp
+BugReports: https://github.com/julien-hec/BKTR/issues

@@ -67,16 +67,16 @@ reshape_covariate_dfs <- function(
     }
     data_df <- cross_join_dt(spatial_df_cp, temporal_df_cp)
     setkeyv(data_df, c(spa_index_name, temp_index_name))
-    y_vals_mat <- as.matrix(y_df_cp[, ..y_df_col_names])
+    y_vals_mat <- as.matrix(y_df_cp[, y_df_col_names, with = FALSE])
     y_flat_values <- as.vector(t(y_vals_mat))
     data_df[, (y_column_name) := y_flat_values]
     setcolorder(data_df, c(spa_index_name, temp_index_name, y_column_name))
     return(data_df)
 }
 
-#' Simulate spatiotemporal data using kernel covariances.
+#' @title Simulate Spatiotemporal Data Using Kernel Covariances.
 #'
-#' @param nb_spatial_locations Integer: Number of spatial locations
+#' @param nb_locations Integer: Number of spatial locations
 #' @param nb_time_points Integer: Number of time points
 #' @param nb_spatial_dimensions Integer: Number of spatial dimensions
 #' @param spatial_scale Numeric: Spatial scale
@@ -84,7 +84,7 @@ reshape_covariate_dfs <- function(
 #' @param spatial_covariates_means Vector: Spatial covariates means
 #' @param temporal_covariates_means Vector: Temporal covariates means
 #' @param spatial_kernel Kernel: Spatial kernel
-#' @param temporal_Kernel Kernel: Temporal kernel
+#' @param temporal_kernel Kernel: Temporal kernel
 #' @param noise_variance_scale Numeric: Noise variance scale
 #
 #' @return A list containing 4 dataframes:
@@ -167,7 +167,7 @@ simulate_spatiotemporal_data <- function(
     beta_values <- (
         chol_spa$matmul(temp_vals)$matmul(chol_temp_covs$t())
     )$reshape(c(nb_locations, nb_time_points, nb_covs))
-    y_val <- torch:::torch_einsum('ijk,ijk->ij', c(covs, beta_values))
+    y_val <- torch::torch_einsum('ijk,ijk->ij', c(covs, beta_values))
     err <- TSR$randn(c(nb_locations, nb_time_points)) * (noise_variance_scale ** 0.5)
     y_val <- y_val + err
     y_val <- y_val$reshape(c(nb_locations * nb_time_points, 1))
@@ -203,6 +203,8 @@ simulate_spatiotemporal_data <- function(
 #' @param dim_prefix String: The prefix of the dimension labels
 #' @param max_value Integer: The maximum value of the dimension labels
 #' @return String: The dimension labels
+#'
+#' @noRd
 get_dim_labels <- function(dim_prefix, max_value) {
     max_digits <- nchar(as.character(max_value - 1))
     formatted_numbers <- formatC(0:(max_value - 1), width = max_digits, flag = "0")
@@ -216,6 +218,8 @@ get_dim_labels <- function(dim_prefix, max_value) {
 #' @param label_list Vector[Any]: The list of labels
 #' @param label_type String: The label type either 'spatial', 'temporal', 'feature'.
 #' @return Integer: The index of the label in the list
+#'
+#' @noRd
 get_label_index_or_raise <- function(label, label_list, label_type) {
     match_indx <- match(as.character(label), as.character(label_list))
     if (is.na(match_indx)) {
@@ -232,6 +236,8 @@ get_label_index_or_raise <- function(label, label_list, label_type) {
 #' @param label_type (spatial, temporal, feature): Type of label for
 #'     which we want to get indexes
 #' @return The indexes of the labels in the vector of available labels
+#'
+#' @noRd
 get_label_indexes <- function(labels, available_labels, label_type) {
     if (length(labels) == 0) {
         stop(sprintf('No %s labels provided.', label_type))
@@ -242,6 +248,8 @@ get_label_indexes <- function(labels, available_labels, label_type) {
 #' @description Utility function to capitalize a string (only the first letter)
 #' @param str_val String: The string to capitalize
 #' @return String: The capitalized string
+#'
+#' @noRd
 capitalize_str <- function(str_val) {
     return(
         paste0(
@@ -255,6 +263,8 @@ capitalize_str <- function(str_val) {
 #' @param str_val String: The string to truncate
 #' @param trunc_len Integer: The maximum length of the string
 #' @return String: The truncated string
+#'
+#' @noRd
 trunc_str <- function(str_val, trunc_len) {
     if (trunc_len < 3) {
         stop('trunc_len must be at least 3')

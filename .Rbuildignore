@@ -1,3 +1,13 @@
 ^data-raw$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^output$
+^LICENSE.md$
+^.editorconfig$
+^.lintr$
+^.python-version$
+^.vscode$
+^doc$
+^Meta$
+vignettes/*.pdf$
+^cran-comments\.md$

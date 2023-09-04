@@ -4,7 +4,12 @@
 \alias{summary.BKTRRegressor}
 \title{Summarize a BKTRRegressor instance}
 \usage{
-\method{summary}{BKTRRegressor}(bktr_reg)
+\method{summary}{BKTRRegressor}(object, ...)
+}
+\arguments{
+\item{object}{A BKTRRegressor instance}
+
+\item{...}{Additional arguments to comply with generic function}
 }
 \description{
 Summarize a BKTRRegressor instance

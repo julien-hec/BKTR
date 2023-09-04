@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{simulate_spatiotemporal_data}
 \alias{simulate_spatiotemporal_data}
-\title{Simulate spatiotemporal data using kernel covariances.}
+\title{Simulate Spatiotemporal Data Using Kernel Covariances.}
 \usage{
 simulate_spatiotemporal_data(
   nb_locations,
@@ -18,6 +18,8 @@ simulate_spatiotemporal_data(
 )
 }
 \arguments{
+\item{nb_locations}{Integer: Number of spatial locations}
+
 \item{nb_time_points}{Integer: Number of time points}
 
 \item{nb_spatial_dimensions}{Integer: Number of spatial dimensions}
@@ -32,11 +34,9 @@ simulate_spatiotemporal_data(
 
 \item{spatial_kernel}{Kernel: Spatial kernel}
 
+\item{temporal_kernel}{Kernel: Temporal kernel}
+
 \item{noise_variance_scale}{Numeric: Noise variance scale}
-
-\item{nb_spatial_locations}{Integer: Number of spatial locations}
-
-\item{temporal_Kernel}{Kernel: Temporal kernel}
 }
 \value{
 A list containing 4 dataframes:
@@ -46,5 +46,5 @@ A list containing 4 dataframes:
      - `beta_df` contains the true beta coefficients
 }
 \description{
-Simulate spatiotemporal data using kernel covariances.
+Simulate Spatiotemporal Data Using Kernel Covariances.
 }

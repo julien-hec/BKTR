@@ -7,7 +7,18 @@
 R6 class for Matern Kernels
 }
 \section{Super class}{
-\code{BKTR::Kernel} -> \code{KernelMatern}
+\code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelMatern}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{lengthscale}}{The lengthscale parameter instance of the kernel}
+
+\item{\code{smoothness_factor}}{The smoothness factor of the kernel}
+
+\item{\code{has_dist_matrix}}{Identify if the kernel has a distance matrix or not}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -32,6 +43,7 @@ R6 class for Matern Kernels
 \if{html}{\out{<a id="method-KernelMatern-new"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelMatern-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new \code{KernelMatern} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$new(
   smoothness_factor = 5,
@@ -41,24 +53,45 @@ R6 class for Matern Kernels
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{smoothness_factor}}{Numeric: The smoothness factor of the kernel (1, 3 or 5)}
+
+\item{\code{lengthscale}}{KernelParameter: The lengthscale parameter instance of the kernel}
+
+\item{\code{kernel_variance}}{Numeric: The variance of the kernel}
+
+\item{\code{jitter_value}}{Numeric: The jitter value to add to the kernel matrix}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelMatern-get_smoothness_kernel_fn"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelMatern-get_smoothness_kernel_fn}{}}}
 \subsection{Method \code{get_smoothness_kernel_fn()}}{
+Method to the get the smoothness kernel function for a given integer smoothness factor
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$get_smoothness_kernel_fn()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The smoothness kernel function
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelMatern-core_kernel_fn"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelMatern-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
+Method to compute the core kernel's covariance matrix
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelMatern$core_kernel_fn()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The core kernel's covariance matrix
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelMatern-clone"></a>}}

@@ -8,8 +8,7 @@
 #' likelihood of the kernel hyperparameters. This likelihood is used during the sampling
 #' process.
 #'
-#' @export
-#' @keywords internal
+#' @noRd
 MarginalLikelihoodEvaluator <- R6::R6Class(
     'MarginalLikelihoodEvaluator',
     public = list(
@@ -23,7 +22,6 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
         inv_k = NULL,
         chol_k = NULL,
         chol_lu = NULL,
-        # TODO What is uu
         uu = NULL,
         likelihood = NULL,
 

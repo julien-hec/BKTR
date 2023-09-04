@@ -6,6 +6,23 @@
 \description{
 R6 class encapsulating all BIXI dataframes
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{departure_df}}{The departure dataframe}
+
+\item{\code{spatial_features_df}}{The spatial features dataframe}
+
+\item{\code{temporal_features_df}}{The temporal features dataframe}
+
+\item{\code{spatial_positions_df}}{The spatial positions dataframe}
+
+\item{\code{temporal_positions_df}}{The temporal positions dataframe}
+
+\item{\code{data_df}}{The data dataframe}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -17,10 +34,14 @@ R6 class encapsulating all BIXI dataframes
 \if{html}{\out{<a id="method-BixiData-new"></a>}}
 \if{latex}{\out{\hypertarget{method-BixiData-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize the BIXI data class
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BixiData$new()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+A new BIXI data instance
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BixiData-clone"></a>}}
