@@ -2,12 +2,25 @@
 % Please edit documentation in R/kernels.R
 \name{KernelRQ}
 \alias{KernelRQ}
-\title{R6 class for Square Exponential Kernels}
+\title{R6 class for Rational Quadratic Kernels}
 \description{
-R6 class for Square Exponential Kernels
+R6 class for Rational Quadratic Kernels
 }
 \section{Super class}{
-\code{BKTR::Kernel} -> \code{KernelRQ}
+\code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelRQ}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{lengthscale}}{The lengthscale parameter instance of the kernel}
+
+\item{\code{alpha}}{The alpha parameter instance of the kernel}
+
+\item{\code{has_dist_matrix}}{The distance matrix between points in a tensor format}
+
+\item{\code{name}}{The kernel's name}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -31,6 +44,7 @@ R6 class for Square Exponential Kernels
 \if{html}{\out{<a id="method-KernelRQ-new"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelRQ-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new \code{KernelRQ} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelRQ$new(
   lengthscale = KernelParameter$new(2),
@@ -40,15 +54,35 @@ R6 class for Square Exponential Kernels
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lengthscale}}{KernelParameter: The lengthscale parameter instance of the kernel}
+
+\item{\code{alpha}}{KernelParameter: The alpha parameter instance of the kernel}
+
+\item{\code{kernel_variance}}{Numeric: The variance of the kernel}
+
+\item{\code{jitter_value}}{Numeric: The jitter value to add to the kernel matrix}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new \code{KernelRQ} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelRQ-core_kernel_fn"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelRQ-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
+Method to compute the core kernel's covariance matrix
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelRQ$core_kernel_fn()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The core kernel's covariance matrix
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelRQ-clone"></a>}}

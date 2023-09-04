@@ -6,9 +6,25 @@
 \description{
 R6 class for Composed Kernels
 }
-\keyword{internal}
 \section{Super class}{
-\code{BKTR::Kernel} -> \code{KernelComposed}
+\code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelComposed}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{name}}{The kernel's name}
+
+\item{\code{parameters}}{The parameters of the kernel (list of \code{KernelParameter})}
+
+\item{\code{left_kernel}}{The left kernel to use for composition}
+
+\item{\code{right_kernel}}{The right kernel to use for composition}
+
+\item{\code{composition_operation}}{The operation to use for composition}
+
+\item{\code{has_dist_matrix}}{Identify if the kernel has a distance matrix or not}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -32,28 +48,57 @@ R6 class for Composed Kernels
 \if{html}{\out{<a id="method-KernelComposed-new"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelComposed-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new \code{KernelComposed} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelComposed$new(left_kernel, right_kernel, new_name, composition_operation)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{left_kernel}}{Kernel: The left kernel to use for composition}
+
+\item{\code{right_kernel}}{Kernel: The right kernel to use for composition}
+
+\item{\code{new_name}}{String: The name of the composed kernel}
+
+\item{\code{composition_operation}}{CompositionOps: The operation to use for composition}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelComposed-core_kernel_fn"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelComposed-core_kernel_fn}{}}}
 \subsection{Method \code{core_kernel_fn()}}{
+Method to compute the core kernel's covariance matrix
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelComposed$core_kernel_fn()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The core kernel's covariance matrix
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelComposed-set_positions"></a>}}
 \if{latex}{\out{\hypertarget{method-KernelComposed-set_positions}{}}}
 \subsection{Method \code{set_positions()}}{
+Method to set the kernel's positions and compute the distance matrix
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{KernelComposed$set_positions(positions_df)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{positions_df}}{Dataframe: The positions of the points in a dataframe format}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+NULL, set the kernel's positions and compute the distance matrix
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-KernelComposed-clone"></a>}}

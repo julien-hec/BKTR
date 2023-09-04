@@ -9,18 +9,28 @@ KernelParameter contains all information and behaviour related to a kernel param
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{The}}{kernel associated with the parameter (it is set at kernel instanciation)}
+\item{\code{value}}{The hyperparameter mean's prior value or its constant value}
 
-\item{\code{The}}{kernel parameter's name}
+\item{\code{is_fixed}}{Says if the kernel parameter is fixed or not (if fixed, there is no sampling)}
+
+\item{\code{lower_bound}}{The hyperparameter's minimal value during sampling}
+
+\item{\code{upper_bound}}{The hyperparameter's maximal value during sampling}
+
+\item{\code{slice_sampling_scale}}{The sampling range's amplitude}
+
+\item{\code{hparam_precision}}{Precision of the hyperparameter}
+
+\item{\code{kernel}}{The kernel associated with the parameter (it is set at kernel instanciation)}
+
+\item{\code{name}}{The kernel parameter's name}
 }
 \if{html}{\out{</div>}}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{The}}{kernel associated with the parameter (it is set at kernel instanciation)}
-
-\item{\code{The}}{kernel parameter's name}
+\item{\code{full_name}}{The kernel parameter's full name}
 }
 \if{html}{\out{</div>}}
 }
@@ -61,7 +71,7 @@ Create a new \code{KernelParameter} object.
 
 \item{\code{slice_sampling_scale}}{Numeric: The sampling range's amplitude (Paper - \eqn{\rho})}
 
-\item{\code{hparam_precision}}{Numeric: WHAT IS THAT? TODO}
+\item{\code{hparam_precision}}{Numeric: The hyperparameter's precision}
 }
 \if{html}{\out{</div>}}
 }
@@ -82,6 +92,8 @@ Set \code{Kernel} for a given \code{KernelParameter} object.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{kernel}}{Kernel: The kernel to associate with the parameter}
+
+\item{\code{param_name}}{String: The parameter's name}
 }
 \if{html}{\out{</div>}}
 }

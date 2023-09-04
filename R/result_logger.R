@@ -8,8 +8,7 @@
 #' @description The ResultLogger encapsulate all the behavior related to
 #' logging iteration information during the BKTR algorithm
 #'
-#' @export
-#' @keywords internal
+#' @noRd
 ResultLogger <- R6::R6Class(
     'ResultLogger',
     public = list(

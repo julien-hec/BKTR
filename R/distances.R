@@ -1,6 +1,8 @@
 #' @title Distance tensor checks
 #'
 #' @description Check that two tensors are valid for distance computation
+#'
+#' @noRd
 check_dist_tensor_dimensions <- function(x1, x2, expected_nb_dim = 2, expected_last_dim_shape = NULL) {
     if (!(TSR$is_tensor(x1) && TSR$is_tensor(x2))) {
         stop('Distance params must be tensors')
@@ -22,6 +24,8 @@ check_dist_tensor_dimensions <- function(x1, x2, expected_nb_dim = 2, expected_l
 #' @title Function to compute a tensor's euclidean distance
 #'
 #' @description Function to compute the euclidean distance between a tensor and its transpose.
+#'
+#' @noRd
 get_euclidean_dist_tsr <- function(x) {
     check_dist_tensor_dimensions(x, x)
     x1 <- x$unsqueeze(1)
@@ -34,6 +38,8 @@ get_euclidean_dist_tsr <- function(x) {
 #' @description Project coordinates with mercator projection on a 2D plane for
 #' a given scale. Keep track of the scale and the center of the projection to
 #' be able to project new coordinates which is useful during interpolation.
+#'
+#' @noRd
 GeoMercatorProjector <- R6::R6Class(
     'GeoMercatorProjector',
     public = list(

@@ -10,6 +10,15 @@ in BKTR
 \section{Super class}{
 \code{\link[R6P:Singleton]{R6P::Singleton}} -> \code{TensorOperator}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{fp_type}}{The floating point type to use for the tensor operations}
+
+\item{\code{fp_device}}{The device to use for the tensor operations}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -35,136 +44,318 @@ in BKTR
 \if{html}{\out{<a id="method-TensorOperator-new"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize the tensor operator with the given floating point type
+and device
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$new(fp_type = "float64", fp_device = "cpu")}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fp_type}}{The floating point type to use for the tensor operations (either
+"float64" or "float32")}
+
+\item{\code{fp_device}}{The device to use for the tensor operations (either "cpu" or
+"cuda")}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor operator instance
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-set_params"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-set_params}{}}}
 \subsection{Method \code{set_params()}}{
+Set the tensor operator parameters
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$set_params(fp_type = NULL, fp_device = NULL, seed = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fp_type}}{The floating point type to use for the tensor operations (either
+"float64" or "float32")}
+
+\item{\code{fp_device}}{The device to use for the tensor operations (either "cpu" or
+"cuda")}
+
+\item{\code{seed}}{The seed to use for the random number generator}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-get_default_jitter"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-get_default_jitter}{}}}
 \subsection{Method \code{get_default_jitter()}}{
+Get the default jitter value for the floating point type used by the tensor operator
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$get_default_jitter()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+The default jitter value for the floating point type used by the tensor operator
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-tensor"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-tensor}{}}}
 \subsection{Method \code{tensor()}}{
+Create a tensor from a vector or matrix of data with the tensor operator dtype and device
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$tensor(tensor_data)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor_data}}{The vector or matrix of data to create the tensor from}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor with the tensor operator dtype and device
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-is_tensor"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-is_tensor}{}}}
 \subsection{Method \code{is_tensor()}}{
+Check if a provided object is a tensor
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$is_tensor(tensor)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tensor}}{The object to check}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A boolean indicating if the object is a tensor
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-eye"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-eye}{}}}
 \subsection{Method \code{eye()}}{
+Create a tensor with a diagonal of ones and zeros with the tensor operator dtype and device
+for a given dimension
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$eye(eye_dim)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{eye_dim}}{The dimension of the tensor to create}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor with a diagonal of ones and zeros with the tensor operator dtype and device
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-ones"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-ones}{}}}
 \subsection{Method \code{ones()}}{
+Create a tensor of ones with the tensor operator dtype and device for a given dimension
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$ones(tsr_dim)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tsr_dim}}{The dimension of the tensor to create}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor of ones with the tensor operator dtype and device
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-zeros"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-zeros}{}}}
 \subsection{Method \code{zeros()}}{
+Create a tensor of zeros with the tensor operator dtype and device for a given dimension
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$zeros(tsr_dim)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tsr_dim}}{The dimension of the tensor to create}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor of zeros with the tensor operator dtype and device
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-rand"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-rand}{}}}
 \subsection{Method \code{rand()}}{
+Create a tensor of random uniform values with the tensor operator dtype and
+device for a given dimension
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$rand(tsr_dim)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tsr_dim}}{The dimension of the tensor to create}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor of random values with the tensor operator dtype and device
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-randn"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-randn}{}}}
 \subsection{Method \code{randn()}}{
+Create a tensor of random normal values with the tensor operator dtype and device
+for a given dimension
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$randn(tsr_dim)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{tsr_dim}}{The dimension of the tensor to create}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor of random normal values with the tensor operator dtype and device
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-randn_like"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-randn_like}{}}}
 \subsection{Method \code{randn_like()}}{
+Create a tensor of random uniform values with the same shape as a given tensor
+with the tensor operator dtype and device
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$randn_like(input_tensor)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{input_tensor}}{The tensor to use as a shape reference}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor of random uniform values with the same shape as a given tensor
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-arange"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-arange}{}}}
 \subsection{Method \code{arange()}}{
+Create a tensor of a range of values with the tensor operator dtype and device
+for a given start and end
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$arange(start, end)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{start}}{The start of the range}
+
+\item{\code{end}}{The end of the range}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor of a range of values with the tensor operator dtype and device
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-rand_choice"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-rand_choice}{}}}
 \subsection{Method \code{rand_choice()}}{
+Choose random values from a tensor for a given number of samples
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$rand_choice(choices_tsr, nb_sample, use_replace = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{choices_tsr}}{The tensor to choose values from}
+
+\item{\code{nb_sample}}{The number of samples to choose}
+
+\item{\code{use_replace}}{A boolean indicating if the sampling should be done with replacement}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new tensor of randomly chosen values from a tensor
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-kronecker_prod"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-kronecker_prod}{}}}
 \subsection{Method \code{kronecker_prod()}}{
+Efficiently compute the kronecker product of two matrices in tensor format
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$kronecker_prod(a, b)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{a}}{The first tensor}
+
+\item{\code{b}}{The second tensor}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The kronecker product of the two matrices
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-khatri_rao_prod"></a>}}
 \if{latex}{\out{\hypertarget{method-TensorOperator-khatri_rao_prod}{}}}
 \subsection{Method \code{khatri_rao_prod()}}{
+Efficiently compute the khatri rao product of two matrices in tensor format
+having the same number of columns
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{TensorOperator$khatri_rao_prod(a, b)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{a}}{The first tensor}
+
+\item{\code{b}}{The second tensor}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The khatri rao product of the two matrices
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-TensorOperator-clone"></a>}}

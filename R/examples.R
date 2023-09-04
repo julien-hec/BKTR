@@ -14,13 +14,21 @@ normalize_0_1 <- function(x) {
 BixiData <- R6::R6Class(
     'BixiData',
     public = list(
+        #' @field departure_df The departure dataframe
         departure_df = NULL,
+        #' @field spatial_features_df The spatial features dataframe
         spatial_features_df = NULL,
+        #' @field temporal_features_df The temporal features dataframe
         temporal_features_df = NULL,
+        #' @field spatial_positions_df The spatial positions dataframe
         spatial_positions_df = NULL,
+        #' @field temporal_positions_df The temporal positions dataframe
         temporal_positions_df = NULL,
+        #' @field data_df The data dataframe
         data_df = NULL,
 
+        #' @description Initialize the BIXI data class
+        #' @return A new BIXI data instance
         initialize = function() {
             self$departure_df <- BKTR::bixi_station_departures
             # Normalize departure counts to [0, 1]

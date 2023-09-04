@@ -1,13 +1,15 @@
 #' @import ggplot2
 #' @import ggmap
+#' @importFrom stats reshape rWishart time
 
+#' @title Plot Temporal Beta Coefficients
 #' @description Create a plot of the beta values through time for a given
 #' spatial point and a set of feature labels.
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
 #' @param plot_feature_labels Array: Array of feature labels to plot.
 #' @param spatial_point_label String: Spatial point label to plot.
 #' @param date_format String: Format of the date to use in bktr dataframes for the time.
-#'   Defaults to '%Y-%m-%d'.
+#'   Defaults to '\%Y-\%m-\%d'.
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Numeric: Figure width when figure is shown. Defaults to 8.5.
 #' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.5.
@@ -40,10 +42,10 @@ plot_temporal_betas <- function(
 
     if (!is.null(date_format)) beta_est_df$time <- as.Date(beta_est_df$time, format = date_format)
     fig <- (
-        ggplot(beta_est_df, aes(time, Mean, group = feature, color = feature))
+        ggplot(beta_est_df, aes(.data$time, .data$Mean, group = .data$feature, color = .data$feature))
         + geom_line()
         + geom_ribbon(
-            aes(ymin = Low2.5p, ymax = Up97.5p, fill = feature),
+            aes(ymin = .data$Low2.5p, ymax = .data$Up97.5p, fill = .data$feature),
             alpha = 0.3,
             color = NA
         )
@@ -60,6 +62,7 @@ plot_temporal_betas <- function(
     print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
 }
 
+#' @title Plot Spatial Beta Coefficients
 #' @description Create a plot of beta values through space for a given
 #' temporal point and a set of feature labels.
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
@@ -95,7 +98,7 @@ plot_spatial_betas <- function(
     # Get only spatial estimates
     beta_df <- bktr_reg$beta_estimates
     out_col_names <- c('location', plot_feature_labels)
-    beta_df <- beta_df[beta_df$time == temporal_point_label, ..out_col_names]
+    beta_df <- beta_df[beta_df$time == temporal_point_label, out_col_names, with = FALSE]
 
     coords_projector <- bktr_reg$geo_coords_projector
     is_map <- !is.null(coords_projector)
@@ -119,7 +122,7 @@ plot_spatial_betas <- function(
     if (is_map) {
         map_type <- ifelse(use_dark_mode, 'toner', 'toner-lite')
         fig <- (
-            qmplot(x = longitude, y = latitude, color = value, data = full_df, maptype = map_type)
+            qmplot(x = .data$longitude, y = .data$latitude, color = .data$value, data = full_df, maptype = map_type)
             + facet_wrap(~feature, ncol = nb_cols)
             + theme_bw()
             + theme(
@@ -136,7 +139,7 @@ plot_spatial_betas <- function(
         x_col_name <- colnames(full_df)[2]
         y_col_name <- colnames(full_df)[3]
         fig <- (
-            ggplot(full_df, aes(x = .data[[x_col_name]], y = .data[[y_col_name]], color = value))
+            ggplot(full_df, aes(x = .data[[x_col_name]], y = .data[[y_col_name]], color = .data$value))
             + geom_point()
             + facet_wrap(~feature, ncol = nb_cols)
             + theme_bw()
@@ -152,6 +155,7 @@ plot_spatial_betas <- function(
 
 
 
+#' @title Plot Beta Coefficients Distribution
 #' @description Plot the distribution of beta values for a given list of labels.
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
 #' @param labels_list List: List of labels tuple (spatial, temporal, feature) for
@@ -185,7 +189,7 @@ plot_beta_dists <- function(
         times = col_names
     )
     fig <- (
-        ggplot(df, aes(x = labels, y = value, fill = labels))
+        ggplot(df, aes(x = .data$labels, y = .data$value, fill = .data$labels))
         + geom_violin(trim = FALSE)
         + ggtitle(plot_title)
         + ylab('Beta Value')
@@ -199,6 +203,7 @@ plot_beta_dists <- function(
 }
 
 
+#' @title Plot Beta Coefficients Distribution Regrouped by Covariates
 #' @description Plot the distribution of beta estimates regrouped by covariates.
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
 #' @param feature_labels Array or NULL: Array of feature labels for
@@ -230,7 +235,7 @@ plot_covariates_beta_dists <- function(
 
     plot_title <- 'Distribution of beta estimates by feature across time and space'
     full_df <- reshape(
-        bktr_reg$beta_estimates[, ..feature_labels],
+        bktr_reg$beta_estimates[, feature_labels, with = FALSE],
         direction = 'long',
         v.names = 'value',
         timevar = 'feature',
@@ -238,7 +243,7 @@ plot_covariates_beta_dists <- function(
         times = feature_labels
     )
     fig <- (
-        ggplot(full_df, aes(x=feature, y=value, fill=feature))
+        ggplot(full_df, aes(x = .data$feature, y = .data$value, fill = .data$feature))
         + geom_violin()
         + ggtitle(plot_title)
         + ylab('Beta Value')
@@ -251,6 +256,7 @@ plot_covariates_beta_dists <- function(
     print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
 }
 
+#' @title Plot Hyperparameters Distributions
 #' @description Plot the distribution of hyperparameters through iterations
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
 #' @param hyperparameters Array or NULL: Array of hyperparameters to plot.
@@ -293,7 +299,7 @@ plot_hyperparams_dists <- function(
         times = hparams
     )
     fig <- (
-        ggplot(df, aes(x = hyperparameter, y = value, fill = hyperparameter))
+        ggplot(df, aes(x = .data$hyperparameter, y = .data$value, fill = .data$hyperparameter))
         + geom_violin(trim = FALSE)
         + ggtitle('Posterior Distribution of BKTR Hyperparameters')
         + ylab('Hyperparameter Value')
@@ -306,6 +312,7 @@ plot_hyperparams_dists <- function(
     print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
 }
 
+#' @title Plot Hyperparameters Traceplot
 #' @description Plot the evolution of hyperparameters through iterations. (Traceplot)
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
 #' @param hyperparameters Array or NULL: Array of hyperparameters to plot.
@@ -341,7 +348,7 @@ plot_hyperparams_traceplot <- function(
     }
     df_cols <- c('iter', hparams)
     df <- reshape(
-        df[, ..df_cols],
+        df[, df_cols, with = FALSE],
         direction = 'long',
         v.names = 'value',
         idvar = 'iter',
@@ -350,14 +357,14 @@ plot_hyperparams_traceplot <- function(
         times = hparams
     )
     fig <- (
-        ggplot(df, aes(iter, value, group = hyperparameter, color = hyperparameter))
+        ggplot(df, aes(.data$iter, .data$value, group = .data$hyperparameter, color = .data$hyperparameter))
         + geom_line()
         + ggtitle('Hyperparameter values through sampling iterations (Traceplot)')
         + theme_bw()
         + ylab('Hyperparameter Value')
         + xlab('Sampling Iter')
         + labs(fill = 'Hyperparameter', color = 'Hyperparameter')
-        + theme(legend.position='bottom')
+        + theme(legend.position = 'bottom')
     )
     if (!show_figure) {
         return(fig)
@@ -366,6 +373,7 @@ plot_hyperparams_traceplot <- function(
 }
 
 
+#' @title Plot Y Estimates
 #' @description Plot y estimates vs observed y values.
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
@@ -393,7 +401,7 @@ plot_y_estimates <- function(
     max_y <- max(y_list)
     df <- data.table(y = y_list, y_est = y_est_list)
     fig <- (
-        ggplot(df, aes(x = y, y = y_est))
+        ggplot(df, aes(x = .data$y, y = .data$y_est))
         + geom_point(color = '#39a7d0', alpha = 0.6, shape = 21, fill = '#20a0d0')
         + geom_segment(aes(x = min_y, y = min_y, xend = max_y, yend = max_y), color = 'black',
                        linetype = 'twodash', linewidth = 1)

@@ -15,46 +15,77 @@
 BKTRRegressor <- R6::R6Class(
     classname = 'BKTRRegressor',
     public = list(
+        #' @field data_df The dataframe containing all the covariates through time and space (including
+        #' the response variable)
         data_df = NULL,
+        #' @field y The response variable tensor
         y = NULL,
+        #' @field omega The tensor indicating which response values are not missing
         omega = NULL,
+        #' @field covariates The tensor containing all the covariates
         covariates = NULL,
+        #' @field covariates_dim The dimensions of the covariates tensor
         covariates_dim = NULL,
+        #' @field logged_params_tensor The tensor containing all the sampled hyperparameters
         logged_params_tensor = NULL,
+        #' @field tau The precision hyperparameter
         tau = NULL,
-        # Covariate decompositions (change during iter)
+        #' @field spatial_decomp The spatial covariate decomposition
         spatial_decomp = NULL, # U
+        #' @field temporal_decomp The temporal covariate decomposition
         temporal_decomp = NULL, # V
+        #' @field covs_decomp The feature covariate decomposition
         covs_decomp = NULL, # C or W
         # Result Logger
+        #' @field result_logger The result logger instance used to store the results of the MCMC sampling
         result_logger = NULL,
+        #' @field has_completed_sampling Boolean showing wheter the MCMC sampling has been completed
         has_completed_sampling = FALSE,
         # Kernels
+        #' @field spatial_kernel The spatial kernel used
         spatial_kernel = NULL,
+        #' @field temporal_kernel The temporal kernel used
         temporal_kernel = NULL,
+        #' @field spatial_positions_df The dataframe containing the spatial positions
         spatial_positions_df = NULL,
+        #' @field temporal_positions_df The dataframe containing the temporal positions
         temporal_positions_df = NULL,
         # Samplers
+        #' @field spatial_params_sampler The spatial kernel hyperparameter sampler
         spatial_params_sampler = NULL,
+        #' @field temporal_params_sampler The temporal kernel hyperparameter sampler
         temporal_params_sampler = NULL,
+        #' @field tau_sampler The tau hyperparameter sampler
         tau_sampler = NULL,
+        #' @field precision_matrix_sampler The precision matrix sampler
         precision_matrix_sampler = NULL,
         # Likelihood evaluators
+        #' @field spatial_ll_evaluator The spatial likelihood evaluator
         spatial_ll_evaluator = NULL,
+        #' @field temporal_ll_evaluator The temporal likelihood evaluator
         temporal_ll_evaluator = NULL,
         # Params
+        #' @field rank_decomp The rank of the CP decomposition
         rank_decomp = NULL,
+        #' @field burn_in_iter The number of burn in iterations
         burn_in_iter = NULL,
+        #' @field sampling_iter The number of sampling iterations
         sampling_iter = NULL,
+        #' @field max_iter The total number of iterations
         max_iter = NULL,
+        #' @field a_0 The initial value for the shape in the gamma function generating tau
         a_0 = NULL,
+        #' @field b_0 The initial value for the rate in the gamma function generating tau
         b_0 = NULL,
+        #' @field formula The formula used to specify the relation between the response variable and the covariates
         formula = NULL,
-        # Labels
+        #' @field spatial_labels The spatial labels
         spatial_labels = NULL,
+        #' @field temporal_labels The temporal labels
         temporal_labels = NULL,
+        #' @field feature_labels The feature labels
         feature_labels = NULL,
-        # Geographical coordinates projector
+        #' @field geo_coords_projector The geographic coordinates projector
         geo_coords_projector = NULL,
 
         #' @description Create a new \code{BKTRRegressor} object.
@@ -72,8 +103,8 @@ BKTRRegressor <- R6::R6Class(
         #' column of the data frame will be used as the response variable and all the
         #' other columns will be used as the covariates.  Defaults to Null.
         #' @param rank_decomp Integer: Rank of the CP decomposition (Paper -- \eqn{R}). Defaults to 10.
-        #' @param burn_in_iter Integer: Number of iteration before sampling (Paper -- :math:`K_1`). Defaults to 500.
-        #' @param sampling_iter Integer: Number of sampling iterations (Paper -- :math:`K_2`). Defaults to 500.
+        #' @param burn_in_iter Integer: Number of iteration before sampling (Paper -- \eqn{K_1}). Defaults to 500.
+        #' @param sampling_iter Integer: Number of sampling iterations (Paper -- \eqn{K_2}). Defaults to 500.
         #' @param spatial_positions_df data.table: Spatial kernel input tensor used
         #' to calculate covariates' distance. Vector of length equal to the number of location points.
         #' @param temporal_positions_df data.table: Temporal kernel input tensor used to
@@ -291,13 +322,13 @@ BKTRRegressor <- R6::R6Class(
             return(list(new_y_df = new_y_df, new_beta_df = new_beta_df))
         },
 
-        #~ @description Return all sampled betas through sampling iterations for a given
-        #~ set of spatial, temporal and feature labels. Useful for plotting the
-        #~ distribution of sampled beta values.
-        #~ @param spatial_label String: The spatial label for which we want to get the betas
-        #~ @param temporal_label String: The temporal label for which we want to get the betas
-        #~ @param feature_label String: The feature label for which we want to get the betas
-        #~ @return A list containing the sampled betas through iteration for the given labels
+        #' @description Return all sampled betas through sampling iterations for a given
+        #' set of spatial, temporal and feature labels. Useful for plotting the
+        #' distribution of sampled beta values.
+        #' @param spatial_label String: The spatial label for which we want to get the betas
+        #' @param temporal_label String: The temporal label for which we want to get the betas
+        #' @param feature_label String: The feature label for which we want to get the betas
+        #' @return A list containing the sampled betas through iteration for the given labels
         get_iterations_betas = function(spatial_label, temporal_label, feature_label) {
             if (!self$has_completed_sampling) {
                 stop('Beta values can only be accessed after MCMC sampling.')
@@ -508,8 +539,8 @@ BKTRRegressor <- R6::R6Class(
 
         #~ @description Sample a new covariate decomposition from a mulivariate normal distribution
         #~ @param initial_decomp tensor: Decomposition of the previous iteration
-        #~ @param chol_l tensor: The cholesky decomposition of the #TODO
-        #~ @param uu tensor: #TODO
+        #~ @param chol_l tensor: The cholesky decomposition of the l tensor
+        #~ @param uu tensor: uu decomposition
         #~ @return A tensor containing the newly sampled covariate decomposition
         sample_decomp_norm = function(initial_decomp, chol_l, uu) {
             precision_mat <- chol_l$t()
@@ -637,18 +668,21 @@ BKTRRegressor <- R6::R6Class(
     ),
 
     active = list(
+        #' @field summary A summary of the BKTRRegressor instance
         summary = function() {
             if (!self$has_completed_sampling) {
                 stop('Summary can only be accessed after running the MCMC sampling.')
             }
             return(self$result_logger$summary())
         },
+        #' @field beta_covariates_summary A dataframe containing the summary of the beta covariates
         beta_covariates_summary = function() {
             if (!self$has_completed_sampling) {
                 stop('Beta covariates summary can only be accessed after running the MCMC sampling.')
             }
             return(self$result_logger$beta_covariates_summary_df)
         },
+        #' @field y_estimates A dataframe containing the y estimates
         y_estimates = function() {
             if (!self$has_completed_sampling) {
                 stop('Y estimates can only be accessed after running the MCMC sampling.')
@@ -657,26 +691,28 @@ BKTRRegressor <- R6::R6Class(
             y_est[as.array(bktr_regressor$omega$flatten()$cpu()) == 0, 3] <- NaN
             return(y_est)
         },
+        #' @field imputed_y_estimates A dataframe containing the imputed y estimates
         imputed_y_estimates = function() {
             if (!self$has_completed_sampling) {
                 stop('Imputed Y estimates can only be accessed after running the MCMC sampling.')
             }
             return(self$result_logger$y_estimates_df)
         },
-        beta_estimates = function(value) {
+        #' @field beta_estimates A dataframe containing the beta estimates
+        beta_estimates = function() {
             if (!self$has_completed_sampling) {
                 stop('Beta estimates can only be accessed after running the MCMC sampling.')
             }
             return(self$result_logger$beta_estimates_df)
         },
+        #' @field hyperparameters_per_iter_df A dataframe containing the beta estimates per iteration
         hyperparameters_per_iter_df = function() {
             if (!self$has_completed_sampling) {
                 stop('Hyperparameters trace can only be accessed after running the MCMC sampling.')
             }
             return(self$result_logger$hyperparameters_per_iter_df)
         },
-        #~ @description List of all used decomposition tensors
-        # TODO this could be transformed as params in the related functions
+        #' @field decomposition_tensors List of all used decomposition tensors
         decomposition_tensors = function() {
             return(
                 list(
@@ -691,14 +727,18 @@ BKTRRegressor <- R6::R6Class(
 )
 
 #' @title Summarize a BKTRRegressor instance
+#' @param object A BKTRRegressor instance
+#' @param ... Additional arguments to comply with generic function
 #' @export
-summary.BKTRRegressor <- function(bktr_reg) {
-    cat(bktr_reg$summary)
+summary.BKTRRegressor <- function(object, ...) {
+    cat(object$summary)
 }
 
 
 #' @title Print the summary of a BKTRRegressor instance
+#' @param x A BKTRRegressor instance
+#' @param ... Additional arguments to comply with generic function
 #' @export
-print.BKTRRegressor <- function(bktr_reg) {
-    cat(bktr_reg$summary)
+print.BKTRRegressor <- function(x, ...) {
+    cat(x$summary)
 }
