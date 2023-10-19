@@ -76,6 +76,7 @@ plot_temporal_betas <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Numeric: Figure width when figure is shown. Defaults to 8.5.
 #' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.5.
+#' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
@@ -89,7 +90,8 @@ plot_spatial_betas <- function(
     zoom = 11,
     google_token = NULL,
     fig_width = 8.5,
-    fig_height = 5.5
+    fig_height = 5.5,
+    fig_resolution = 200
 ) {
     if (!bktr_reg$has_completed_sampling) {
         stop('Plots can only be accessed after MCMC sampling.')
@@ -175,9 +177,9 @@ plot_spatial_betas <- function(
     if (!show_figure) {
         return(fig)
     }
-    # The following options are for notebooks rendering (like Colab)
-    options(repr.plot.width = fig_width, repr.plot.height = fig_height, repr.plot.res = 200)
-    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+    # The following options are mainly for notebooks rendering (like Colab)
+    options(repr.plot.width = fig_width, repr.plot.height = fig_height, repr.plot.res = fig_resolution)
+    print(fig)
 }
 
 
