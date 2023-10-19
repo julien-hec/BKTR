@@ -2,6 +2,22 @@
 #' @import ggmap
 #' @importFrom stats reshape
 
+#' @title Print ggplot figure
+#' @description Utility function to print a ggplot figure
+#' @param fig ggplot: ggplot figure to print
+#' @param fig_width Numeric: Figure width.
+#' @param fig_height Numeric: Figure height.
+#' @param fig_resolution Numeric: Figure resolution PPI.
+#' @return NULL
+#'
+#' @noRd
+print_ggplot_fig <- function(fig, fig_width, fig_height, fig_resolution) {
+    # The following options are mainly for notebooks rendering (like Colab)
+    options(repr.plot.width = fig_width, repr.plot.height = fig_height, repr.plot.res = fig_resolution)
+    # The following sizes are for RStudio and other rendering
+    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+}
+
 #' @title Plot Temporal Beta Coefficients
 #' @description Create a plot of the beta values through time for a given
 #' spatial point and a set of feature labels.
@@ -13,6 +29,7 @@
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Numeric: Figure width when figure is shown. Defaults to 8.5.
 #' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.5.
+#' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
@@ -23,7 +40,8 @@ plot_temporal_betas <- function(
     date_format = '%Y-%m-%d',
     show_figure = TRUE,
     fig_width = 8.5,
-    fig_height = 5.5
+    fig_height = 5.5,
+    fig_resolution = 200
 ) {
     if (!bktr_reg$has_completed_sampling) {
         stop('Plots can only be accessed after MCMC sampling.')
@@ -59,7 +77,7 @@ plot_temporal_betas <- function(
     if (!show_figure) {
         return(fig)
     }
-    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+    print_ggplot_fig(fig, fig_width, fig_height, fig_resolution)
 }
 
 #' @title Plot Spatial Beta Coefficients
@@ -177,9 +195,7 @@ plot_spatial_betas <- function(
     if (!show_figure) {
         return(fig)
     }
-    # The following options are mainly for notebooks rendering (like Colab)
-    options(repr.plot.width = fig_width, repr.plot.height = fig_height, repr.plot.res = fig_resolution)
-    print(fig)
+    print_ggplot_fig(fig, fig_width, fig_height, fig_resolution)
 }
 
 
@@ -192,6 +208,7 @@ plot_spatial_betas <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 6.
+#' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
@@ -200,7 +217,8 @@ plot_beta_dists <- function(
     labels_list,
     show_figure = TRUE,
     fig_width = 9,
-    fig_height = 6
+    fig_height = 6,
+    fig_resolution = 200
 ) {
     if (!bktr_reg$has_completed_sampling) {
         stop('Plots can only be accessed after MCMC sampling.')
@@ -228,7 +246,7 @@ plot_beta_dists <- function(
     if (!show_figure) {
         return(fig)
     }
-    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+    print_ggplot_fig(fig, fig_width, fig_height, fig_resolution)
 }
 
 
@@ -240,6 +258,7 @@ plot_beta_dists <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 6.
+#' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
@@ -248,7 +267,8 @@ plot_covariates_beta_dists <- function(
     feature_labels,
     show_figure = TRUE,
     fig_width = 9,
-    fig_height = 6
+    fig_height = 6,
+    fig_resolution = 200
 ) {
     if (!bktr_reg$has_completed_sampling) {
         stop('Plots can only be accessed after MCMC sampling.')
@@ -282,7 +302,7 @@ plot_covariates_beta_dists <- function(
     if (!show_figure) {
         return(fig)
     }
-    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+    print_ggplot_fig(fig, fig_width, fig_height, fig_resolution)
 }
 
 #' @title Plot Hyperparameters Distributions
@@ -293,6 +313,7 @@ plot_covariates_beta_dists <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 6.
+#' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
@@ -301,7 +322,8 @@ plot_hyperparams_dists <- function(
     hyperparameters = NULL,
     show_figure = TRUE,
     fig_width = 9,
-    fig_height = 6
+    fig_height = 6,
+    fig_resolution = 200
 ) {
     if (!bktr_reg$has_completed_sampling) {
         stop('Plots can only be accessed after MCMC sampling.')
@@ -338,7 +360,7 @@ plot_hyperparams_dists <- function(
     if (!show_figure) {
         return(fig)
     }
-    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+    print_ggplot_fig(fig, fig_width, fig_height, fig_resolution)
 }
 
 #' @title Plot Hyperparameters Traceplot
@@ -349,6 +371,7 @@ plot_hyperparams_dists <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Integer: Figure width. Defaults to 9.
 #' @param fig_height Integer: Figure height. Defaults to 5.5.
+#' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
 #' @export
@@ -357,7 +380,8 @@ plot_hyperparams_traceplot <- function(
     hyperparameters = NULL,
     show_figure = TRUE,
     fig_width = 9,
-    fig_height = 5.5
+    fig_height = 5.5,
+    fig_resolution = 200
 ) {
     if (!bktr_reg$has_completed_sampling) {
         stop('Plots can only be accessed after MCMC sampling.')
@@ -398,7 +422,7 @@ plot_hyperparams_traceplot <- function(
     if (!show_figure) {
         return(fig)
     }
-    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+    print_ggplot_fig(fig, fig_width, fig_height, fig_resolution)
 }
 
 
@@ -408,6 +432,7 @@ plot_hyperparams_traceplot <- function(
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Numeric: Figure width when figure is shown. Defaults to 5.
 #' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.
+#' @param fig_resolution Numeric: Figure resolution PPI when figure is shown. Defaults to 200.
 #' @param fig_title String or NULL: Figure title if provided. Defaults to 'y estimates vs observed y values'
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
@@ -417,6 +442,7 @@ plot_y_estimates <- function(
     show_figure = TRUE,
     fig_width = 5,
     fig_height = 5,
+    fig_resolution = 200,
     fig_title = 'y estimates vs observed y values'
 ) {
     if (!bktr_reg$has_completed_sampling) {
@@ -444,5 +470,5 @@ plot_y_estimates <- function(
     if (!show_figure) {
         return(fig)
     }
-    print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
+    print_ggplot_fig(fig, fig_width, fig_height, fig_resolution)
 }
