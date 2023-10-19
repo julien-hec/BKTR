@@ -1,6 +1,6 @@
 #' @import ggplot2
 #' @import ggmap
-#' @importFrom stats reshape rWishart time
+#' @importFrom stats reshape
 
 #' @title Plot Temporal Beta Coefficients
 #' @description Create a plot of the beta values through time for a given
@@ -70,6 +70,9 @@ plot_temporal_betas <- function(
 #' @param temporal_point_label String: Temporal point label to plot.
 #' @param nb_cols Integer: The number of columns to use in the facet grid.
 #' @param use_dark_mode Boolean: Whether to use a dark mode for the geographic map or not.
+#' @param zoom Integer: Zoom level for the geographic map. Defaults to 11.
+#' @param google_token String or NULL: Google API token to use for the geographic map. Defaults to NULL.
+#'  If NULL, use Stamen maps.
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Numeric: Figure width when figure is shown. Defaults to 8.5.
 #' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.5.
@@ -83,6 +86,8 @@ plot_spatial_betas <- function(
     nb_cols = 1,
     use_dark_mode = TRUE,
     show_figure = TRUE,
+    zoom = 11,
+    google_token = NULL,
     fig_width = 8.5,
     fig_height = 5.5
 ) {
@@ -119,10 +124,29 @@ plot_spatial_betas <- function(
     )
 
     plot_title <- paste0('Estimated Beta at Time Point : ', temporal_point_label)
+    longitude <- latitude <- value <- NULL # Used for CRAN global binding checks
     if (is_map) {
-        map_type <- ifelse(use_dark_mode, 'toner', 'toner-lite')
+        is_google <- !is.null(google_token)
+        map_source <- ifelse(is_google, 'google', 'stamen')
+        map_color <- ifelse(is_google && use_dark_mode, 'bw', 'color')
+        if (is_google) {
+          map_type <- 'roadmap'
+        } else if (use_dark_mode) {
+          map_type <- 'toner'
+        } else {
+          map_type <- 'toner-lite'
+        }
         fig <- (
-            qmplot(x = .data$longitude, y = .data$latitude, color = .data$value, data = full_df, maptype = map_type)
+            qmplot(
+              x = longitude,
+              y = latitude,
+              color = value,
+              data = full_df,
+              source = map_source,
+              maptype = map_type,
+              mapcolor = map_color,
+              zoom = zoom
+            )
             + facet_wrap(~feature, ncol = nb_cols)
             + theme_bw()
             + theme(
@@ -150,6 +174,8 @@ plot_spatial_betas <- function(
     if (!show_figure) {
         return(fig)
     }
+    # The following options are for notebooks rendering (like Colab)
+    options(repr.plot.width = fig_width, repr.plot.height = fig_height, repr.plot.res = 200)
     print(fig, vp = grid::viewport(width = unit(fig_width, 'inches'), height = unit(fig_height, 'inches')))
 }
 
