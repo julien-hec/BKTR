@@ -130,6 +130,7 @@ plot_spatial_betas <- function(
         map_source <- ifelse(is_google, 'google', 'stamen')
         map_color <- ifelse(is_google && use_dark_mode, 'bw', 'color')
         if (is_google) {
+          ggmap::register_google(google_token)
           map_type <- 'roadmap'
         } else if (use_dark_mode) {
           map_type <- 'toner'
