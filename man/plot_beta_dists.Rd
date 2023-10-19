@@ -9,7 +9,8 @@ plot_beta_dists(
   labels_list,
   show_figure = TRUE,
   fig_width = 9,
-  fig_height = 6
+  fig_height = 6,
+  fig_resolution = 200
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ which to plot the beta distribution through iterations}
 \item{fig_width}{Integer: Figure width. Defaults to 9.}
 
 \item{fig_height}{Integer: Figure height. Defaults to 6.}
+
+\item{fig_resolution}{Numeric: Figure resolution PPI. Defaults to 200.}
 }
 \value{
 ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.

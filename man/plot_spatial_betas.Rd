@@ -11,8 +11,11 @@ plot_spatial_betas(
   nb_cols = 1,
   use_dark_mode = TRUE,
   show_figure = TRUE,
+  zoom = 11,
+  google_token = NULL,
   fig_width = 8.5,
-  fig_height = 5.5
+  fig_height = 5.5,
+  fig_resolution = 200
 )
 }
 \arguments{
@@ -28,9 +31,16 @@ plot_spatial_betas(
 
 \item{show_figure}{Boolean: Whether to show the figure. Defaults to True.}
 
+\item{zoom}{Integer: Zoom level for the geographic map. Defaults to 11.}
+
+\item{google_token}{String or NULL: Google API token to use for the geographic map. Defaults to NULL.
+If NULL, use Stamen maps.}
+
 \item{fig_width}{Numeric: Figure width when figure is shown. Defaults to 8.5.}
 
 \item{fig_height}{Numeric: Figure height when figure is shown. Defaults to 5.5.}
+
+\item{fig_resolution}{Numeric: Figure resolution PPI. Defaults to 200.}
 }
 \value{
 ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.

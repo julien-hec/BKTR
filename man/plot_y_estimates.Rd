@@ -9,6 +9,7 @@ plot_y_estimates(
   show_figure = TRUE,
   fig_width = 5,
   fig_height = 5,
+  fig_resolution = 200,
   fig_title = "y estimates vs observed y values"
 )
 }
@@ -20,6 +21,8 @@ plot_y_estimates(
 \item{fig_width}{Numeric: Figure width when figure is shown. Defaults to 5.}
 
 \item{fig_height}{Numeric: Figure height when figure is shown. Defaults to 5.}
+
+\item{fig_resolution}{Numeric: Figure resolution PPI when figure is shown. Defaults to 200.}
 
 \item{fig_title}{String or NULL: Figure title if provided. Defaults to 'y estimates vs observed y values'}
 }

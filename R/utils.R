@@ -1,5 +1,6 @@
 #' @import torch
 #' @include tensor_ops.R
+#' @importFrom stats rWishart
 
 # Private utility function to do a cross join between two data.tables.
 # Taken from https://github.com/Rdatatable/data.table/issues/1717

@@ -9,7 +9,8 @@ plot_hyperparams_traceplot(
   hyperparameters = NULL,
   show_figure = TRUE,
   fig_width = 9,
-  fig_height = 5.5
+  fig_height = 5.5,
+  fig_resolution = 200
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ If NULL, plot all hyperparameters. Defaults to NULL.}
 \item{fig_width}{Integer: Figure width. Defaults to 9.}
 
 \item{fig_height}{Integer: Figure height. Defaults to 5.5.}
+
+\item{fig_resolution}{Numeric: Figure resolution PPI. Defaults to 200.}
 }
 \value{
 ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
