@@ -11,7 +11,8 @@ plot_temporal_betas(
   date_format = "\%Y-\%m-\%d",
   show_figure = TRUE,
   fig_width = 8.5,
-  fig_height = 5.5
+  fig_height = 5.5,
+  fig_resolution = 200
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ Defaults to '\%Y-\%m-\%d'.}
 \item{fig_width}{Numeric: Figure width when figure is shown. Defaults to 8.5.}
 
 \item{fig_height}{Numeric: Figure height when figure is shown. Defaults to 5.5.}
+
+\item{fig_resolution}{Numeric: Figure resolution PPI. Defaults to 200.}
 }
 \value{
 ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
