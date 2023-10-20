@@ -11,6 +11,16 @@ DEFAULT_UBOUND <- 1e3
 #'
 #' @description KernelParameter contains all information and behaviour related to a kernel parameters.
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # A kernel parameter can be a constant value
+#' const_param <- KernelParameter$new(7, is_fixed = TRUE)
+#' # It can otherwise be sampled and have its value updated through sampling
+#' samp_param <- KernelParameter$new(1, lower_bound = 0.1,
+#'   upper_bound = 10, slice_sampling_scale = 4)
+#'
+#' # A kernel parameter can be associated with any type of kernel
+#' KernelPeriodic$new(period_length = const_param, lengthscale = samp_param)
+#'
 #' @export
 KernelParameter <- R6::R6Class(
     public = list(
@@ -45,7 +55,7 @@ KernelParameter <- R6::R6Class(
             upper_bound = DEFAULT_UBOUND,
             slice_sampling_scale = log(10),
             hparam_precision = 1.0
-        ){
+        ) {
             self$value <- value
             self$lower_bound <- lower_bound
             self$upper_bound <- upper_bound
@@ -77,7 +87,7 @@ KernelParameter <- R6::R6Class(
 
 
 #' @title Base R6 class for Kernels
-#' @description Abstract base class for kernels
+#' @description Abstract base class for kernels (Should not be instantiated)
 #' @export
 Kernel <- R6::R6Class(
     'Kernel',
@@ -174,6 +184,15 @@ Kernel <- R6::R6Class(
 #'
 #' @description R6 class for White Noise Kernels
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new white noise kernel
+#' k_white_noise <- KernelWhiteNoise$new()
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_white_noise$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_white_noise$kernel_gen()
+#'
 #' @export
 KernelWhiteNoise <- R6::R6Class(
     'KernelWhiteNoise',
@@ -205,6 +224,15 @@ KernelWhiteNoise <- R6::R6Class(
 #' @title R6 class for Square Exponential Kernels
 #'
 #' @description R6 class for Square Exponential Kernels
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new SE kernel
+#' k_se <- KernelSE$new()
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_se$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_se$kernel_gen()
 #'
 #' @export
 KernelSE <- R6::R6Class(
@@ -242,6 +270,15 @@ KernelSE <- R6::R6Class(
 #' @title R6 class for Rational Quadratic Kernels
 #'
 #' @description R6 class for Rational Quadratic Kernels
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new RQ kernel
+#' k_rq <- KernelRQ$new()
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_rq$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_rq$kernel_gen()
 #'
 #' @export
 KernelRQ <- R6::R6Class(
@@ -288,6 +325,15 @@ KernelRQ <- R6::R6Class(
 #'
 #' @description R6 class for Periodic Kernels
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new Periodic kernel
+#' k_periodic <- KernelPeriodic$new()
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_periodic$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_periodic$kernel_gen()
+#'
 #' @export
 KernelPeriodic <- R6::R6Class(
     'KernelPeriodic',
@@ -333,6 +379,15 @@ KernelPeriodic <- R6::R6Class(
 #' @title R6 class for Matern Kernels
 #'
 #' @description R6 class for Matern Kernels
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new Matern 3/2 kernel
+#' k_matern <- KernelMatern$new(smoothness_factor = 3)
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_matern$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_matern$kernel_gen()
 #'
 #' @export
 KernelMatern <- R6::R6Class(
@@ -392,10 +447,10 @@ KernelMatern <- R6::R6Class(
 #' @title Kernel Composition Operations
 #'
 #' @description Kernel Composition Operations Enum. Possibilities of operation between
-#' two kernels to generate a new composed kernel.
+#' two kernels to generate a new composed kernel. The values are: \code{MUL} and \code{ADD}.
 #'
 #' @export
-CompositionOps = list(
+CompositionOps <- list(
     'MUL' = 'MUL',
     'ADD' = 'ADD'
 )
@@ -403,6 +458,20 @@ CompositionOps = list(
 #' @title R6 class for Composed Kernels
 #'
 #' @description R6 class for Composed Kernels
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new locally periodic kernel
+#' k_loc_per <- KernelComposed$new(
+#'   left_kernel = KernelSE$new(),
+#'   right_kernel = KernelPeriodic$new(),
+#'   new_name = 'Locally Periodic Kernel',
+#'   composition_operation = CompositionOps$MUL
+#' )
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_loc_per$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_loc_per$kernel_gen()
 #'
 #' @export
 KernelComposed <- R6::R6Class(
@@ -475,6 +544,19 @@ KernelComposed <- R6::R6Class(
 #' @description R6 class automatically generated when
 #' adding two kernels together.
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new additive kernel
+#' k_rq_plus_per <- KernelAddComposed$new(
+#'   left_kernel = KernelRQ$new(),
+#'   right_kernel = KernelPeriodic$new(),
+#'   new_name = 'SE + Periodic Kernel'
+#' )
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_rq_plus_per$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_rq_plus_per$kernel_gen()
+#'
 #' @export
 KernelAddComposed <- R6::R6Class(
     'KernelAddComposed',
@@ -495,6 +577,19 @@ KernelAddComposed <- R6::R6Class(
 #'
 #' @description R6 class automatically generated when
 #' multiplying two kernels together.
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new locally periodic kernel
+#' k_loc_per <- KernelMulComposed$new(
+#'   left_kernel = KernelSE$new(),
+#'   right_kernel = KernelPeriodic$new(),
+#'   new_name = 'Locally Periodic Kernel'
+#' )
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_loc_per$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_loc_per$kernel_gen()
 #'
 #' @export
 KernelMulComposed <- R6::R6Class(
@@ -518,6 +613,15 @@ KernelMulComposed <- R6::R6Class(
 #' @param k2 Kernel: The right kernel to use for composition
 #' @return A new \code{KernelAddComposed} object.
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new additive kernel
+#' k_rq_plus_per <- KernelRQ$new() + KernelPeriodic$new()
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_rq_plus_per$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_rq_plus_per$kernel_gen()
+#'
 #' @export
 `+.Kernel` <- function(k1, k2) {
     composed_kernel <- KernelAddComposed$new(k1, k2, paste0(k1$name, ' + ', k2$name))
@@ -529,6 +633,15 @@ KernelMulComposed <- R6::R6Class(
 #' @param k1 Kernel: The left kernel to use for composition
 #' @param k2 Kernel: The right kernel to use for composition
 #' @return A new \code{KernelMulComposed} object.
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a new locally periodic kernel
+#' k_loc_per <- KernelSE$new() * KernelPeriodic$new()
+#' # Set the kernel's positions
+#' positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+#' k_loc_per$set_positions(positions_df)
+#' # Generate the kernel's covariance matrix
+#' k_loc_per$kernel_gen()
 #'
 #' @export
 `*.Kernel` <- function(k1, k2) {

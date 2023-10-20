@@ -7,6 +7,72 @@
 A BKTRRegressor holds all the key elements to accomplish the MCMC sampling
 algorithm (\strong{Algorithm 1} of the paper).
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Create a BIXI data collection instance containing multiple dataframes
+bixi_data <- BixiData$new(is_light = TRUE) # Use light version for example
+
+# Create a BKTRRegressor instance
+bktr_regressor <- BKTRRegressor$new(
+  formula = nb_departure ~ 1 + mean_temp_c + area_park,
+  data_df <- bixi_data$data_df,
+  spatial_positions_df = bixi_data$spatial_positions_df,
+  temporal_positions_df = bixi_data$temporal_positions_df,
+  burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+
+# Launch the MCMC sampling
+bktr_regressor$mcmc_sampling()
+
+# Get the summary of the bktr regressor
+summary(bktr_regressor)
+
+# Get estimated response variables for missing values
+bktr_regressor$imputed_y_estimates
+
+# Get the list of sampled betas for given spatial, temporal and feature labels
+bktr_regressor$get_iterations_betas(
+  spatial_label = bixi_data$spatial_positions_df$location[1],
+  temporal_label = bixi_data$temporal_positions_df$time[1],
+  feature_label = 'mean_temp_c')
+
+# Get the summary of all betas for the 'mean_temp_c' feature
+bktr_regressor$get_beta_summary_df(feature_labels = 'mean_temp_c')
+\dontshow{\}) # examplesIf}
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+## PREDICTION EXAMPLE ##
+# Create a light version of the BIXI data collection instance
+bixi_data <- BixiData$new(is_light = TRUE)
+# Simplify variable names
+data_df <- bixi_data$data_df
+spa_pos_df <- bixi_data$spatial_positions_df
+temp_pos_df <- bixi_data$temporal_positions_df
+
+# Keep some data aside for prediction
+new_spa_pos_df <- spa_pos_df[1:2, ]
+new_temp_pos_df <- temp_pos_df[1:5, ]
+reg_spa_pos_df <- spa_pos_df[-(1:2), ]
+reg_temp_pos_df <- temp_pos_df[-(1:5), ]
+reg_data_df_mask <- data_df$location \%in\% reg_spa_pos_df$location &
+  data_df$time \%in\% reg_temp_pos_df$time
+reg_data_df <- data_df[reg_data_df_mask, ]
+new_data_df <- data_df[!reg_data_df_mask, ]
+
+# Launch mcmc sampling on regression data
+bktr_regressor <- BKTRRegressor$new(
+  formula = nb_departure ~ 1 + mean_temp_c + area_park,
+  data_df = reg_data_df,
+  spatial_positions_df = reg_spa_pos_df,
+  temporal_positions_df = reg_temp_pos_df,
+  burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+bktr_regressor$mcmc_sampling()
+
+# Predict response values for new data
+bktr_regressor$predict(
+  new_data_df = new_data_df,
+  new_spatial_positions_df = new_spa_pos_df,
+  new_temporal_positions_df = new_temp_pos_df)
+\dontshow{\}) # examplesIf}
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -212,7 +278,7 @@ For a predefined number of iterations:
 }
 
 \subsection{Returns}{
-A list containing the results of the MCMC sampling.
+NULL Results are stored and can be accessed via summary()
 }
 }
 \if{html}{\out{<hr>}}
@@ -295,25 +361,28 @@ then the summary is for all the betas. If labels are given, then the summary
 is for the given labels.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BKTRRegressor$get_beta_summary_df(
-  spatial_labels,
-  temporal_labels,
-  feature_labels
+  spatial_labels = NULL,
+  temporal_labels = NULL,
+  feature_labels = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{spatial_labels}}{vector: The spatial labels to get the summary for the summary.}
+\item{\code{spatial_labels}}{vector: The spatial labels used in summary. If NULL,
+then all spatial labels are used. Defaults to NULL.}
 
-\item{\code{temporal_labels}}{vector: The temporal labels to get the summary for the summary.}
+\item{\code{temporal_labels}}{vector: The temporal labels used in summary. If NULL,
+then all temporal labels are used. Defaults to NULL.}
 
-\item{\code{feature_labels}}{vector: The feature labels to get the summary for the summary.}
+\item{\code{feature_labels}}{vector: The feature labels used in summary. If NULL,
+then all feature labels are used. Defaults to NULL.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new data.table with the summary for the given label.
+A new data.table with the beta summary for the given labels.
 }
 }
 \if{html}{\out{<hr>}}

@@ -49,3 +49,28 @@ ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 Create a plot of beta values through space for a given
 temporal point and a set of feature labels.
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Launch MCMC sampling on a light version of the BIXI dataset
+bixi_data <- BixiData$new(is_light = TRUE)
+bktr_regressor <- BKTRRegressor$new(
+  data_df <- bixi_data$data_df,
+  spatial_positions_df = bixi_data$spatial_positions_df,
+  temporal_positions_df = bixi_data$temporal_positions_df,
+  burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+bktr_regressor$mcmc_sampling()
+
+# Plot spatial beta coefficients for the first time point and the two features
+plot_spatial_betas(
+  bktr_regressor,
+  plot_feature_labels = c('mean_temp_c', 'area_park'),
+  temporal_point_label = bixi_data$temporal_positions_df$time[1])
+
+# We can also use light mode and plot the maps side by side
+plot_spatial_betas(
+  bktr_regressor,
+  plot_feature_labels = c('mean_temp_c', 'area_park', 'total_precip_mm'),
+  temporal_point_label = bixi_data$temporal_positions_df$time[10],
+  use_dark_mode = FALSE,  nb_cols = 3)
+\dontshow{\}) # examplesIf}
+}

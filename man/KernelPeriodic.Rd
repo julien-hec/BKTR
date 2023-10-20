@@ -6,6 +6,17 @@
 \description{
 R6 class for Periodic Kernels
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Create a new Periodic kernel
+k_periodic <- KernelPeriodic$new()
+# Set the kernel's positions
+positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+k_periodic$set_positions(positions_df)
+# Generate the kernel's covariance matrix
+k_periodic$kernel_gen()
+\dontshow{\}) # examplesIf}
+}
 \section{Super class}{
 \code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelPeriodic}
 }

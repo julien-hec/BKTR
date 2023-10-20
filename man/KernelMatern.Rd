@@ -6,6 +6,17 @@
 \description{
 R6 class for Matern Kernels
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Create a new Matern 3/2 kernel
+k_matern <- KernelMatern$new(smoothness_factor = 3)
+# Set the kernel's positions
+positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+k_matern$set_positions(positions_df)
+# Generate the kernel's covariance matrix
+k_matern$kernel_gen()
+\dontshow{\}) # examplesIf}
+}
 \section{Super class}{
 \code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelMatern}
 }

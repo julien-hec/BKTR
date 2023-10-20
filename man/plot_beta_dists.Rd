@@ -33,3 +33,26 @@ ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 \description{
 Plot the distribution of beta values for a given list of labels.
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Launch MCMC sampling on a light version of the BIXI dataset
+bixi_data <- BixiData$new(is_light = TRUE)
+bktr_regressor <- BKTRRegressor$new(
+  data_df <- bixi_data$data_df,
+  spatial_positions_df = bixi_data$spatial_positions_df,
+  temporal_positions_df = bixi_data$temporal_positions_df,
+  burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+bktr_regressor$mcmc_sampling()
+
+# Plot temporal beta coefficients for the first station and the first feature
+spa_lab <- bixi_data$spatial_positions_df$location[3]
+plot_beta_dists(
+  bktr_regressor,
+  labels_list = list(
+     c(spa_lab, '2019-04-15', 'area_park'),
+     c(spa_lab, '2019-04-16', 'area_park'),
+     c(spa_lab, '2019-04-16', 'mean_temp_c')
+  ),
+)
+\dontshow{\}) # examplesIf}
+}

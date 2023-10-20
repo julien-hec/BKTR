@@ -12,6 +12,6 @@ CompositionOps
 }
 \description{
 Kernel Composition Operations Enum. Possibilities of operation between
-two kernels to generate a new composed kernel.
+two kernels to generate a new composed kernel. The values are: \code{MUL} and \code{ADD}.
 }
 \keyword{datasets}

@@ -6,6 +6,22 @@
 \description{
 R6 class for Composed Kernels
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Create a new locally periodic kernel
+k_loc_per <- KernelComposed$new(
+  left_kernel = KernelSE$new(),
+  right_kernel = KernelPeriodic$new(),
+  new_name = 'Locally Periodic Kernel',
+  composition_operation = CompositionOps$MUL
+)
+# Set the kernel's positions
+positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+k_loc_per$set_positions(positions_df)
+# Generate the kernel's covariance matrix
+k_loc_per$kernel_gen()
+\dontshow{\}) # examplesIf}
+}
 \section{Super class}{
 \code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelComposed}
 }

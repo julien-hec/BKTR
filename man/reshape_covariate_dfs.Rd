@@ -37,3 +37,15 @@ This is useful when the temporal covariates do not vary trough space and the spa
 covariates do not vary trough time (Like in the BIXI example). The function also adds
 a column for the target variable at the beginning of the dataframe.
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Let's reshape the BIXI dataframes without normalization
+new_data_df <- reshape_covariate_dfs(
+  spatial_df = BKTR::bixi_spatial_features,
+  temporal_df = BKTR::bixi_temporal_features,
+  y_df = BKTR::bixi_station_departures,
+  y_column_name = 'whole_nb_departure')
+# The resulting dataframe has the right shape to be a BKTRRegressor data_df
+head(new_data_df)
+\dontshow{\}) # examplesIf}
+}

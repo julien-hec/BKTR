@@ -11,6 +11,36 @@
 #' @description A BKTRRegressor holds all the key elements to accomplish the MCMC sampling
 #' algorithm (\strong{Algorithm 1} of the paper).
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Create a BIXI data collection instance containing multiple dataframes
+#' bixi_data <- BixiData$new(is_light = TRUE) # Use light version for example
+#'
+#' # Create a BKTRRegressor instance
+#' bktr_regressor <- BKTRRegressor$new(
+#'   formula = nb_departure ~ 1 + mean_temp_c + area_park,
+#'   data_df <- bixi_data$data_df,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#'
+#' # Launch the MCMC sampling
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Get the summary of the bktr regressor
+#' summary(bktr_regressor)
+#'
+#' # Get estimated response variables for missing values
+#' bktr_regressor$imputed_y_estimates
+#'
+#' # Get the list of sampled betas for given spatial, temporal and feature labels
+#' bktr_regressor$get_iterations_betas(
+#'   spatial_label = bixi_data$spatial_positions_df$location[1],
+#'   temporal_label = bixi_data$temporal_positions_df$time[1],
+#'   feature_label = 'mean_temp_c')
+#'
+#' # Get the summary of all betas for the 'mean_temp_c' feature
+#' bktr_regressor$get_beta_summary_df(feature_labels = 'mean_temp_c')
+#'
 #' @export
 BKTRRegressor <- R6::R6Class(
     classname = 'BKTRRegressor',
@@ -208,7 +238,7 @@ BKTRRegressor <- R6::R6Class(
         #' \item{Sample a new tau value}
         #' \item{Collect all the important data for the iteration}
         #' }
-        #' @return A list containing the results of the MCMC sampling.
+        #' @return NULL Results are stored and can be accessed via summary()
         mcmc_sampling = function() {
             private$initialize_params()
             for (i in 1:self$max_iter) {
@@ -235,6 +265,41 @@ BKTRRegressor <- R6::R6Class(
         #'   temporal positions. Defaults to NULL.
         #' @param jitter Numeric or NULL: A small value to add to the diagonal of the precision matrix.
         #'   Defaults to NULL.
+        #'
+        #' @examplesIf torch::torch_is_installed()
+        #' ## PREDICTION EXAMPLE ##
+        #' # Create a light version of the BIXI data collection instance
+        #' bixi_data <- BixiData$new(is_light = TRUE)
+        #' # Simplify variable names
+        #' data_df <- bixi_data$data_df
+        #' spa_pos_df <- bixi_data$spatial_positions_df
+        #' temp_pos_df <- bixi_data$temporal_positions_df
+        #'
+        #' # Keep some data aside for prediction
+        #' new_spa_pos_df <- spa_pos_df[1:2, ]
+        #' new_temp_pos_df <- temp_pos_df[1:5, ]
+        #' reg_spa_pos_df <- spa_pos_df[-(1:2), ]
+        #' reg_temp_pos_df <- temp_pos_df[-(1:5), ]
+        #' reg_data_df_mask <- data_df$location %in% reg_spa_pos_df$location &
+        #'   data_df$time %in% reg_temp_pos_df$time
+        #' reg_data_df <- data_df[reg_data_df_mask, ]
+        #' new_data_df <- data_df[!reg_data_df_mask, ]
+        #'
+        #' # Launch mcmc sampling on regression data
+        #' bktr_regressor <- BKTRRegressor$new(
+        #'   formula = nb_departure ~ 1 + mean_temp_c + area_park,
+        #'   data_df = reg_data_df,
+        #'   spatial_positions_df = reg_spa_pos_df,
+        #'   temporal_positions_df = reg_temp_pos_df,
+        #'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+        #' bktr_regressor$mcmc_sampling()
+        #'
+        #' # Predict response values for new data
+        #' bktr_regressor$predict(
+        #'   new_data_df = new_data_df,
+        #'   new_spatial_positions_df = new_spa_pos_df,
+        #'   new_temporal_positions_df = new_temp_pos_df)
+        #'
         #' @return List: A list of two dataframes. The first represents the beta
         #'   forecasted for all new spatial locations or temporal points.
         #'   The second represents the forecasted response for all new spatial
@@ -342,11 +407,18 @@ BKTRRegressor <- R6::R6Class(
         #' @description Get a summary of estimated beta values. If no labels are given,
         #' then the summary is for all the betas. If labels are given, then the summary
         #' is for the given labels.
-        #' @param spatial_labels vector: The spatial labels to get the summary for the summary.
-        #' @param temporal_labels vector: The temporal labels to get the summary for the summary.
-        #' @param feature_labels vector: The feature labels to get the summary for the summary.
-        #' @return A new data.table with the summary for the given label.
-        get_beta_summary_df = function(spatial_labels, temporal_labels, feature_labels) {
+        #' @param spatial_labels vector: The spatial labels used in summary. If NULL,
+        #' then all spatial labels are used. Defaults to NULL.
+        #' @param temporal_labels vector: The temporal labels used in summary. If NULL,
+        #' then all temporal labels are used. Defaults to NULL.
+        #' @param feature_labels vector: The feature labels used in summary. If NULL,
+        #' then all feature labels are used. Defaults to NULL.
+        #' @return A new data.table with the beta summary for the given labels.
+        get_beta_summary_df = function(
+            spatial_labels = NULL,
+            temporal_labels = NULL,
+            feature_labels = NULL
+        ) {
             if (!self$has_completed_sampling) {
                 stop('Beta values can only be accessed after MCMC sampling.')
             }

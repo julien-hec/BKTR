@@ -7,6 +7,44 @@
 Tensor backend configuration and methods for all the tensor operations
 in BKTR
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Set the seed, setup the tensor floating point type and device
+TSR$set_params(fp_type='float64', fp_device='cpu', seed=42)
+# Create a tensor from a vector
+TSR$tensor(c(1, 2, 3))
+# Create a tensor from a matrix
+TSR$tensor(matrix(c(1, 2, 3, 4), nrow=2))
+# Create a 3x3 tensor with a diagonal of ones and zeros elsewhere
+TSR$eye(3)
+# Create a tensor of ones (with 6 elements, 2 rows and 3 columns)
+TSR$ones(c(2, 3))
+# Create a tensor of zeros (with 12 elements, 3 rows and 4 columns)
+TSR$zeros(c(3, 4))
+# Create a tensor of random uniform values (with 6 elements)
+TSR$rand(c(2, 3))
+# Create a tensor of random normal values (with 6 elements)
+TSR$randn(c(2, 3))
+# Create a tensor of random normal values with the same shape as a given tensor
+tsr_a <- TSR$randn(c(2, 3))
+TSR$randn_like(tsr_a)
+# Create a tensor of a range of values (1, 2, 3, 4)
+TSR$arange(1, 4)
+# Choose two random values from a given tensor without replacement
+tsr_b <- TSR$rand(6)
+TSR$rand_choice(tsr_b, 2)
+# Use the tensor operator to compute the kronecker product of two 2x2 matrices
+tsr_c <- TSR$tensor(matrix(c(1, 2, 3, 4), nrow=2))
+tsr_d <- TSR$tensor(matrix(c(5, 6, 7, 8), nrow=2))
+TSR$kronecker_prod(tsr_c, tsr_d) # Returns a 4x4 tensor
+# Use the tensor operator to compute the khatri rao product of two 2x2 matrices
+TSR$khatri_rao_prod(tsr_c, tsr_d) # Returns a 4x2 tensor
+# Check if a given object is a tensor
+TSR$is_tensor(tsr_d) # Returns TRUE
+TSR$is_tensor(TSR$eye(2)) # Returns TRUE
+TSR$is_tensor(1) # Returns FALSE
+\dontshow{\}) # examplesIf}
+}
 \section{Super class}{
 \code{\link[R6P:Singleton]{R6P::Singleton}} -> \code{TensorOperator}
 }
@@ -294,7 +332,12 @@ A new tensor of a range of values with the tensor operator dtype and device
 \subsection{Method \code{rand_choice()}}{
 Choose random values from a tensor for a given number of samples
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$rand_choice(choices_tsr, nb_sample, use_replace = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{TensorOperator$rand_choice(
+  choices_tsr,
+  nb_sample,
+  use_replace = FALSE,
+  weights_tsr = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -304,7 +347,11 @@ Choose random values from a tensor for a given number of samples
 
 \item{\code{nb_sample}}{The number of samples to choose}
 
-\item{\code{use_replace}}{A boolean indicating if the sampling should be done with replacement}
+\item{\code{use_replace}}{A boolean indicating if the sampling should be done with replacement.
+Defaults to FALSE}
+
+\item{\code{weights_tsr}}{The weights to use for the sampling. If NULL, the sampling is uniform.
+Defaults to NULL}
 }
 \if{html}{\out{</div>}}
 }

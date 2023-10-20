@@ -33,3 +33,31 @@ ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 \description{
 Plot the distribution of hyperparameters through iterations
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Launch MCMC sampling on a light version of the BIXI dataset
+bixi_data <- BixiData$new(is_light = TRUE)
+k_matern <- KernelMatern$new()
+k_periodic <- KernelPeriodic$new()
+bktr_regressor <- BKTRRegressor$new(
+  data_df <- bixi_data$data_df,
+  spatial_kernel = k_matern,
+  temporal_kernel = k_periodic,
+  spatial_positions_df = bixi_data$spatial_positions_df,
+  temporal_positions_df = bixi_data$temporal_positions_df,
+  burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+bktr_regressor$mcmc_sampling()
+
+# Plot the distribution of all hyperparameters
+plot_hyperparams_dists(bktr_regressor)
+
+# Plot the distribution of the spatial kernel hyperparameters
+spa_par_name <- paste0('Spatial - ', k_matern$parameters[[1]]$full_name)
+plot_hyperparams_dists(bktr_regressor, spa_par_name)
+
+# Plot the distribution of the temporal kernel hyperparameters
+temp_par_names <- sapply(k_periodic$parameters, function(x) x$full_name)
+temp_par_names <- paste0('Temporal - ', temp_par_names)
+plot_hyperparams_dists(bktr_regressor, temp_par_names)
+\dontshow{\}) # examplesIf}
+}

@@ -32,6 +32,22 @@ print_ggplot_fig <- function(fig, fig_width, fig_height, fig_resolution) {
 #' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Launch MCMC sampling on a light version of the BIXI dataset
+#' bixi_data <- BixiData$new(is_light = TRUE)
+#' bktr_regressor <- BKTRRegressor$new(
+#'   data_df <- bixi_data$data_df,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Plot temporal beta coefficients for the first station and the two features
+#' plot_temporal_betas(
+#'   bktr_regressor,
+#'   plot_feature_labels = c('mean_temp_c', 'area_park'),
+#'   spatial_point_label = bixi_data$spatial_positions_df$location[1])
+#'
 #' @export
 plot_temporal_betas <- function(
     bktr_reg,
@@ -96,6 +112,29 @@ plot_temporal_betas <- function(
 #' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.5.
 #' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Launch MCMC sampling on a light version of the BIXI dataset
+#' bixi_data <- BixiData$new(is_light = TRUE)
+#' bktr_regressor <- BKTRRegressor$new(
+#'   data_df <- bixi_data$data_df,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Plot spatial beta coefficients for the first time point and the two features
+#' plot_spatial_betas(
+#'   bktr_regressor,
+#'   plot_feature_labels = c('mean_temp_c', 'area_park'),
+#'   temporal_point_label = bixi_data$temporal_positions_df$time[1])
+#'
+#' # We can also use light mode and plot the maps side by side
+#' plot_spatial_betas(
+#'   bktr_regressor,
+#'   plot_feature_labels = c('mean_temp_c', 'area_park', 'total_precip_mm'),
+#'   temporal_point_label = bixi_data$temporal_positions_df$time[10],
+#'   use_dark_mode = FALSE,  nb_cols = 3)
 #'
 #' @export
 plot_spatial_betas <- function(
@@ -211,6 +250,27 @@ plot_spatial_betas <- function(
 #' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Launch MCMC sampling on a light version of the BIXI dataset
+#' bixi_data <- BixiData$new(is_light = TRUE)
+#' bktr_regressor <- BKTRRegressor$new(
+#'   data_df <- bixi_data$data_df,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Plot temporal beta coefficients for the first station and the first feature
+#' spa_lab <- bixi_data$spatial_positions_df$location[3]
+#' plot_beta_dists(
+#'   bktr_regressor,
+#'   labels_list = list(
+#'      c(spa_lab, '2019-04-15', 'area_park'),
+#'      c(spa_lab, '2019-04-16', 'area_park'),
+#'      c(spa_lab, '2019-04-16', 'mean_temp_c')
+#'   ),
+#' )
+#'
 #' @export
 plot_beta_dists <- function(
     bktr_reg,
@@ -261,10 +321,26 @@ plot_beta_dists <- function(
 #' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Launch MCMC sampling on a light version of the BIXI dataset
+#' bixi_data <- BixiData$new(is_light = TRUE)
+#' bktr_regressor <- BKTRRegressor$new(
+#'   formula = 'nb_departure ~ 1 + area_park + mean_temp_c + total_precip_mm',
+#'   data_df <- bixi_data$data_df,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Plot beta estimates distribution for all features
+#' plot_covariates_beta_dists(bktr_regressor)
+#' # Or plot for a subset of features
+#' plot_covariates_beta_dists(bktr_regressor, c('area_park', 'mean_temp_c'))
+#'
 #' @export
 plot_covariates_beta_dists <- function(
     bktr_reg,
-    feature_labels,
+    feature_labels = NULL,
     show_figure = TRUE,
     fig_width = 9,
     fig_height = 6,
@@ -315,6 +391,32 @@ plot_covariates_beta_dists <- function(
 #' @param fig_height Integer: Figure height. Defaults to 6.
 #' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Launch MCMC sampling on a light version of the BIXI dataset
+#' bixi_data <- BixiData$new(is_light = TRUE)
+#' k_matern <- KernelMatern$new()
+#' k_periodic <- KernelPeriodic$new()
+#' bktr_regressor <- BKTRRegressor$new(
+#'   data_df <- bixi_data$data_df,
+#'   spatial_kernel = k_matern,
+#'   temporal_kernel = k_periodic,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Plot the distribution of all hyperparameters
+#' plot_hyperparams_dists(bktr_regressor)
+#'
+#' # Plot the distribution of the spatial kernel hyperparameters
+#' spa_par_name <- paste0('Spatial - ', k_matern$parameters[[1]]$full_name)
+#' plot_hyperparams_dists(bktr_regressor, spa_par_name)
+#'
+#' # Plot the distribution of the temporal kernel hyperparameters
+#' temp_par_names <- sapply(k_periodic$parameters, function(x) x$full_name)
+#' temp_par_names <- paste0('Temporal - ', temp_par_names)
+#' plot_hyperparams_dists(bktr_regressor, temp_par_names)
 #'
 #' @export
 plot_hyperparams_dists <- function(
@@ -373,6 +475,32 @@ plot_hyperparams_dists <- function(
 #' @param fig_height Integer: Figure height. Defaults to 5.5.
 #' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Launch MCMC sampling on a light version of the BIXI dataset
+#' bixi_data <- BixiData$new(is_light = TRUE)
+#' k_matern <- KernelMatern$new()
+#' k_periodic <- KernelPeriodic$new()
+#' bktr_regressor <- BKTRRegressor$new(
+#'   data_df <- bixi_data$data_df,
+#'   spatial_kernel = k_matern,
+#'   temporal_kernel = k_periodic,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Plot the traceplot of all hyperparameters
+#' plot_hyperparams_traceplot(bktr_regressor)
+#'
+#' # Plot the traceplot of the spatial kernel hyperparameters
+#' spa_par_name <- paste0('Spatial - ', k_matern$parameters[[1]]$full_name)
+#' plot_hyperparams_traceplot(bktr_regressor, spa_par_name)
+#'
+#' # Plot the traceplot of the temporal kernel hyperparameters
+#' temp_par_names <- sapply(k_periodic$parameters, function(x) x$full_name)
+#' temp_par_names <- paste0('Temporal - ', temp_par_names)
+#' plot_hyperparams_traceplot(bktr_regressor, temp_par_names)
 #'
 #' @export
 plot_hyperparams_traceplot <- function(
@@ -435,6 +563,19 @@ plot_hyperparams_traceplot <- function(
 #' @param fig_resolution Numeric: Figure resolution PPI when figure is shown. Defaults to 200.
 #' @param fig_title String or NULL: Figure title if provided. Defaults to 'y estimates vs observed y values'
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
+#'
+#' @examplesIf torch::torch_is_installed()
+#' # Launch MCMC sampling on a light version of the BIXI dataset
+#' bixi_data <- BixiData$new(is_light = TRUE)
+#' bktr_regressor <- BKTRRegressor$new(
+#'   data_df <- bixi_data$data_df,
+#'   spatial_positions_df = bixi_data$spatial_positions_df,
+#'   temporal_positions_df = bixi_data$temporal_positions_df,
+#'   burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+#' bktr_regressor$mcmc_sampling()
+#'
+#' # Plot Y estimates vs observed y values
+#' plot_y_estimates(bktr_regressor)
 #'
 #' @export
 plot_y_estimates <- function(
