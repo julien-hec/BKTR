@@ -6,6 +6,17 @@
 \description{
 R6 class for White Noise Kernels
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Create a new white noise kernel
+k_white_noise <- KernelWhiteNoise$new()
+# Set the kernel's positions
+positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+k_white_noise$set_positions(positions_df)
+# Generate the kernel's covariance matrix
+k_white_noise$kernel_gen()
+\dontshow{\}) # examplesIf}
+}
 \section{Super class}{
 \code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{KernelWhiteNoise}
 }

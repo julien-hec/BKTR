@@ -32,3 +32,18 @@ ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 \description{
 Plot y estimates vs observed y values.
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Launch MCMC sampling on a light version of the BIXI dataset
+bixi_data <- BixiData$new(is_light = TRUE)
+bktr_regressor <- BKTRRegressor$new(
+  data_df <- bixi_data$data_df,
+  spatial_positions_df = bixi_data$spatial_positions_df,
+  temporal_positions_df = bixi_data$temporal_positions_df,
+  burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+bktr_regressor$mcmc_sampling()
+
+# Plot Y estimates vs observed y values
+plot_y_estimates(bktr_regressor)
+\dontshow{\}) # examplesIf}
+}

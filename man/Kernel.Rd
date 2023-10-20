@@ -4,7 +4,7 @@
 \alias{Kernel}
 \title{Base R6 class for Kernels}
 \description{
-Abstract base class for kernels
+Abstract base class for kernels (Should not be instantiated)
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

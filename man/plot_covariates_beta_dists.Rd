@@ -6,7 +6,7 @@
 \usage{
 plot_covariates_beta_dists(
   bktr_reg,
-  feature_labels,
+  feature_labels = NULL,
   show_figure = TRUE,
   fig_width = 9,
   fig_height = 6,
@@ -32,4 +32,22 @@ ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 }
 \description{
 Plot the distribution of beta estimates regrouped by covariates.
+}
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Launch MCMC sampling on a light version of the BIXI dataset
+bixi_data <- BixiData$new(is_light = TRUE)
+bktr_regressor <- BKTRRegressor$new(
+  formula = 'nb_departure ~ 1 + area_park + mean_temp_c + total_precip_mm',
+  data_df <- bixi_data$data_df,
+  spatial_positions_df = bixi_data$spatial_positions_df,
+  temporal_positions_df = bixi_data$temporal_positions_df,
+  burn_in_iter = 5, sampling_iter = 10) # For example only (too few iterations)
+bktr_regressor$mcmc_sampling()
+
+# Plot beta estimates distribution for all features
+plot_covariates_beta_dists(bktr_regressor)
+# Or plot for a subset of features
+plot_covariates_beta_dists(bktr_regressor, c('area_park', 'mean_temp_c'))
+\dontshow{\}) # examplesIf}
 }

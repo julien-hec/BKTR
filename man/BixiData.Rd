@@ -4,7 +4,22 @@
 \alias{BixiData}
 \title{BIXI Data Class}
 \description{
-R6 class encapsulating all BIXI dataframes
+R6 class encapsulating all BIXI dataframes. It is also
+possible to use a light version of the dataset by using the \code{is_light}
+parameter. In this case, the dataset is reduced to its first 25 stations
+and first 50 days. The light version is only used for testing and short examples.
+}
+\examples{
+# Create a light BIXI data collection instance containing multiple dataframes
+# This only uses the first 25 stations and 50 days of the full dataset
+bixi_data <- BixiData$new(is_light = TRUE)
+# Dataframe containing the position (latitude and longitude) of M stations
+bixi_data$spatial_positions_df
+# Dataframe containing the time position of N days (O to N-1)
+bixi_data$temporal_positions_df
+# Dataframe with spatial and temporal features for each day and station (M x N rows)
+bixi_data$data_df
+
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -20,6 +35,8 @@ R6 class encapsulating all BIXI dataframes
 \item{\code{temporal_positions_df}}{The temporal positions dataframe}
 
 \item{\code{data_df}}{The data dataframe}
+
+\item{\code{is_light}}{Whether the light version of the dataset is used}
 }
 \if{html}{\out{</div>}}
 }
@@ -36,9 +53,17 @@ R6 class encapsulating all BIXI dataframes
 \subsection{Method \code{new()}}{
 Initialize the BIXI data class
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{BixiData$new()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{BixiData$new(is_light = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{is_light}}{Whether the light version of the dataset is used,
+defaults to FALSE.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 A new BIXI data instance
 }

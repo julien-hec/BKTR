@@ -17,3 +17,14 @@ A new \code{KernelAddComposed} object.
 \description{
 Operator overloading for kernel addition
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Create a new additive kernel
+k_rq_plus_per <- KernelRQ$new() + KernelPeriodic$new()
+# Set the kernel's positions
+positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+k_rq_plus_per$set_positions(positions_df)
+# Generate the kernel's covariance matrix
+k_rq_plus_per$kernel_gen()
+\dontshow{\}) # examplesIf}
+}

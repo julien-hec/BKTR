@@ -6,6 +6,18 @@
 \description{
 KernelParameter contains all information and behaviour related to a kernel parameters.
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# A kernel parameter can be a constant value
+const_param <- KernelParameter$new(7, is_fixed = TRUE)
+# It can otherwise be sampled and have its value updated through sampling
+samp_param <- KernelParameter$new(1, lower_bound = 0.1,
+  upper_bound = 10, slice_sampling_scale = 4)
+
+# A kernel parameter can be associated with any type of kernel
+KernelPeriodic$new(period_length = const_param, lengthscale = samp_param)
+\dontshow{\}) # examplesIf}
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

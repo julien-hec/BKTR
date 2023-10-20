@@ -32,6 +32,16 @@ cross_join_dt <- function(...) {
 #'       The first two columns are the indexes (location, time), the following column
 #'       is the target variable and the other columns are the covariates.
 #'
+#' @examplesIf torch::torch_is_installed()
+#' # Let's reshape the BIXI dataframes without normalization
+#' new_data_df <- reshape_covariate_dfs(
+#'   spatial_df = BKTR::bixi_spatial_features,
+#'   temporal_df = BKTR::bixi_temporal_features,
+#'   y_df = BKTR::bixi_station_departures,
+#'   y_column_name = 'whole_nb_departure')
+#' # The resulting dataframe has the right shape to be a BKTRRegressor data_df
+#' head(new_data_df)
+#'
 #' @export
 reshape_covariate_dfs <- function(
     spatial_df,
@@ -93,6 +103,31 @@ reshape_covariate_dfs <- function(
 #'      - `spatial_positions_df` contains the spatial locations and their coordinates
 #'      - `temporal_positions_df` contains the time points and their coordinates
 #'      - `beta_df` contains the true beta coefficients
+#' @examplesIf torch::torch_is_installed()
+#' # Simulate data with 20 locations, 30 time points, in 2D spatial dimensions
+#' # with 3 spatial covariates and 2 temporal covariates
+#' simu_data <- simulate_spatiotemporal_data(
+#'    nb_locations=20,
+#'    nb_time_points=30,
+#'    nb_spatial_dimensions=2,
+#'    spatial_scale=10,
+#'    time_scale=10,
+#'    spatial_covariates_means=c(0, 2, 4),
+#'    temporal_covariates_means=c(1, 3),
+#'    spatial_kernel=KernelMatern$new(),
+#'    temporal_kernel=KernelSE$new(),
+#'    noise_variance_scale=1)
+#'
+#' # The dataframes are similar to bixi_data, we have:
+#' # - data_df
+#' head(simu_data$data_df)
+#' # - spatial_positions_df
+#' head(simu_data$spatial_positions_df)
+#' # - temporal_positions_df
+#' head(simu_data$temporal_positions_df)
+#'
+#' # We also obtain the true beta coefficients used to simulate the data
+#' head(simu_data$beta_df)
 #'
 #' @export
 simulate_spatiotemporal_data <- function(

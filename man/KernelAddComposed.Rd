@@ -7,6 +7,21 @@
 R6 class automatically generated when
 adding two kernels together.
 }
+\examples{
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Create a new additive kernel
+k_rq_plus_per <- KernelAddComposed$new(
+  left_kernel = KernelRQ$new(),
+  right_kernel = KernelPeriodic$new(),
+  new_name = 'SE + Periodic Kernel'
+)
+# Set the kernel's positions
+positions_df <- data.frame(x=c(-4, 0, 3), y=c(-2, 0, 2))
+k_rq_plus_per$set_positions(positions_df)
+# Generate the kernel's covariance matrix
+k_rq_plus_per$kernel_gen()
+\dontshow{\}) # examplesIf}
+}
 \section{Super classes}{
 \code{\link[BKTR:Kernel]{BKTR::Kernel}} -> \code{\link[BKTR:KernelComposed]{BKTR::KernelComposed}} -> \code{KernelAddComposed}
 }
