@@ -616,11 +616,11 @@ BKTRRegressor <- R6::R6Class(
         #~ @return A tensor containing the newly sampled covariate decomposition
         sample_decomp_norm = function(initial_decomp, chol_l, uu) {
             precision_mat <- chol_l$t()
-            mean_vec <- self$tau * torch::torch_triangular_solve(
-                uu$unsqueeze(2),
+            mean_vec <- self$tau * torch:::torch_linalg_solve_triangular(
                 precision_mat,
+                uu$unsqueeze(2),
                 upper = TRUE
-            )[[1]]$squeeze()
+            )$squeeze()
             return(
                 sample_norm_multivariate(mean_vec, precision_mat)$reshape_as(initial_decomp$t())$t()
             )
