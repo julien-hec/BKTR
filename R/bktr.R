@@ -241,6 +241,14 @@ BKTRRegressor <- R6::R6Class(
         #' @return NULL Results are stored and can be accessed via summary()
         mcmc_sampling = function() {
             private$initialize_params()
+
+            # When the covariates are too large, the CPU memory can be overloaded
+            # because of the torch library. In this case, the memory can be freed
+            # after each iteration by calling the garbage collector manually.
+            # This is only necessary on the CPU. CUDA memory is managed efficiently.
+            # See: https://torch.mlverse.org/docs/articles/memory-management.html
+            is_gc_needed <- (TSR$fp_device == 'cpu') && (self$covariates$numel() > 1E5)
+
             for (i in 1:self$max_iter) {
                 private$sample_kernel_hparam()
                 private$sample_precision_wish()
@@ -248,6 +256,7 @@ BKTRRegressor <- R6::R6Class(
                 private$sample_covariate_decomp()
                 private$sample_temporal_decomp()
                 private$set_errors_and_sample_precision_tau(i)
+                if (is_gc_needed) gc()
                 private$collect_iter_values(i)
             }
             private$log_final_iter_results()
