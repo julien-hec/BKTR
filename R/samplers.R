@@ -84,7 +84,7 @@ sample_norm_multivariate <- function(mean_vec, precision_upper_tri) {
     # Not Able to use the precision matrix because of priority of ops (!is.null(NULL) + !is.null(1) + !is.null(1)) == F
     # ERROR comes from torch::distr_multivariate_normal(torch::torch_zeros(2), precision_matrix = torch::torch_eye(2))
     return(
-        torch:::torch_linalg_solve_triangular(
+        torch::linalg_solve_triangular(
             precision_upper_tri,
             TSR$randn_like(mean_vec)$unsqueeze(2),
             upper = TRUE

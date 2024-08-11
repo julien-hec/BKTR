@@ -62,7 +62,7 @@ MarginalLikelihoodEvaluator <- R6::R6Class(
             )$transpose(2, 3)$reshape(c(lambda_size, lambda_size))
             lambda_u <- lambda_u + self$inv_k
             self$chol_lu <- torch::linalg_cholesky(lambda_u)
-            uu <- torch:::torch_linalg_solve_triangular(
+            uu <- torch::linalg_solve_triangular(
                 self$chol_lu,
                 torch::torch_einsum(
                     'ijk,ik->ji', c(psi_u_mask, self$y_masked$permute(c(self$axis_permutation)))
