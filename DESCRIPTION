@@ -22,7 +22,7 @@ Depends:
     R (>= 4.0.0)
 Encoding: UTF-8
 Imports:
-    torch,
+    torch (>= 0.13.0),
     R6,
     R6P,
     ggplot2,
