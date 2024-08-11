@@ -98,22 +98,25 @@ plot_temporal_betas <- function(
 
 #' @title Plot Spatial Beta Coefficients
 #' @description Create a plot of beta values through space for a given
-#' temporal point and a set of feature labels.
+#' temporal point and a set of feature labels. We use ggmap under the hood,
+#' so you need to provide a Google or Stadia API token to plot on a map.
+#' See: https://cran.r-project.org/web/packages/ggmap/readme/README.html for more details
+#' on how to get an API token.
 #' @param bktr_reg BKTRRegressor: BKTRRegressor object.
 #' @param plot_feature_labels Array: Array of feature labels to plot.
 #' @param temporal_point_label String: Temporal point label to plot.
-#' @param nb_cols Integer: The number of columns to use in the facet grid.
-#' @param use_dark_mode Boolean: Whether to use a dark mode for the geographic map or not.
-#' @param zoom Integer: Zoom level for the geographic map. Defaults to 11.
 #' @param google_token String or NULL: Google API token to use for the geographic map. Defaults to NULL.
-#'  If NULL, use Stamen maps.
+#' @param stadia_token String or NULL: Stadia API token to use for the geographic map. Defaults to NULL.
+#' @param nb_cols Integer: The number of columns to use in the facet grid.
+#' @param use_dark_mode Boolean: Whether to use a dark mode for the geographic map or not. Defaults to TRUE.
+#' @param zoom Integer: Zoom level for the geographic map. Defaults to 11.
 #' @param show_figure Boolean: Whether to show the figure. Defaults to True.
 #' @param fig_width Numeric: Figure width when figure is shown. Defaults to 8.5.
 #' @param fig_height Numeric: Figure height when figure is shown. Defaults to 5.5.
 #' @param fig_resolution Numeric: Figure resolution PPI. Defaults to 200.
 #' @return ggplot or NULL: ggplot object or NULL if show_figure is set to FALSE.
 #'
-#' @examplesIf torch::torch_is_installed()
+#' @examplesIf FALSE
 #' # Launch MCMC sampling on a light version of the BIXI dataset
 #' bixi_data <- BixiData$new(is_light = TRUE)
 #' bktr_regressor <- BKTRRegressor$new(
@@ -124,17 +127,20 @@ plot_temporal_betas <- function(
 #' bktr_regressor$mcmc_sampling()
 #'
 #' # Plot spatial beta coefficients for the first time point and the two features
+#' # Use your own Google API token instead of 'GOOGLE_API_TOKEN'
 #' plot_spatial_betas(
 #'   bktr_regressor,
 #'   plot_feature_labels = c('mean_temp_c', 'area_park'),
-#'   temporal_point_label = bixi_data$temporal_positions_df$time[1])
+#'   temporal_point_label = bixi_data$temporal_positions_df$time[1],
+#'   google_token = 'GOOGLE_API_TOKEN')
 #'
 #' # We can also use light mode and plot the maps side by side
+#' # Use your own Stadia API token instead of 'STADIA_API_TOKEN'
 #' plot_spatial_betas(
 #'   bktr_regressor,
 #'   plot_feature_labels = c('mean_temp_c', 'area_park', 'total_precip_mm'),
 #'   temporal_point_label = bixi_data$temporal_positions_df$time[10],
-#'   use_dark_mode = FALSE,  nb_cols = 3)
+#'   use_dark_mode = FALSE, nb_cols = 3, stadia_token = 'STADIA_API_TOKEN')
 #'
 #' @export
 plot_spatial_betas <- function(
@@ -146,6 +152,7 @@ plot_spatial_betas <- function(
     show_figure = TRUE,
     zoom = 11,
     google_token = NULL,
+    stadia_token = NULL,
     fig_width = 8.5,
     fig_height = 5.5,
     fig_resolution = 200
@@ -185,19 +192,21 @@ plot_spatial_betas <- function(
     plot_title <- paste0('Estimated Beta at Time Point : ', temporal_point_label)
     longitude <- latitude <- value <- NULL # Used for CRAN global binding checks
     if (is_map) {
-        is_google <- !is.null(google_token)
-        map_source <- ifelse(is_google, 'google', 'stamen')
-        map_color <- ifelse(is_google && use_dark_mode, 'bw', 'color')
-        if (is_google) {
-          ggmap::register_google(google_token)
-          map_type <- 'roadmap'
-        } else if (use_dark_mode) {
-          map_type <- 'toner'
+        if (!is.null(google_token)) {
+            ggmap::register_google(google_token)
+            map_source <- 'google'
+            map_type <- 'roadmap'
+            map_color <- ifelse(use_dark_mode, 'bw', 'color')
+        } else if (!is.null(stadia_token)) {
+            ggmap::register_stadiamaps(stadia_token)
+            map_source <- 'stadia'
+            map_type <- ifelse(use_dark_mode, 'stamen_toner', 'stamen_toner_lite')
+            map_color <- 'bw'
         } else {
-          map_type <- 'toner-lite'
+            stop('You must provide a Google or Stadia API token to plot on a map.')
         }
         fig <- (
-            qmplot(
+            ggmap::qmplot(
               x = longitude,
               y = latitude,
               color = value,
