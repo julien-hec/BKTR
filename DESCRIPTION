@@ -1,5 +1,5 @@
 Package: BKTR
-Version: 0.1.1.9000
+Version: 0.2.0
 Title: Bayesian Kernelized Tensor Regression
 Authors@R: c(
         person("Julien", "Lanthier", email = "julien.lanthier@hec.ca", role = c("aut", "cre", "cph"), comment = c(ORCID = "0009-0008-8728-4996")),
