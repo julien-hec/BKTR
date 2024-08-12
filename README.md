@@ -81,7 +81,7 @@ install.packages("torch")
 ```
 
 #### More information on torch installation
-For more information on how to install torch, please refer to the [torch installation vignette](https://cran.r-project.org/web/packages/torch/vignettes/installation.html).
+For more information on how to install torch, please refer to the [torch installation vignette](https://cran.r-project.org/package=torch/vignettes/installation.html).
 
 #### Getting started with Colab
 If you want to get started quickly with `BKTR` on Google Colab, you can use the following examples
