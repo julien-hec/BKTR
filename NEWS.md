@@ -1,3 +1,5 @@
+# BKTR (development version)
+
 # BKTR 0.2.0
 
 * Fix the `torch_triangular_solve` deprection warnings using the new `linalg_solve_triangular` function (mlverse/torch#1146). Also, update the minimal `torch` package version to 0.13.0 to be able to use this new function.
